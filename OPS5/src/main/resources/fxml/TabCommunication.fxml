@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="712.0" prefWidth="876.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CommunicationsController">
+	<children>
+		<Text layoutX="40.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Zieladresse" />
+		<Text layoutX="486.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Patient / OP" />
+		<ComboBox fx:id="communicationsObject" layoutX="556.0" layoutY="84.0" prefHeight="25.0" prefWidth="195.0" />
+		<TextField fx:id="communicationsIpAddress" layoutX="110.0" layoutY="84.0" prefHeight="25.0" prefWidth="142.0" />
+		<TextField fx:id="communicationsPort" layoutX="302.0" layoutY="84.0" prefHeight="25.0" prefWidth="75.0" />
+      <TableView fx:id="ts" layoutX="26.0" layoutY="128.0" prefHeight="392.0" prefWidth="765.0">
+        <columns>
+          <TableColumn minWidth="0.0" prefWidth="584.0" text="HL7 Message" />
+          <TableColumn minWidth="0.0" prefWidth="138.0" text="Date" />
+          <TableColumn prefWidth="42.0" text="Gültig" />
+        </columns>
+      </TableView>
+      <Text layoutX="273.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Port" />
+      <Button layoutX="40.0" layoutY="40.0" mnemonicParsing="false" onAction="#send" text="Senden" />
+	</children>
+</AnchorPane>

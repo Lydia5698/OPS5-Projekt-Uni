@@ -1,0 +1,24 @@
+# Java & Maven
+logs/
+target/
+bin/
+doc/
+.classpath
+dependency-reduced-pom.xml
+
+# Typesafe
+.sbtserver/
+.cache-main
+.cache-tests
+/RUNNING_PID
+
+# IntelliJ
+.idea
+.idea_modules
+.iml
+
+# Eclipse
+.project
+.settings
+
+
