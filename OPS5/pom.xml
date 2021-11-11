@@ -9,6 +9,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
+		<db.name>pmiw21g05_v01</db.name>
+		<db.username>pmiw21g05</db.username>
+		<db.password>IL6CgkzEMcNY99TD</db.password>
+		<db.url>jdbc:mariadb://dbstudents01.imi.uni-luebeck.de:3306/${db.name}</db.url>
+		<skip.jooq.generation>true</skip.jooq.generation>
+		<jooq.version>3.15.4</jooq.version>
 	</properties>
 	<build>
 		<plugins>
@@ -56,6 +62,63 @@
 					<mainClass>main.Main</mainClass>
 				</configuration>
 			</plugin>
+			<plugin>
+				<!-- 1 - Define plugin artifact coordinates -->
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<version>${jooq.version}</version>
+
+				<!-- 2 - The plugin should hook into the generate goal -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<!-- 3 - Manage the plugin's dependency in order to connect to MariaDB -->
+				<dependencies>
+					<dependency>
+						<groupId>org.mariadb.jdbc</groupId>
+						<artifactId>mariadb-java-client</artifactId>
+						<version>3.0.2-rc</version>
+						<scope>compile</scope>
+					</dependency>
+				</dependencies>
+				<!-- 4 - Specify the plugin configuration. -->
+				<configuration>
+
+					<!-- 5 - A boolean property (or constant) can be specified here to tell the plugin not to do anything -->
+					<skip>${skip.jooq.generation}</skip>
+
+					<!-- 6 - JDBC connection parameters -->
+					<jdbc>
+						<driver>org.mariadb.jdbc.Driver</driver>
+						<url>${db.url}</url>
+						<user>${db.username}</user>
+						<password>${db.password}</password>
+					</jdbc>
+
+					<!-- 7 - Generator parameters -->
+					<generator>
+						<generate>
+							<!-- 7.1 - DAOs make everything easier -->
+							<daos>true</daos>
+						</generate>
+						<database>
+							<!-- 7.2 - Generate sources for all schema versions -->
+							<name>org.jooq.meta.mariadb.MariaDBDatabase</name>
+							<includes>.*</includes>
+							<inputSchema>${db.name}</inputSchema>
+						</database>
+						<target>
+							<!-- 7.3 - Define output directory -->
+							<packageName>jooq</packageName>
+							<directory>src/main/java/</directory>
+						</target>
+					</generator>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -101,6 +164,21 @@
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-fxml</artifactId>
 			<version>17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<version>${jooq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-meta</artifactId>
+			<version>${jooq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-codegen</artifactId>
+			<version>${jooq.version}</version>
 		</dependency>
 	</dependencies>
 </project>
