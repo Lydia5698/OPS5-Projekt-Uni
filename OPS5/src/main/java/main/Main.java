@@ -17,16 +17,16 @@ public class Main extends Application{
    
    public static void main(String[] args) {
 
-		String userName = "pmiw21g05";
-		String password = "IL6CgkzEMcNY99TD";
-		String url = "jdbc:mariadb://dbstudents01.imi.uni-luebeck.de:3306/pmiw21g05_v01";
-		try(Connection conn = DriverManager.getConnection(url, userName, password)){
-		    System.out.println("Mit DB verbunden.");
+//		String userName = "pmiw21g05";
+//		String password = "IL6CgkzEMcNY99TD";
+//		String url = "jdbc:mariadb://dbstudents01.imi.uni-luebeck.de:3306/pmiw21g05_v01";
+//		try(Connection conn = DriverManager.getConnection(url, userName, password)){
+//		    System.out.println("Mit DB verbunden.");
 			Application.launch(Main.class, args);
-        }
-		catch(Exception e){
-		    e.printStackTrace();
-        }
+			//      }
+//		catch(Exception e){
+//		    e.printStackTrace();
+  //      }
 
 	   }
    
