@@ -7,13 +7,27 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 
 public class Main extends Application{
 
    private Parent root;
    
    public static void main(String[] args) {
-		Application.launch(Main.class, args);	      
+
+		String userName = "pmiw21g05";
+		String password = "IL6CgkzEMcNY99TD";
+		String url = "jdbc:mariadb://dbstudents01.imi.uni-luebeck.de:3306/pmiw21g05_v01";
+		try(Connection conn = DriverManager.getConnection(url, userName, password)){
+		    System.out.println("Mit DB verbunden.");
+			Application.launch(Main.class, args);
+        }
+		catch(Exception e){
+		    e.printStackTrace();
+        }
+
 	   }
    
    @Override
