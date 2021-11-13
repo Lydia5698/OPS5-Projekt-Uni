@@ -7,14 +7,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 
+import main.Main;
 import org.jooq.*;
-import org.jooq.impl.DSL;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
 import static jooq.Tables.*;
-import static org.jooq.impl.DSL.*;
-import java.sql.*;
 
 
 public class PatientController{
@@ -49,24 +44,15 @@ public class PatientController{
 	
     @FXML
     void createPatient(ActionEvent event) {
-        String userName = "pmiw21g05";
-        String password = "IL6CgkzEMcNY99TD";
-        String url = "jdbc:mariadb://dbstudents01.imi.uni-luebeck.de:3306/pmiw21g05_v01";
-        try(Connection conn = DriverManager.getConnection(url, userName, password)){
-            System.out.println("Mit DB verbunden.");
-            DSLContext create = DSL.using(conn, SQLDialect.MARIADB);
-            Result<Record2<String, String>> result = create.select(PATIENT.NAME, PATIENT.VORNAME).from(PATIENT).fetch();
+            Result<Record2<String, String>> result = Main.dslContext.select(PATIENT.NAME, PATIENT.VORNAME).from(PATIENT).fetch();
             for(Record r: result){
                 String name = r.get(PATIENT.NAME);
                 String vorname = r. get(PATIENT.VORNAME);
                 System.out.println(name + ", " + vorname);
             }
             System.out.println("Creating patient!");
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-    }
+	}
+
 
     public TextField getPatientFirstname() {
         return patientFirstname;
