@@ -7,9 +7,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import org.jooq.Configuration;
 import org.jooq.impl.DSL;
 import org.jooq.SQLDialect;
 import org.jooq.DSLContext;
+import org.jooq.impl.DefaultConfiguration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -44,6 +47,7 @@ public class Main extends Application{
      */
     public static DSLContext dslContext = DSL.using(connection, SQLDialect.MARIADB);
 
+    public static Configuration configuration = new DefaultConfiguration().set(connection).set(SQLDialect.MARIADB);
    
    public static void main(String[] args) {
 			Application.launch(Main.class, args);

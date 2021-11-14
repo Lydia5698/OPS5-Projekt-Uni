@@ -7,6 +7,8 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 
+import jooq.tables.Patient;
+import jooq.tables.daos.PatientDao;
 import main.Main;
 import org.jooq.*;
 import static jooq.Tables.*;
@@ -36,21 +38,39 @@ public class PatientController{
     private RadioButton patientMale;
     @FXML
     private RadioButton patientDiv;
-       
-	@FXML
+    @FXML
+    private RadioButton zerominus;
+    @FXML
+    private RadioButton zeroplus;
+    @FXML
+    private RadioButton aminus;
+    @FXML
+    private RadioButton aplus;
+    @FXML
+    private RadioButton bminus;
+    @FXML
+    private RadioButton bplus;
+    @FXML
+    private RadioButton abminus;
+    @FXML
+    private RadioButton abplus;
+
+
+
+
+    @FXML
 	public void initialize() {
     	System.out.println("Initialize Patient-Tab!");
 	}
 	
     @FXML
     void createPatient(ActionEvent event) {
-            Result<Record2<String, String>> result = Main.dslContext.select(PATIENT.NAME, PATIENT.VORNAME).from(PATIENT).fetch();
-            for(Record r: result){
-                String name = r.get(PATIENT.NAME);
-                String vorname = r. get(PATIENT.VORNAME);
-                System.out.println(name + ", " + vorname);
-            }
-            System.out.println("Creating patient!");
+//	    Main.dslContext.insertInto(PATIENT, PATIENT.NAME, PATIENT.VORNAME, PATIENT.GEBURTSDATUM, PATIENT.BLUTGRUPPE,
+ //               PATIENT.GESCHLECHT, PATIENT.GEBURTSORT, PATIENT.STRASSE, PATIENT.POSTLEITZAHL, PATIENT.TELEFONNUMMER).values(
+//                        getPatientLastname().getText(), getPatientFirstname().getText(), getPatientBirthdate().getValue().atTime(), getPatientBirthplace().getText(), getPatientStreet().getText(),
+//                getPatientPostcode().getText(), getPatientCellphone().getText()).execute();
+//	    System.out.println(getSexGroup().getSelectedToggle());
+	    System.out.println("Creating patient!");
 	}
 
 
