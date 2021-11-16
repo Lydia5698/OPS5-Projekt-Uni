@@ -11,6 +11,9 @@ import jooq.tables.Patient;
 import jooq.tables.daos.PatientDao;
 import main.Main;
 import org.jooq.*;
+
+import java.util.List;
+
 import static jooq.Tables.*;
 
 
@@ -39,6 +42,8 @@ public class PatientController{
     @FXML
     private RadioButton patientDiv;
     @FXML
+    private ToggleGroup blutgruppe;
+    @FXML
     private RadioButton zerominus;
     @FXML
     private RadioButton zeroplus;
@@ -65,11 +70,12 @@ public class PatientController{
 	
     @FXML
     void createPatient(ActionEvent event) {
-//	    Main.dslContext.insertInto(PATIENT, PATIENT.NAME, PATIENT.VORNAME, PATIENT.GEBURTSDATUM, PATIENT.BLUTGRUPPE,
- //               PATIENT.GESCHLECHT, PATIENT.GEBURTSORT, PATIENT.STRASSE, PATIENT.POSTLEITZAHL, PATIENT.TELEFONNUMMER).values(
-//                        getPatientLastname().getText(), getPatientFirstname().getText(), getPatientBirthdate().getValue().atTime(), getPatientBirthplace().getText(), getPatientStreet().getText(),
-//                getPatientPostcode().getText(), getPatientCellphone().getText()).execute();
-//	    System.out.println(getSexGroup().getSelectedToggle());
+//	    List<Record> records = Main.dslContext.insertInto(PATIENT, PATIENT.NAME, PATIENT.VORNAME, PATIENT.GEBURTSDATUM, PATIENT.BLUTGRUPPE,
+  //              PATIENT.GESCHLECHT, PATIENT.GEBURTSORT, PATIENT.STRASSE, PATIENT.POSTLEITZAHL, PATIENT.TELEFONNUMMER).values(
+    //                    getPatientLastname().getText(), getPatientFirstname().getText(), getPatientBirthdate().getValue(),
+      //          getBlutgruppe().getSelectedToggle(), getSexGroup().getSelectedToggle(), getPatientBirthplace().getText(),
+        //        getPatientStreet().getText(), getPatientPostcode().getText(), getPatientCellphone().getText());
+	    //System.out.println(getSexGroup().getSelectedToggle());
 	    System.out.println("Creating patient!");
 	}
 
@@ -116,6 +122,10 @@ public class PatientController{
 
     public RadioButton getPatientDiv() {
         return patientDiv;
+    }
+
+    public ToggleGroup getBlutgruppe() {
+        return blutgruppe;
     }
 }
 
