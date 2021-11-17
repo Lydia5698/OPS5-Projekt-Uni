@@ -46,17 +46,14 @@
                                        <padding>
                                           <Insets top="20.0" />
                                        </padding>
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="sexGroup" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="patientMale" mnemonicParsing="false" text="Männlich">
-                                       <padding>
-                                          <Insets top="20.0" />
-                                       </padding>
                      <toggleGroup>
                         <ToggleGroup fx:id="sex_group" />
                      </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="patientMale" mnemonicParsing="false" text="Männlich" toggleGroup="$sex_group">
+                                       <padding>
+                                          <Insets top="20.0" />
+                                       </padding>
                                     </RadioButton>
                                      <RadioButton fx:id="patientDiv" mnemonicParsing="false" text="Divers" toggleGroup="$sex_group">
                                        <padding>
