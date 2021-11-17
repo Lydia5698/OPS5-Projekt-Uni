@@ -7,6 +7,16 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 
+import jooq.tables.Patient;
+import jooq.tables.daos.PatientDao;
+import main.Main;
+import org.jooq.*;
+
+import java.util.List;
+
+import static jooq.Tables.*;
+
+
 public class PatientController{
 
     @FXML
@@ -31,16 +41,91 @@ public class PatientController{
     private RadioButton patientMale;
     @FXML
     private RadioButton patientDiv;
-       
-	@FXML
+    @FXML
+    private ToggleGroup blutgruppe;
+    @FXML
+    private RadioButton zerominus;
+    @FXML
+    private RadioButton zeroplus;
+    @FXML
+    private RadioButton aminus;
+    @FXML
+    private RadioButton aplus;
+    @FXML
+    private RadioButton bminus;
+    @FXML
+    private RadioButton bplus;
+    @FXML
+    private RadioButton abminus;
+    @FXML
+    private RadioButton abplus;
+
+
+
+
+    @FXML
 	public void initialize() {
     	System.out.println("Initialize Patient-Tab!");
 	}
 	
     @FXML
     void createPatient(ActionEvent event) {
-    	System.out.println("Creating patient!");
+//	    List<Record> records = Main.dslContext.insertInto(PATIENT, PATIENT.NAME, PATIENT.VORNAME, PATIENT.GEBURTSDATUM, PATIENT.BLUTGRUPPE,
+  //              PATIENT.GESCHLECHT, PATIENT.GEBURTSORT, PATIENT.STRASSE, PATIENT.POSTLEITZAHL, PATIENT.TELEFONNUMMER).values(
+    //                    getPatientLastname().getText(), getPatientFirstname().getText(), getPatientBirthdate().getValue(),
+      //          getBlutgruppe().getSelectedToggle(), getSexGroup().getSelectedToggle(), getPatientBirthplace().getText(),
+        //        getPatientStreet().getText(), getPatientPostcode().getText(), getPatientCellphone().getText());
+	    //System.out.println(getSexGroup().getSelectedToggle());
+	    System.out.println("Creating patient!");
+	}
+
+
+    public TextField getPatientFirstname() {
+        return patientFirstname;
     }
-    
+
+    public TextField getPatientLastname() {
+        return patientLastname;
+    }
+
+    public DatePicker getPatientBirthdate() {
+        return patientBirthdate;
+    }
+
+    public TextField getPatientBirthplace() {
+        return patientBirthplace;
+    }
+
+    public TextField getPatientStreet() {
+        return patientStreet;
+    }
+
+    public TextField getPatientPostcode() {
+        return patientPostcode;
+    }
+
+    public TextField getPatientCellphone() {
+        return patientCellphone;
+    }
+
+    public ToggleGroup getSexGroup() {
+        return sexGroup;
+    }
+
+    public RadioButton getPatientFemale() {
+        return patientFemale;
+    }
+
+    public RadioButton getPatientMale() {
+        return patientMale;
+    }
+
+    public RadioButton getPatientDiv() {
+        return patientDiv;
+    }
+
+    public ToggleGroup getBlutgruppe() {
+        return blutgruppe;
+    }
 }
 
