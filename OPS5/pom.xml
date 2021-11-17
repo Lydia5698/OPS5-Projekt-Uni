@@ -110,6 +110,14 @@
 							<name>org.jooq.meta.mariadb.MariaDBDatabase</name>
 							<includes>.*</includes>
 							<inputSchema>${db.name}</inputSchema>
+							<forcedTypes>
+								<forcedType>
+									<name>BOOLEAN</name>
+									<includeExpression>.*\.storniert</includeExpression>
+									<includeTypes>.*</includeTypes>
+									<objectType>ALL</objectType>
+								</forcedType>
+							</forcedTypes>
 						</database>
 						<target>
 							<!-- 7.3 - Define output directory -->
