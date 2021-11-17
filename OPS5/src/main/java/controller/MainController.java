@@ -4,6 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import jooq.Tables;
+import main.Main;
+import org.jooq.Record1;
+import org.jooq.Result;
+import org.jooq.impl.DSL;
+
+import java.util.List;
 
 public class MainController {
 
@@ -17,7 +24,7 @@ public class MainController {
 	@FXML
 	private Label systemMessage;
 	@FXML
-	private ComboBox<Integer> employeeId;
+	private ComboBox<String> employeeId;
 	@FXML
 	private Button btnLogout;
 	// Controllers
@@ -37,6 +44,17 @@ public class MainController {
 	private ProcedureController prozedurIdController;
 	@FXML
 	private CommunicationsController commTabController;
+
+	@FXML
+	public void initialize(){
+		Result<Record1<String>> result = Main.dslContext.select(DSL.concat(Tables.MED_PERSONAL.PERS_ID, DSL.inline(" : "), Tables.MED_PERSONAL.NACHNAME_VORNAME).as("id_name_medPersonal"))
+				.from(Tables.MED_PERSONAL)
+				.orderBy(Tables.MED_PERSONAL.NACHNAME_VORNAME.asc())
+				.fetch();
+		List<String> medpersonal_list = result.map(record -> record.getValue("id_name_medPersonal").toString());
+		employeeId.getItems().setAll(medpersonal_list);
+		employeeId.setEditable(false);
+	}
 
 	/**
 	 * Use this Method to access the current Instance of the Main Controller from
