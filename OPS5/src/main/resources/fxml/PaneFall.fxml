@@ -11,8 +11,8 @@
 
 <AnchorPane minHeight="180.0" minWidth="200.0" prefHeight="513.0" prefWidth="695.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FallController">
 <children>
-    <Button layoutX="54.0" layoutY="438.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="106.0" text="Speichern" />
-    <GridPane layoutX="54.0" layoutY="14.0" prefHeight="402.0" prefWidth="678.0">
+    <Button fx:id="speicherbutton" layoutX="54.0" layoutY="438.0" mnemonicParsing="false" onAction="#createFall" prefHeight="25.0" prefWidth="106.0" text="Speichern" />
+    <GridPane layoutX="43.0" layoutY="85.0" prefHeight="332.0" prefWidth="689.0">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="217.0" minWidth="10.0" prefWidth="217.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="365.0" minWidth="10.0" prefWidth="364.0" />
@@ -25,7 +25,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
         <children>
-            <TextField id="patient" fx:id="patient" GridPane.columnIndex="1" />
+            <TextField fx:id="patient" GridPane.columnIndex="1" />
             <TextField id="falltyp" fx:id="falltyp" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Patient" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Falltyp" GridPane.rowIndex="1" />
@@ -37,5 +37,6 @@
             <DatePicker id="entlassungsdatum" fx:id="entlassungsdatum" GridPane.columnIndex="1" GridPane.rowIndex="4" />
         </children>
     </GridPane>
+      <Text layoutX="210.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Im Notfall kann hier ein neuer Fall angelegt werden" />
 </children>
 </AnchorPane>
