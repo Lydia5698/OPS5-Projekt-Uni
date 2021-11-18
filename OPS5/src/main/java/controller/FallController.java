@@ -16,6 +16,7 @@ import jooq.tables.pojos.Patient;
 import jooq.tables.pojos.StationSt;
 import main.Main;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,18 @@ public class FallController {
     }
 
     public void createFall(ActionEvent actionEvent) {
+
+//         FallDao fallDao = new FallDao(Main.configuration);
+  //       Fall fall = new Fall();
+    //     fall.setPatId(patient.getValue().getPatId());
+      //   fall.setFallId(falltyp.getValue().getFallTypId());
+        // fall.setStationSt(station.getValue().getStation());
+         //fall.setAufnahmedatum(aufnahmedatum.getValue().atStartOfDay());
+//         fall.setEntlassungsdatum(entlassungsdatum.getValue().atStartOfDay());
+  //       fall.setErsteller(MainController.getEmployeeId().getPersId());
+    //     fall.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+      //   fallDao.insert(fall);
+
         System.out.println("Create Fall");
     }
 
@@ -69,6 +82,7 @@ public class FallController {
         patient.setButtonCell(cellFactory.call(null));
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
+        patient.getSelectionModel().selectFirst();
     }
 
     private void setFallTyp(){
@@ -114,4 +128,9 @@ public class FallController {
         station.setCellFactory(cellFactory);
         station.getItems().setAll(new StationStDao(Main.configuration).findAll());
     }
+
+    private void setAufnahmedatum(){
+        aufnahmedatum.setValue(new Timestamp(System.currentTimeMillis()).toLocalDateTime().toLocalDate());
+    }
+
 }

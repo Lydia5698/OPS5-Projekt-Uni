@@ -1,10 +1,11 @@
 package controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.util.Callback;
 import jooq.Tables;
+import jooq.tables.daos.MedPersonalDao;
+import jooq.tables.pojos.MedPersonal;
 import main.Main;
 import org.jooq.Record1;
 import org.jooq.Result;
@@ -24,7 +25,7 @@ public class MainController {
 	@FXML
 	private Label systemMessage;
 	@FXML
-	private ComboBox<String> employeeId;
+	private ComboBox<MedPersonal> employeeId;
 	@FXML
 	private Button btnLogout;
 	// Controllers
@@ -47,13 +48,7 @@ public class MainController {
 
 	@FXML
 	public void initialize(){
-		Result<Record1<String>> result = Main.dslContext.select(DSL.concat(Tables.MED_PERSONAL.PERS_ID, DSL.inline(" : "), Tables.MED_PERSONAL.NACHNAME_VORNAME).as("id_name_medPersonal"))
-				.from(Tables.MED_PERSONAL)
-				.orderBy(Tables.MED_PERSONAL.NACHNAME_VORNAME.asc())
-				.fetch();
-		List<String> medpersonal_list = result.map(record -> record.getValue("id_name_medPersonal").toString());
-		employeeId.getItems().setAll(medpersonal_list);
-		employeeId.setEditable(false);
+		setEmployeeId();
 	}
 
 	/**
@@ -77,6 +72,29 @@ public class MainController {
 	 */
 	public static void setInstance(MainController instance) {
 		MainController.instance = instance;
+	}
+
+	private void setEmployeeId(){
+		Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<MedPersonal> call(ListView<MedPersonal> medPersonalListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(MedPersonal med, boolean empty) {
+						super.updateItem(med, empty);
+						if (med == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(med.getPersId() + " : " + med.getNachnameVorname());
+						}
+					}
+				};
+			}
+		};
+		employeeId.setButtonCell(cellFactory.call(null));
+		employeeId.setCellFactory(cellFactory);
+		employeeId.getItems().setAll(new MedPersonalDao(Main.configuration).findAll());
+		employeeId.getSelectionModel().selectFirst();
 	}
 
 }
