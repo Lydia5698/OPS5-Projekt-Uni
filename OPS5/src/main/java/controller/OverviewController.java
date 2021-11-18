@@ -1,6 +1,7 @@
 package controller;
 import java.io.IOException;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,27 +11,21 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.collections.ObservableList;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
 
 import java.time.LocalDateTime;
 
 
-import jooq.Tables;
-import jooq.tables.Fall;
-
+import jooq.tables.daos.FallDao;
+import jooq.tables.daos.OperationDao;
+import jooq.tables.pojos.Fall;
+import jooq.tables.pojos.Operation;
 import main.Main;
-import controller.FallObject;
 
-
-import org.jooq.impl.DSL;
-import java.sql.*;
-
-import org.jooq.*;
-import org.jooq.impl.*;
 
 import java.util.List;
 
@@ -43,9 +38,90 @@ public class OverviewController {
     @FXML
     private TableView<?> opListPatients;
     @FXML
-    private TableView<FallObject> opListCase;
+    private TableView<Fall> opListCase;
+
     @FXML
-    private TableView<OpObject> opListOperation;
+    private TableColumn<Fall, Integer> fallIDCol;
+
+    @FXML
+    private TableColumn<Fall, LocalDateTime> aufnahmeCol;
+
+    @FXML
+    private TableColumn<Fall, LocalDateTime> entlassungCol;
+
+    @FXML
+    private TableColumn<Fall, LocalDateTime> erstellzeitCol;
+
+    @FXML
+    private TableColumn<Fall, LocalDateTime> bearbeiterzeitCol;
+
+    @FXML
+    private TableColumn<Fall, Byte> storniertCol;
+
+    @FXML
+    private TableColumn<Fall, Integer> patientenIDCol;
+
+    @FXML
+    private TableColumn<Fall,String> stationCol;
+
+    @FXML
+    private TableColumn<Fall, String> erstellerCol;
+
+    @FXML
+    private TableColumn<Fall, String> bearbeiterCol;
+
+    @FXML
+    private TableColumn<Fall, Integer> fallTypCol;
+    @FXML
+    private TableView<Operation> opListOperation;
+    @FXML
+    private TableColumn<Operation, Integer> opIDCol;
+
+    @FXML
+    private TableColumn<Operation, LocalDateTime> beginnCol;
+
+    @FXML
+    private TableColumn<Operation, LocalDateTime> endeCol;
+
+    @FXML
+    private TableColumn<Operation, Integer> bauchtuecherPraeCol;
+
+    @FXML
+    private TableColumn<Operation, Integer> bauchtuecherPostCol;
+
+    @FXML
+    private TableColumn<Operation, LocalDateTime> schnittzeitCol;
+
+    @FXML
+    private TableColumn<Operation, LocalDateTime> nahtzeitCol;
+
+    @FXML
+    private TableColumn<Operation, LocalDateTime> erstellzeitOPCol;
+
+    @FXML
+    private TableColumn<Operation, LocalDateTime> bearbeiterzeitOPCol;
+
+    @FXML
+    private TableColumn<Operation, Byte> storniertOPCol;
+
+    @FXML
+    private TableColumn<Operation, Integer> fallIdOPCol;
+
+    @FXML
+    private TableColumn<Operation, Integer> opSaalCol;
+
+    @FXML
+    private TableColumn<Operation, Integer> narkoseCol;
+
+    @FXML
+    private TableColumn<Operation, Integer> opTypCol;
+
+    @FXML
+    private TableColumn<Operation, String> erstellerOPCol;
+
+    @FXML
+    private TableColumn<Operation, String> bearbeiterOPCol;
+
 
     @FXML
     private Button btnStornieren;
@@ -55,68 +131,67 @@ public class OverviewController {
     @FXML
     private Button btnProc;
 
-    private ObservableList<FallObject> fallData = FXCollections.observableArrayList();
-    private ObservableList<OpObject> opData = FXCollections.observableArrayList();
 
 
     @FXML
 	public void initialize() {
         System.out.println("Initialize OPlist-Tab!");
 
-        // tabellencols werden erstellt
-        // create columns
-        TableColumn<FallObject, Integer> fallIDCol = new TableColumn<FallObject, Integer>("Fall-ID");
-        fallIDCol.setCellValueFactory(new PropertyValueFactory<>("fallID"));
-
-        TableColumn<FallObject, LocalDateTime> aufnahmeCol = new TableColumn<FallObject, LocalDateTime>("Aufnahmedatum");
-        aufnahmeCol.setCellValueFactory(new PropertyValueFactory<>("aufnahmedatum"));
-
-        TableColumn<FallObject, Integer> fallTypCol = new TableColumn<FallObject, Integer>("Stationär/Ambulant");
-        fallTypCol.setCellValueFactory(new PropertyValueFactory<>("stationär"));
-
-        // add columns
-        opListCase.getColumns().addAll(fallIDCol, aufnahmeCol, fallTypCol);
-
-        TableColumn<OpObject, Integer> opIDCol = new TableColumn<OpObject, Integer>("Op-ID");
-        opIDCol.setCellValueFactory(new PropertyValueFactory<>("opID"));
-
-        // add columns
-        opListOperation.getColumns().addAll(opIDCol);
-
-
-        // Alle Daten von der Tabelle Fall
-        Result<Record> resultFall = Main.dslContext.select().from(Tables.FALL).fetch();
-
-        for (Record r : resultFall) {
-            Integer id = r.getValue(Tables.FALL.FALL_ID);
-            LocalDateTime aufnahmedatum = r.getValue(Tables.FALL.AUFNAHMEDATUM);
-            Integer stationär = r.getValue(Tables.FALL.FALL_TYP);
-            System.out.println("ID: " + id + aufnahmedatum + stationär);
-            fallData.add(new FallObject(id, aufnahmedatum, 1));  // TODO: 18.11.21  stationär mit Stammtabelle verbinden
-        }
-        opListCase.setItems(fallData);
-
-        Result<Record> resultOp = Main.dslContext.select().from(Tables.OPERATION, Tables.FALL).where(Tables.OPERATION.FALL_ID.eq(Tables.FALL.FALL_ID)).fetch();
-
-        for (Record r : resultOp) { // TODO: 18.11.21 nur ops zum Fall anzeigen
-            Integer id = r.getValue(Tables.OPERATION.OP_ID);
-            System.out.println("ID: " + id);
-            opData.add(new OpObject(id));
-        }
-
+        initializeColumns();
+        opListCase.setItems(fallView());
         opListCase.setOnMouseClicked((MouseEvent event) -> {
-            if (event.getClickCount() > 1) {
-                onEdit();
+            if (event.getClickCount() > 0) {
+                int id = onEdit();
+                opListOperation.setItems(operationView(id));
             }
         });
     }
 
-        public void onEdit() {
+    private void initializeColumns() {
+        // tabellencols werden erstellt
+        // create columns
+
+        // columns Case
+        fallIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
+        aufnahmeCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getAufnahmedatum()));
+        entlassungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getEntlassungsdatum()));
+        erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
+        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        patientenIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getPatId()));
+        stationCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStationSt()));
+        erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErsteller()));
+        bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiter()));
+        fallTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallTyp()));
+
+        // columns Operation
+        opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
+        beginnCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBeginn()));
+        endeCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getEnde()));
+        bauchtuecherPraeCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBauchtuecherPrae()));
+        bauchtuecherPostCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBauchtuecherPost()));
+        schnittzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getSchnittzeit()));
+        nahtzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getNahtzeit()));
+        erstellzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
+        bearbeiterzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+        storniertOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        fallIdOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
+        opSaalCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpSaal()));
+        narkoseCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getNarkoseSt()));
+        opTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpTypSt()));
+        erstellerOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErsteller()));
+        bearbeiterOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiter()));
+
+    }
+
+    public int onEdit() {
+        int id = 0;
             // check the table's selected item and get selected item
             if (opListCase.getSelectionModel().getSelectedItem() != null) {
-                FallObject selectedFall = opListCase.getSelectionModel().getSelectedItem();
-                System.out.println(selectedFall);
+                Fall selectedFall = opListCase.getSelectionModel().getSelectedItem();
+                id = selectedFall.getFallId();
             }
+            return id;
         }
 
 
@@ -153,6 +228,19 @@ public class OverviewController {
        		e.printStackTrace();
        	}
        	
+    }
+
+    public static ObservableList<Fall> fallView(){
+        FallDao fallDao = new FallDao(Main.configuration);
+        List<Fall> fall = fallDao.findAll();
+        return FXCollections.observableArrayList(fall);
+
+    }
+
+    public static ObservableList<Operation> operationView(Integer id){
+        OperationDao operationDao = new OperationDao(Main.configuration);
+        List<Operation> operation = operationDao.fetchByFallId(id);
+        return FXCollections.observableArrayList(operation);
     }
 
 }
