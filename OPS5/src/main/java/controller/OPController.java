@@ -1,9 +1,13 @@
 package controller;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Spinner;
 import jooq.Tables;
+import jooq.tables.daos.FallDao;
+import jooq.tables.pojos.Fall;
 import main.Main;
 import org.jooq.Record1;
 import org.jooq.Result;
@@ -14,7 +18,7 @@ import java.util.List;
 public class OPController{	
     
     @FXML
-    private ComboBox<Integer> opCaseId;
+    private ComboBox<Fall> opCaseId;
 	@FXML
     private DatePicker opDate;
     @FXML
@@ -22,9 +26,17 @@ public class OPController{
     @FXML
     private ComboBox<String> opRoom;
     @FXML
+    private ComboBox<String> narkose;
+    @FXML
     private ComboBox<Integer> opSurgeonId;
     @FXML
     private Spinner<Integer> towelBefore = new Spinner<Integer>(0,100, 0);
+
+    public static ObservableList<Fall> getCases(){
+        FallDao fallDao = new FallDao(Main.configuration);
+        List<Fall> cases = fallDao.fetchByPatId(1);
+        return FXCollections.observableArrayList(cases);
+    }
 	
     @FXML
 	public void initialize() {
@@ -46,13 +58,22 @@ public class OPController{
         List<String> optyp_list = typeresult.map(record -> record.getValue("opbeschreibung").toString());
         opType.getItems().setAll(optyp_list);
 
-        Result<Record1<String>> result = Main.dslContext.select(Tables.OP_SAAL_ST.BESCHREIBUNG.as("opsaal"))
+        Result<Record1<String>> roomResult = Main.dslContext.select(Tables.OP_SAAL_ST.BESCHREIBUNG.as("opsaal"))
                 .from(Tables.OP_SAAL_ST)
                 .orderBy(Tables.OP_SAAL_ST.BESCHREIBUNG.asc())
                 .fetch();
-        List<String> opsaallist = result.map(record -> record.getValue("opsaal").toString());
+        List<String> opsaallist = roomResult.map(record -> record.getValue("opsaal").toString());
         opRoom.getItems().setAll(opsaallist);
-    	System.out.println("Initialize OP-Tab!");
+
+        Result<Record1<String>> narkoseTypResult = Main.dslContext.select(Tables.NARKOSE_ST.BESCHREIBUNG.as("narkose"))
+                .from(Tables.NARKOSE_ST)
+                .orderBy(Tables.NARKOSE_ST.BESCHREIBUNG.asc())
+                .fetch();
+        List<String> narkoseList = narkoseTypResult.map(record -> record.getValue("narkose").toString());
+        narkose.getItems().setAll(narkoseList);
+
+        opCaseId.setItems(getCases());
+        System.out.println("Initialize OP-Tab!");
 	}
     
     
