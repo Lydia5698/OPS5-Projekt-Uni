@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="1156.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OverviewController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="1156.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OverviewController">
 	<children>
 		<CheckBox fx:id="opListFilterPostOp" layoutX="20.0" layoutY="20.0" mnemonicParsing="false" text="Zeige entlassene Patienten (KIS)" />
 		<TableView fx:id="opListPatients" layoutX="20.0" layoutY="45.0" prefHeight="409.0" prefWidth="363.0">
@@ -18,22 +18,16 @@
             	<TableColumn prefWidth="96.0" text="Geburtsdatum" />
 			</columns>
 		</TableView>
-      <TableView fx:id="opListOpTable" layoutX="400.0" layoutY="45.0" prefHeight="353.0" prefWidth="331.0">
-        <columns>
-          <TableColumn prefWidth="100.0" text="Fall" />
-          <TableColumn prefWidth="101.0" text="Aufnahmedatum" />
-            <TableColumn prefWidth="146.0" text="Stationär/Ambulant" />
-        </columns>
-      </TableView>
+      <TableView fx:id="opListCase" layoutX="400.0" layoutY="45.0" prefHeight="353.0" prefWidth="331.0" />
       <ComboBox layoutX="233.0" layoutY="16.0" prefWidth="150.0" promptText="Station" />
       <Button fx:id="btnDiag" layoutX="422.0" layoutY="422.0" mnemonicParsing="false" onAction="#createAndShowDiagnosisWindow" text="Diagnosen" />
       <Button fx:id="btnProc" layoutX="527.0" layoutY="422.0" mnemonicParsing="false" onAction="#createAndShowProcedureWindow" text="Prozeduren" />
-      <TableView layoutX="745.0" layoutY="45.0" prefHeight="353.0" prefWidth="262.0">
+      <TableView fx:id="opListStation" layoutX="745.0" layoutY="45.0" prefHeight="353.0" prefWidth="262.0">
         <columns>
           <TableColumn prefWidth="75.0" text="Station" />
           <TableColumn prefWidth="165.0" text="Aufnahmedatum" />
         </columns>
       </TableView>
-      <Button layoutX="640.0" layoutY="422.0" mnemonicParsing="false" text="Stornieren" />
+      <Button fx:id="btnStornieren" layoutX="640.0" layoutY="422.0" mnemonicParsing="false" text="Stornieren" />
 	</children>
 </AnchorPane>
