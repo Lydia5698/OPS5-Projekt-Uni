@@ -10,10 +10,10 @@ public class OpObject {
     private LocalDateTime beginn;
     private LocalDateTime ende;
 
-    public OpObject(Integer opID, LocalDateTime beginn, LocalDateTime ende) {
+    public OpObject(Integer opID) {
         this.opID = opID;
-        this.beginn = beginn;
-        this.ende = ende;
+        //this.beginn = beginn;
+        //this.ende = ende;
     }
     public Integer getOpID() {
         return opID;

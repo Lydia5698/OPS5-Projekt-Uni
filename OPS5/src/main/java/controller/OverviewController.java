@@ -45,7 +45,7 @@ public class OverviewController {
     @FXML
     private TableView<FallObject> opListCase;
     @FXML
-    private TableView<?> opListStation;
+    private TableView<OpObject> opListOperation;
 
     @FXML
     private Button btnStornieren;
@@ -56,13 +56,15 @@ public class OverviewController {
     private Button btnProc;
 
     private ObservableList<FallObject> fallData = FXCollections.observableArrayList();
+    private ObservableList<OpObject> opData = FXCollections.observableArrayList();
 
 
     @FXML
 	public void initialize() {
-    	System.out.println("Initialize OPlist-Tab!");
+        System.out.println("Initialize OPlist-Tab!");
 
-    	// tabellencols werden erstellt
+        // tabellencols werden erstellt
+        // create columns
         TableColumn<FallObject, Integer> fallIDCol = new TableColumn<FallObject, Integer>("Fall-ID");
         fallIDCol.setCellValueFactory(new PropertyValueFactory<>("fallID"));
 
@@ -72,28 +74,52 @@ public class OverviewController {
         TableColumn<FallObject, Integer> fallTypCol = new TableColumn<FallObject, Integer>("Stationär/Ambulant");
         fallTypCol.setCellValueFactory(new PropertyValueFactory<>("stationär"));
 
-        opListCase.getColumns().addAll(fallIDCol,aufnahmeCol,fallTypCol);
+        // add columns
+        opListCase.getColumns().addAll(fallIDCol, aufnahmeCol, fallTypCol);
 
+        TableColumn<OpObject, Integer> opIDCol = new TableColumn<OpObject, Integer>("Op-ID");
+        opIDCol.setCellValueFactory(new PropertyValueFactory<>("opID"));
+
+        // add columns
+        opListOperation.getColumns().addAll(opIDCol);
 
 
         // Alle Daten von der Tabelle Fall
         Result<Record> resultFall = Main.dslContext.select().from(Tables.FALL).fetch();
-
 
         for (Record r : resultFall) {
             Integer id = r.getValue(Tables.FALL.FALL_ID);
             LocalDateTime aufnahmedatum = r.getValue(Tables.FALL.AUFNAHMEDATUM);
             Integer stationär = r.getValue(Tables.FALL.FALL_TYP);
             System.out.println("ID: " + id + aufnahmedatum + stationär);
-            fallData.add(new FallObject(id, aufnahmedatum, 1));
+            fallData.add(new FallObject(id, aufnahmedatum, 1));  // TODO: 18.11.21  stationär mit Stammtabelle verbinden
         }
         opListCase.setItems(fallData);
 
+        Result<Record> resultOp = Main.dslContext.select().from(Tables.OPERATION, Tables.FALL).where(Tables.OPERATION.FALL_ID.eq(Tables.FALL.FALL_ID)).fetch();
 
+        for (Record r : resultOp) { // TODO: 18.11.21 nur ops zum Fall anzeigen
+            Integer id = r.getValue(Tables.OPERATION.OP_ID);
+            System.out.println("ID: " + id);
+            opData.add(new OpObject(id));
+        }
 
-
-        //opListCase.getItems().setAll(fallID_list);*/
+        opListCase.setOnMouseClicked((MouseEvent event) -> {
+            if (event.getClickCount() > 1) {
+                onEdit();
+            }
+        });
     }
+
+        public void onEdit() {
+            // check the table's selected item and get selected item
+            if (opListCase.getSelectionModel().getSelectedItem() != null) {
+                FallObject selectedFall = opListCase.getSelectionModel().getSelectedItem();
+                System.out.println(selectedFall);
+            }
+        }
+
+
     
     @FXML
    	public void createAndShowDiagnosisWindow() {
@@ -128,25 +154,5 @@ public class OverviewController {
        	}
        	
     }
-
-    /*
-    AuthorRecord author = context.fetchOne(Author.AUTHOR, Author.AUTHOR.ID.eq(1))
-
-
-    Result<Record2<Integer, String>> articles = context.select(Article.ARTICLE.ID, Article.ARTICLE.TITLE)
-    .from(Author.AUTHOR)
-    .fetch();
-
-    Result<Record<Integer, LocalDateTime, Integer>> fall = context.select(Fall.FALL_ID, Fall.AUFNAHMEDATUM, Fall.FALL_TYP)
-    .from(
-
-    Fälle darstellen mitte
-    Fall Integer
-    Aufnahmedatum LocalDateTime
-    stationär Integer string dann aus FallTypSt
-     */
-
-
-
 
 }
