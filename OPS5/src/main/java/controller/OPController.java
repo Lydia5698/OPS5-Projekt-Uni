@@ -2,6 +2,7 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Spinner;
 import jooq.Tables;
 import main.Main;
 import org.jooq.Record1;
@@ -22,6 +23,8 @@ public class OPController{
     private ComboBox<String> opRoom;
     @FXML
     private ComboBox<Integer> opSurgeonId;
+    @FXML
+    private Spinner<Integer> towelBefore = new Spinner<Integer>(0,100, 0);
 	
     @FXML
 	public void initialize() {

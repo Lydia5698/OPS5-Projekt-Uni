@@ -49,6 +49,9 @@ public class AdmissionController {
 	public void create() {
     	System.out.println("Creating Case/OP!");
     }
+
+    @FXML
+	public void createRole(){ System.out.println("Creating Role"); }
     
     @FXML
 	public void createAndShowNewPatientWindow() {

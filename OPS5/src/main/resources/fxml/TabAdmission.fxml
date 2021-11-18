@@ -25,10 +25,11 @@
             <fx:include fx:id="op" source="PaneOp.fxml" />
          </children>
       </Pane>
-      <Pane layoutY="286.0" prefHeight="65.0" prefWidth="876.0">
+      <Pane layoutY="320.0" prefHeight="65.0" prefWidth="876.0">
          <children>
-            <Button layoutX="36.0" layoutY="20.0" mnemonicParsing="false" onAction="#create" text="OP anlegen" />
+            <Button layoutX="200.0" layoutY="20.0" mnemonicParsing="false" onAction="#create" text="OP anlegen" />
+            <Button layoutX="36.0" layoutY="20.0" mnemonicParsing="false" onAction="#createRole" text="Rolle hinzufügen" />
          </children>
-      </Pane>
+       </Pane>
 	</children>
 </AnchorPane>

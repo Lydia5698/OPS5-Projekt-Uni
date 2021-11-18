@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import ExternalFiles.DateTimePicker?>
 
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="270.0" prefWidth="563.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OPController">
 	<children>
@@ -25,19 +26,33 @@
 			</rowConstraints>
 			<children>
 				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Fall" />
-				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ende" GridPane.rowIndex="1" />
-				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP-Typ" GridPane.rowIndex="2" />
-				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP-Saal" GridPane.rowIndex="3" />
-				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Beginn" GridPane.rowIndex="4" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Beginn" GridPane.rowIndex="1" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ende" GridPane.rowIndex="2" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP-Typ" GridPane.rowIndex="3" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP-Saal" GridPane.rowIndex="4" />
 				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Narkose" GridPane.rowIndex="5" />
-				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bauchtücher" GridPane.rowIndex="6" />
-				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Schnittzeit" GridPane.rowIndex="7" />
-				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nahtzeit" GridPane.rowIndex="8" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Schnittzeit" GridPane.rowIndex="6" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nahtzeit" GridPane.rowIndex="7" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bauchtücher vor der OP" GridPane.rowIndex="8" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bauchtücher vor der OP" GridPane.rowIndex="9" />
 				<ComboBox fx:id="opCaseId" prefWidth="150.0" GridPane.columnIndex="1" />
-				<DatePicker fx:id="opDate" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-				<ComboBox fx:id="opType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-				<ComboBox fx:id="opRoom" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="4" />
+				<DateTimePicker fx:id="opDateBegin" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+				<DateTimePicker fx:id="opDateEnd" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+				<ComboBox fx:id="opType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+				<ComboBox fx:id="opRoom" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+				<ComboBox fx:id="narkose" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+				<DateTimePicker fx:id="cutTime" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+				<DateTimePicker fx:id="sewTime" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+				<Spinner fx:id="towelsBefore" accessibleText="0" GridPane.columnIndex="1" GridPane.rowIndex="8" >
+					<valueFactory>
+						<SpinnerValueFactory.IntegerSpinnerValueFactory min="0" max="100"/>
+					</valueFactory>
+				</Spinner>
+				<Spinner fx:id="towelsAfter" accessibleText="0" GridPane.columnIndex="1" GridPane.rowIndex="9" >
+					<valueFactory>
+						<SpinnerValueFactory.IntegerSpinnerValueFactory min="0" max="100"/>
+					</valueFactory>
+				</Spinner>
 			</children>
 		</GridPane>
 	</children>
