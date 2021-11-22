@@ -7,11 +7,12 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 
-import jooq.tables.Patient;
 import jooq.tables.daos.PatientDao;
+import jooq.tables.pojos.Patient;
 import main.Main;
 import org.jooq.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import static jooq.Tables.*;
@@ -67,65 +68,29 @@ public class PatientController{
 	public void initialize() {
     	System.out.println("Initialize Patient-Tab!");
 	}
-	
+
+    /**
+     * After pressing the button, the entries from the text fields are transferred to the attribute values and the
+     * patient is inserted into the database with the help of the DAO
+     * @param event event which is fired when the button is pushed
+     */
     @FXML
     void createPatient(ActionEvent event) {
-//	    List<Record> records = Main.dslContext.insertInto(PATIENT, PATIENT.NAME, PATIENT.VORNAME, PATIENT.GEBURTSDATUM, PATIENT.BLUTGRUPPE,
-  //              PATIENT.GESCHLECHT, PATIENT.GEBURTSORT, PATIENT.STRASSE, PATIENT.POSTLEITZAHL, PATIENT.TELEFONNUMMER).values(
-    //                    getPatientLastname().getText(), getPatientFirstname().getText(), getPatientBirthdate().getValue(),
-      //          getBlutgruppe().getSelectedToggle(), getSexGroup().getSelectedToggle(), getPatientBirthplace().getText(),
-        //        getPatientStreet().getText(), getPatientPostcode().getText(), getPatientCellphone().getText());
-	    //System.out.println(getSexGroup().getSelectedToggle());
+        PatientDao patientDao = new PatientDao(Main.configuration);
+        Patient patient = new Patient();
+        patient.setName(patientLastname.getText());
+        patient.setVorname(patientFirstname.getText());
+        patient.setGeburtsdatum(patientBirthdate.getValue());
+        patient.setBlutgruppe(blutgruppe.getSelectedToggle().toString());
+        patient.setGeschlecht(sexGroup.getSelectedToggle().toString());
+        patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+        patient.setStrasse(patientStreet.getText());
+        patient.setPostleitzahl(patientPostcode.toString());
+        patient.setGeburtsort(patientBirthplace.toString());
+        patient.setTelefonnummer(patientCellphone.toString());
+        patientDao.insert(patient);
 	    System.out.println("Creating patient!");
 	}
 
-
-    public TextField getPatientFirstname() {
-        return patientFirstname;
-    }
-
-    public TextField getPatientLastname() {
-        return patientLastname;
-    }
-
-    public DatePicker getPatientBirthdate() {
-        return patientBirthdate;
-    }
-
-    public TextField getPatientBirthplace() {
-        return patientBirthplace;
-    }
-
-    public TextField getPatientStreet() {
-        return patientStreet;
-    }
-
-    public TextField getPatientPostcode() {
-        return patientPostcode;
-    }
-
-    public TextField getPatientCellphone() {
-        return patientCellphone;
-    }
-
-    public ToggleGroup getSexGroup() {
-        return sexGroup;
-    }
-
-    public RadioButton getPatientFemale() {
-        return patientFemale;
-    }
-
-    public RadioButton getPatientMale() {
-        return patientMale;
-    }
-
-    public RadioButton getPatientDiv() {
-        return patientDiv;
-    }
-
-    public ToggleGroup getBlutgruppe() {
-        return blutgruppe;
-    }
 }
 

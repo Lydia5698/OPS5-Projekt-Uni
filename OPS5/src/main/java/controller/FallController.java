@@ -130,6 +130,7 @@ public class FallController {
     }
 
     private void setAufnahmedatum(){
+        //set default value to current time
         aufnahmedatum.setValue(new Timestamp(System.currentTimeMillis()).toLocalDateTime().toLocalDate());
     }
 
