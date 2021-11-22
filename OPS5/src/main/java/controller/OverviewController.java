@@ -141,8 +141,15 @@ public class OverviewController {
         opListCase.setItems(fallView());
         opListCase.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
-                int id = onEdit();
-                opListOperation.setItems(operationView(id));
+                int CaseId = onEditCase();
+                opListOperation.setItems(operationView(CaseId));
+            }
+        });
+
+        opListOperation.setOnMouseClicked((MouseEvent event) -> {
+            if (event.getClickCount() > 1) {
+                int opId = onEditOperation();
+                createAndShowOperationWindow();
             }
         });
     }
@@ -150,6 +157,7 @@ public class OverviewController {
     private void initializeColumns() {
         // tabellencols werden erstellt
         // create columns
+
 
         // columns Case
         fallIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
@@ -184,7 +192,7 @@ public class OverviewController {
 
     }
 
-    public int onEdit() {
+    public int onEditCase() {
         int id = 0;
             // check the table's selected item and get selected item
             if (opListCase.getSelectionModel().getSelectedItem() != null) {
@@ -192,7 +200,19 @@ public class OverviewController {
                 id = selectedFall.getFallId();
             }
             return id;
+
+    }
+
+    public int onEditOperation() {
+        int id = 0;
+        // check the table's selected item and get selected item
+        if (opListOperation.getSelectionModel().getSelectedItem() != null) {
+            Operation selectedOperation = opListOperation.getSelectionModel().getSelectedItem();
+            id = selectedOperation.getOpId();
         }
+        return id;
+    }
+
 
 
     
@@ -211,6 +231,23 @@ public class OverviewController {
        		e.printStackTrace();
        	}
        	
+    }
+
+    @FXML
+    public void createAndShowOperationWindow() {
+        System.out.println("New Patient Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOp.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Operation Bearbeiten");
+            stage.setScene(new Scene(root));
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
     
     @FXML
@@ -233,8 +270,8 @@ public class OverviewController {
     public static ObservableList<Fall> fallView(){
         FallDao fallDao = new FallDao(Main.configuration);
         List<Fall> fall = fallDao.findAll();
-        return FXCollections.observableArrayList(fall);
 
+        return FXCollections.observableArrayList(fall);
     }
 
     public static ObservableList<Operation> operationView(Integer id){

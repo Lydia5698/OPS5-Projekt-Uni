@@ -20,39 +20,39 @@
 		</TableView>
       <TableView fx:id="opListCase" layoutX="400.0" layoutY="45.0" prefHeight="353.0" prefWidth="331.0">
          <columns>
-            <TableColumn fx:id="fallIDCol" prefWidth="47.0" text="Fall-ID" />
-            <TableColumn fx:id="aufnahmeCol" prefWidth="134.0" text="Aufnahmedatum" />
-            <TableColumn fx:id="entlassungCol" prefWidth="75.0" text="Entlassungsdatum" />
-            <TableColumn fx:id="erstellzeitCol" prefWidth="75.0" text="Erstellzeit" />
-            <TableColumn fx:id="bearbeiterzeitCol" prefWidth="75.0" text="Bearbeiterzeit" />
-            <TableColumn fx:id="storniertCol" prefWidth="75.0" text="Storniert" />
-            <TableColumn fx:id="patientenIDCol" prefWidth="75.0" text="Patienten-ID" />
+            <TableColumn fx:id="fallIDCol" maxWidth="500.0" prefWidth="45.0" text="Fall-ID" />
+            <TableColumn fx:id="aufnahmeCol" maxWidth="700.0" minWidth="30.0" prefWidth="140.0" text="Aufnahmedatum" />
+            <TableColumn fx:id="entlassungCol" prefWidth="140.0" text="Entlassungsdatum" />
+            <TableColumn fx:id="patientenIDCol" text="Patienten-ID" />
             <TableColumn fx:id="stationCol" prefWidth="75.0" text="Station" />
-            <TableColumn fx:id="erstellerCol" prefWidth="75.0" text="Ersteller" />
-            <TableColumn fx:id="bearbeiterCol" prefWidth="75.0" text="Bearbeiter" />
             <TableColumn fx:id="fallTypCol" prefWidth="115.0" text="Stationär/Ambulant" />
+            <TableColumn fx:id="erstellerCol" prefWidth="75.0" text="Ersteller" />
+            <TableColumn fx:id="erstellzeitCol" prefWidth="140.0" text="Erstellzeit" />
+            <TableColumn fx:id="bearbeiterCol" prefWidth="75.0" text="Bearbeiter" />
+            <TableColumn fx:id="bearbeiterzeitCol" prefWidth="140.0" text="Bearbeiterzeit" />
+            <TableColumn fx:id="storniertCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>
       <ComboBox layoutX="233.0" layoutY="16.0" prefWidth="150.0" promptText="Station" />
       <Button fx:id="btnDiag" layoutX="422.0" layoutY="422.0" mnemonicParsing="false" onAction="#createAndShowDiagnosisWindow" text="Diagnosen" />
       <Button fx:id="btnProc" layoutX="527.0" layoutY="422.0" mnemonicParsing="false" onAction="#createAndShowProcedureWindow" text="Prozeduren" />
       <TableView fx:id="opListOperation" layoutX="745.0" layoutY="45.0" prefHeight="353.0" prefWidth="262.0">
          <columns>
-            <TableColumn fx:id="opIDCol" prefWidth="75.0" text="Op-ID" />
-            <TableColumn fx:id="beginnCol" prefWidth="75.0" text="Beginn" />
-            <TableColumn fx:id="endeCol" prefWidth="75.0" text="Ende" />
-            <TableColumn fx:id="bauchtuecherPraeCol" prefWidth="75.0" text="Bauchtücher Prä" />
-            <TableColumn fx:id="bauchtuecherPostCol" prefWidth="75.0" text="Bauchtücher Post" />
+            <TableColumn fx:id="opIDCol" prefWidth="45.0" text="Op-ID" />
+            <TableColumn fx:id="fallIdOPCol" prefWidth="45.0" text="Fall-ID" />
+            <TableColumn fx:id="beginnCol" prefWidth="140.0" text="Beginn" />
+            <TableColumn fx:id="endeCol" prefWidth="140.0" text="Ende" />
+            <TableColumn fx:id="opSaalCol" prefWidth="55.0" text="Op Saal" />
+            <TableColumn fx:id="bauchtuecherPraeCol" prefWidth="100.0" text="Bauchtücher Prä" />
+            <TableColumn fx:id="bauchtuecherPostCol" prefWidth="110.0" text="Bauchtücher Post" />
             <TableColumn fx:id="schnittzeitCol" prefWidth="75.0" text="Schnittzeit" />
             <TableColumn fx:id="nahtzeitCol" prefWidth="75.0" text="Nahtzeit" />
-            <TableColumn fx:id="erstellzeitOPCol" prefWidth="75.0" text="Erstellzeit" />
-            <TableColumn fx:id="bearbeiterzeitOPCol" prefWidth="75.0" text="Bearbeiterzeit" />
-            <TableColumn fx:id="storniertOPCol" prefWidth="75.0" text="Storniert" />
-            <TableColumn fx:id="fallIdOPCol" prefWidth="75.0" text="Fall-ID" />
-            <TableColumn fx:id="opSaalCol" prefWidth="75.0" text="Op Saal" />
-            <TableColumn fx:id="narkoseCol" prefWidth="75.0" text="Narkose" />
             <TableColumn fx:id="opTypCol" prefWidth="75.0" text="OP Typ" />
+            <TableColumn fx:id="narkoseCol" prefWidth="75.0" text="Narkose" />
             <TableColumn fx:id="erstellerOPCol" prefWidth="75.0" text="Ersteller" />
+            <TableColumn fx:id="erstellzeitOPCol" prefWidth="140.0" text="Erstellzeit" />
             <TableColumn fx:id="bearbeiterOPCol" prefWidth="75.0" text="Bearbeiter" />
+            <TableColumn fx:id="bearbeiterzeitOPCol" prefWidth="140.0" text="Bearbeiterzeit" />
+            <TableColumn fx:id="storniertOPCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>
       <Button fx:id="btnStornieren" layoutX="640.0" layoutY="422.0" mnemonicParsing="false" text="Stornieren" />
 	</children>

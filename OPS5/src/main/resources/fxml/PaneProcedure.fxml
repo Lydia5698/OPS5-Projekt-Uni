@@ -10,13 +10,19 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="457.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProcedureController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="457.0" prefWidth="796.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProcedureController">
 	<children>
       <TableView fx:id="procedureTable" layoutX="21.0" layoutY="14.0" prefHeight="226.0" prefWidth="767.0">
          <columns>
-            <TableColumn prefWidth="159.0" text="OP-ID" />
-            <TableColumn prefWidth="323.0" text="Prozedur" />
-            <TableColumn prefWidth="284.0" text="OPS-Code" />
+            <TableColumn fx:id="prozCol" prefWidth="74.0" text="Prozedur-ID" />
+            <TableColumn fx:id="opIDCol" prefWidth="44.0" text="Op-ID" />
+            <TableColumn fx:id="opsCol" prefWidth="191.0" text="OPS-Code" />
+            <TableColumn fx:id="anmerkungCol" prefWidth="500.0" text="Anmerkung" />
+            <TableColumn fx:id="erstellerCol" minWidth="0.0" prefWidth="75.0" text="Ersteller" />
+            <TableColumn fx:id="erstelltzeitCol" prefWidth="140.0" text="Erstellzeit" />
+            <TableColumn fx:id="bearbeiterCol" prefWidth="75.0" text="Bearbeiter" />
+            <TableColumn fx:id="bearbeiterzeitCol" prefWidth="140.0" text="Bearbeiterzeit" />
+            <TableColumn fx:id="storniertCol" text="Storniert" />
          </columns>
       </TableView>
 		<GridPane layoutX="15.0" layoutY="252.0" prefHeight="135.0" prefWidth="767.0">

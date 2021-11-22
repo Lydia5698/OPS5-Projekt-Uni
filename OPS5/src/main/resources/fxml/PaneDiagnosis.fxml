@@ -8,21 +8,25 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DiagnosisController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DiagnosisController">
 	<children>
 		<Button layoutX="380.0" layoutY="474.0" mnemonicParsing="false" onAction="#createDiagnosis" text="Speichern" />
       <TableView fx:id="diagnosisTable" layoutX="29.0" layoutY="21.0" prefHeight="200.0" prefWidth="763.0">
          <columns>
-            <TableColumn prefWidth="128.0" text="Diagnose" />
-            <TableColumn minWidth="4.0" prefWidth="86.0" text="Fall-ID" />
-            <TableColumn prefWidth="74.0" text="OP-ID" />
-            <TableColumn prefWidth="90.0" text="Code" />
-            <TableColumn prefWidth="90.0" text="Typ" />
-            <TableColumn prefWidth="331.0" text="Freitext" />
+            <TableColumn fx:id="diagIDCol" prefWidth="75.0" text="Diagnose-ID" />
+            <TableColumn fx:id="opIDCol" prefWidth="45.0" text="OP-ID" />
+            <TableColumn fx:id="icdCol" prefWidth="75.0" text="ICD-10 code" />
+            <TableColumn fx:id="dateCol" prefWidth="140.0" text="Datum" />
+            <TableColumn fx:id="diagnosetypCol" prefWidth="83.0" text="Diagnose Typ" />
+            <TableColumn fx:id="textCol" minWidth="4.0" prefWidth="250.0" text="Klartext" />
+            <TableColumn fx:id="erstellerCol" minWidth="0.0" prefWidth="75.0" text="Ersteller" />
+            <TableColumn fx:id="erstellzeitCol" prefWidth="140.0" text="Erstellzeit" />
+            <TableColumn fx:id="bearbeiterCol" prefWidth="75.0" text="Bearbeiter" />
+            <TableColumn fx:id="bearbeiterzeitCol" prefWidth="140.0" text="Bearbeiterzeit" />
+            <TableColumn fx:id="storniertCol" prefWidth="55.0" text="Storniert" />
          </columns>
       </TableView>
       <GridPane layoutX="33.0" layoutY="236.0" prefHeight="221.0" prefWidth="763.0">
@@ -37,7 +41,7 @@
             <RowConstraints maxHeight="135.0" minHeight="10.0" prefHeight="135.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP oder Fall" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP-ID" wrappingWidth="41.33447265625" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Diagnose-Code" GridPane.rowIndex="1" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Diagnose-Typ" GridPane.rowIndex="2" />
             <ComboBox fx:id="diagnosisOpId" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
