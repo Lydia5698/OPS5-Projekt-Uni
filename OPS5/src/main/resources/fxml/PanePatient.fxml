@@ -42,7 +42,7 @@
 										<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Geschlecht" GridPane.rowIndex="4" />
 										<HBox prefHeight="38.0" prefWidth="460.0" spacing="40.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
 											<children>
-                                    <RadioButton fx:id="patientFemale" alignment="BOTTOM_CENTER" mnemonicParsing="false" prefHeight="38.0" prefWidth="91.0" text="Weiblich" textAlignment="CENTER">
+                                    <RadioButton fx:id="patientFemale" alignment="BOTTOM_CENTER" mnemonicParsing="false" prefHeight="38.0" prefWidth="91.0" selected="true" text="Weiblich" textAlignment="CENTER">
                                        <padding>
                                           <Insets top="20.0" />
                                        </padding>
@@ -73,7 +73,7 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Blutgruppe" GridPane.rowIndex="8" />
             <HBox prefHeight="67.0" prefWidth="365.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                <children>
-                  <RadioButton fx:id="zerominus" mnemonicParsing="false" prefHeight="35.0" prefWidth="55.0" text="0-">
+                  <RadioButton fx:id="zerominus" mnemonicParsing="false" prefHeight="35.0" prefWidth="55.0" selected="true" text="0-">
                      <toggleGroup>
                         <ToggleGroup fx:id="blutgruppe" />
                      </toggleGroup></RadioButton>

@@ -46,22 +46,6 @@ public class FallController {
         System.out.println("Initialize Fall-Tab!");
     }
 
-    public void createFall(ActionEvent actionEvent) {
-
-//         FallDao fallDao = new FallDao(Main.configuration);
-  //       Fall fall = new Fall();
-    //     fall.setPatId(patient.getValue().getPatId());
-      //   fall.setFallId(falltyp.getValue().getFallTypId());
-        // fall.setStationSt(station.getValue().getStation());
-         //fall.setAufnahmedatum(aufnahmedatum.getValue().atStartOfDay());
-//         fall.setEntlassungsdatum(entlassungsdatum.getValue().atStartOfDay());
-  //       fall.setErsteller(MainController.getEmployeeId().getPersId());
-    //     fall.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-      //   fallDao.insert(fall);
-
-        System.out.println("Create Fall");
-    }
-
     private void setPatient() {
         Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
             @Override
@@ -132,6 +116,33 @@ public class FallController {
     private void setAufnahmedatum(){
         //set default value to current time
         aufnahmedatum.setValue(new Timestamp(System.currentTimeMillis()).toLocalDateTime().toLocalDate());
+    }
+
+    private void insertFall(){
+//         FallDao fallDao = new FallDao(Main.configuration);
+//       Fall fall = new Fall();
+//          fall.setPatId(patient.getValue().getPatId());
+        //   fall.setFallId(falltyp.getValue().getFallTypId());
+        // fall.setStationSt(station.getValue().getStation());
+        //fall.setAufnahmedatum(aufnahmedatum.getValue().atStartOfDay());
+//         fall.setEntlassungsdatum(entlassungsdatum.getValue().atStartOfDay());
+        //       fall.setErsteller(MainController.getEmployeeId().getPersId());
+        //     fall.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+        //   fallDao.insert(fall);
+    }
+
+    private void clearFields(){
+        patient.getSelectionModel().clearSelection();
+        falltyp.getSelectionModel().clearSelection();
+        station.getSelectionModel().clearSelection();
+        aufnahmedatum.setValue(null);
+        entlassungsdatum.setValue(null);
+    }
+
+    public void createFall(ActionEvent actionEvent) {
+        insertFall();
+        clearFields();
+        System.out.println("Create Fall");
     }
 
 }
