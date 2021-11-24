@@ -20,9 +20,13 @@ import javafx.collections.FXCollections;
 import java.time.LocalDateTime;
 
 
+import jooq.tables.daos.DiagnoseDao;
 import jooq.tables.daos.FallDao;
+import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.daos.OperationDao;
+import jooq.tables.pojos.Diagnose;
 import jooq.tables.pojos.Fall;
+import jooq.tables.pojos.MedPersonal;
 import jooq.tables.pojos.Operation;
 import main.Main;
 
@@ -139,6 +143,7 @@ public class OverviewController {
 
         initializeColumns();
         opListCase.setItems(fallView());
+        // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen
         opListCase.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
                 int CaseId = onEditCase();
@@ -150,6 +155,7 @@ public class OverviewController {
             if (event.getClickCount() > 1) {
                 int opId = onEditOperation();
                 createAndShowOperationWindow();
+                //
             }
         });
     }
@@ -274,10 +280,49 @@ public class OverviewController {
         return FXCollections.observableArrayList(fall);
     }
 
+    public static ObservableList<MedPersonal> medPersonal(){
+        MedPersonalDao medPersonalDao = new MedPersonalDao(Main.configuration);
+        List<MedPersonal> medPersonalList = medPersonalDao.findAll();
+
+        return FXCollections.observableArrayList(medPersonalList);
+    }
+
+
     public static ObservableList<Operation> operationView(Integer id){
         OperationDao operationDao = new OperationDao(Main.configuration);
         List<Operation> operation = operationDao.fetchByFallId(id);
         return FXCollections.observableArrayList(operation);
     }
+
+ /*   private void insertNewOperation(int opID) {
+        LocalDateTime beginn;
+        LocalDateTime ende;
+        Integer       bauchtuecherPrae;
+        Integer       bauchtuecherPost;
+        LocalDateTime schnittzeit;
+        LocalDateTime nahtzeit;
+        LocalDateTime erstellZeit;
+        LocalDateTime bearbeiterZeit;
+        Byte          storniert;
+        Integer       fallId;
+        Integer       opSaal;
+        Integer       narkoseSt;
+        Integer       opTypSt;
+        String        ersteller;
+        String        bearbeiter;
+
+        Operation operation = new Operation(opID,beginn,ende,bauchtuecherPrae,bauchtuecherPost,schnittzeit,nahtzeit,
+                erstellZeit,bearbeiterZeit,storniert,fallId,opSaal,narkoseSt,opTypSt,ersteller,bearbeiter);
+        OperationDao operationDao = new OperationDao(Main.configuration);
+        operationDao.insert(operation);
+        // reicht bei update die opID? als schlüssel
+    }*/
+
+	/*
+	 boolean insertEmployee(Employee employee);
+    boolean updateEmployee(Employee employee);
+    boolean deleteEmployee(Employee employee);
+	 */
+
 
 }

@@ -8,10 +8,8 @@ import javafx.scene.control.*;
 import jooq.tables.daos.DiagnoseDao;
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.Icd10CodeStDao;
-import jooq.tables.pojos.Diagnose;
-import jooq.tables.pojos.Fall;
-import jooq.tables.pojos.Icd10CodeSt;
-import jooq.tables.pojos.Operation;
+import jooq.tables.daos.ProzedurDao;
+import jooq.tables.pojos.*;
 import main.Main;
 
 import javax.security.auth.callback.Callback;
@@ -112,6 +110,7 @@ public class DiagnosisController {
 	@FXML
 	public void createDiagnosis(ActionEvent event){
 		System.out.println("Create diagnosis!");
+		insertNewDiagnose();
 	}
 
 	public static ObservableList<Diagnose> diagnoseView(){
@@ -143,5 +142,48 @@ public class DiagnosisController {
 		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErsteller()));
 		bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiter()));
 	}
+
+	private void insertNewDiagnose() {
+		int diagID; // automatisch generieren?
+		diagID = onEditDiagnose();
+		if(diagID == 0){
+			diagID = 8; // hier automatisch generieren !!!
+		}
+		Byte storniert = null;
+		int opID = diagnosisOpId.getValue();
+		String icdCode = diagnosisIcdCode.getValue();
+		//String diagTyp = diagnosisType.getValue(); // Stammdaten mit zahl ersetzten
+		int diagTyp = 1;
+		String freitext = diagnosisFreetext.getText();
+		LocalDateTime datum = LocalDateTime.now(); // unterscheiden ob neu oder altes Datum nicht überschreiben
+		LocalDateTime erstellZeit = LocalDateTime.now();
+		LocalDateTime bearbeiterZeit = null;
+		String bearbeiter = null; // eingeloggter Benutzer
+		String ersteller = null;
+
+		Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
+		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
+		diagnoseDao.insert(diagnose);
+		// update dao wenn Flag true
+
+	}
+
+	/*
+	 boolean insertEmployee(Employee employee);
+    boolean updateEmployee(Employee employee);
+    boolean deleteEmployee(Employee employee);
+	 */
+
+	public int onEditDiagnose() {
+		int id = 0;
+		// check the table's selected item and get selected item
+		if (diagnosisTable.getSelectionModel().getSelectedItem() != null) {
+			Diagnose selectedItem = diagnosisTable.getSelectionModel().getSelectedItem();
+			id = selectedItem.getDiagnoseId();
+		}
+		return id;
+
+	}
+
 
 }
