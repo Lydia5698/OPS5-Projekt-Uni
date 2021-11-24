@@ -10,6 +10,7 @@ import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Patient;
 import main.Main;
 import org.jooq.*;
+import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -75,29 +76,32 @@ public class PatientController{
      */
     @FXML
     void createPatient(ActionEvent event) {
-        //insertPatient();
+        insertPatient();
         clearFields();
 	    System.out.println("Creating patient!");
 
 	}
 
 	private void insertPatient(){
-        PatientDao patientDao = new PatientDao(Main.configuration);
-        Patient patient = new Patient();
-        patient.setName(patientLastname.getText());
-        patient.setVorname(patientFirstname.getText());
-        patient.setGeburtsdatum(patientBirthdate.getValue());
-        patient.setBlutgruppe(blutgruppe.getSelectedToggle().toString());
-        //patient.setGeschlecht(sexGroup.getSelectedToggle().toString());
-        patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-        patient.setStrasse(patientStreet.getText());
-        patient.setPostleitzahl(patientPostcode.toString());
-        patient.setGeburtsort(patientBirthplace.toString());
-        patient.setTelefonnummer(patientCellphone.toString());
+        try{
+            PatientDao patientDao = new PatientDao(Main.configuration);
+            Patient patient = new Patient();
+            patient.setName(patientLastname.getText());
+            patient.setVorname(patientFirstname.getText());
+            patient.setGeburtsdatum(patientBirthdate.getValue());
+            patient.setBlutgruppe(blutgruppe.getSelectedToggle().toString());
+            patient.setGeschlecht(sexGroup.getSelectedToggle().toString());
+            patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+            patient.setStrasse(patientStreet.getText());
+            patient.setPostleitzahl(patientPostcode.toString());
+            patient.setGeburtsort(patientBirthplace.toString());
+            patient.setTelefonnummer(patientCellphone.toString());
 
-        System.out.println(patientLastname.getText());
-        System.out.println(patientFirstname.getText());
-        //patientDao.insert(patient);
+            patientDao.insert(patient);
+        }
+        catch(DataAccessException e){
+            e.printStackTrace();
+        }
     }
 
     private void clearFields(){

@@ -15,6 +15,7 @@ import jooq.tables.pojos.FallTypSt;
 import jooq.tables.pojos.Patient;
 import jooq.tables.pojos.StationSt;
 import main.Main;
+import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class FallController {
         setPatient();
         setFallTyp();
         setStation();
+        setAufnahmedatum();
         System.out.println("Initialize Fall-Tab!");
     }
 
@@ -118,17 +120,31 @@ public class FallController {
         aufnahmedatum.setValue(new Timestamp(System.currentTimeMillis()).toLocalDateTime().toLocalDate());
     }
 
+    public void createFall(ActionEvent actionEvent) {
+        insertFall();
+        clearFields();
+        System.out.println("Create Fall");
+    }
+
     private void insertFall(){
-//         FallDao fallDao = new FallDao(Main.configuration);
-//       Fall fall = new Fall();
-//          fall.setPatId(patient.getValue().getPatId());
-        //   fall.setFallId(falltyp.getValue().getFallTypId());
-        // fall.setStationSt(station.getValue().getStation());
-        //fall.setAufnahmedatum(aufnahmedatum.getValue().atStartOfDay());
-//         fall.setEntlassungsdatum(entlassungsdatum.getValue().atStartOfDay());
-        //       fall.setErsteller(MainController.getEmployeeId().getPersId());
-        //     fall.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-        //   fallDao.insert(fall);
+ /**       try{
+            FallDao fallDao = new FallDao(Main.configuration);
+            Fall fall = new Fall();
+            fall.setPatId(patient.getValue().getPatId());
+            fall.setFallId(falltyp.getValue().getFallTypId());
+            fall.setStationSt(station.getValue().getStation());
+            fall.setAufnahmedatum(aufnahmedatum.getValue().atStartOfDay());
+            fall.setEntlassungsdatum(entlassungsdatum.getValue().atStartOfDay());
+            fall.setErsteller(MainController.getEmployeeId());
+            fall.setErsteller("0101052");
+            fall.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+            fallDao.insert(fall);
+            System.out.println("Patient wurde eingefügt.");
+        }
+        catch(DataAccessException e){
+            e.printStackTrace();
+        }
+*/
     }
 
     private void clearFields(){
@@ -137,12 +153,6 @@ public class FallController {
         station.getSelectionModel().clearSelection();
         aufnahmedatum.setValue(null);
         entlassungsdatum.setValue(null);
-    }
-
-    public void createFall(ActionEvent actionEvent) {
-        insertFall();
-        clearFields();
-        System.out.println("Create Fall");
     }
 
 }

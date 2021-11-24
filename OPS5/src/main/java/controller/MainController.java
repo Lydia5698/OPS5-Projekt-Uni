@@ -73,7 +73,11 @@ public class MainController {
 	public static void setInstance(MainController instance) {
 		MainController.instance = instance;
 	}
-
+/**
+	public static String getEmployeeId(){
+		return employeeId.getValue().getPersId();
+	}
+*/
 	private void setEmployeeId(){
 		Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
 			@Override
