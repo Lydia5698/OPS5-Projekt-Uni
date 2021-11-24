@@ -21,7 +21,7 @@ public class Diagnose implements Serializable {
     private LocalDateTime datum;
     private LocalDateTime erstellZeit;
     private LocalDateTime bearbeiterZeit;
-    private Byte          storniert;
+    private Boolean       storniert;
     private Integer       opId;
     private Integer       diagnosetyp;
     private String        icd10Code;
@@ -50,7 +50,7 @@ public class Diagnose implements Serializable {
         LocalDateTime datum,
         LocalDateTime erstellZeit,
         LocalDateTime bearbeiterZeit,
-        Byte          storniert,
+        Boolean       storniert,
         Integer       opId,
         Integer       diagnosetyp,
         String        icd10Code,
@@ -143,14 +143,14 @@ public class Diagnose implements Serializable {
     /**
      * Getter for <code>pmiw21g05_v01.diagnose.storniert</code>.
      */
-    public Byte getStorniert() {
+    public Boolean getStorniert() {
         return this.storniert;
     }
 
     /**
      * Setter for <code>pmiw21g05_v01.diagnose.storniert</code>.
      */
-    public void setStorniert(Byte storniert) {
+    public void setStorniert(Boolean storniert) {
         this.storniert = storniert;
     }
 

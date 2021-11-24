@@ -99,7 +99,7 @@ public class Operation extends TableImpl<OperationRecord> {
     /**
      * The column <code>pmiw21g05_v01.operation.storniert</code>.
      */
-    public final TableField<OperationRecord, Byte> STORNIERT = createField(DSL.name("storniert"), SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<OperationRecord, Boolean> STORNIERT = createField(DSL.name("storniert"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     /**
      * The column <code>pmiw21g05_v01.operation.fall_id</code>.
@@ -269,7 +269,7 @@ public class Operation extends TableImpl<OperationRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<Integer, LocalDateTime, LocalDateTime, Integer, Integer, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Byte, Integer, Integer, Integer, Integer, String, String> fieldsRow() {
+    public Row16<Integer, LocalDateTime, LocalDateTime, Integer, Integer, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Integer, Integer, Integer, Integer, String, String> fieldsRow() {
         return (Row16) super.fieldsRow();
     }
 }

@@ -14,6 +14,7 @@ import org.jooq.Result;
 import org.jooq.impl.DSL;
 
 import java.util.List;
+import java.util.Collections;
 
 public class OPController{	
     
@@ -32,10 +33,18 @@ public class OPController{
     @FXML
     private Spinner<Integer> towelBefore = new Spinner<Integer>(0,100, 0);
 
-    public static ObservableList<Fall> getCases(){
+    //TODO: statt opCaseID mit den PatIDs arbeiten!
+    public ObservableList<Fall> getCases(Integer patId){
         FallDao fallDao = new FallDao(Main.configuration);
-        List<Fall> cases = fallDao.fetchByPatId(1);
+        List<Fall> cases = Collections.emptyList();
+        if(patId != null) {
+            cases = fallDao.fetchByPatId(patId);
+        }
         return FXCollections.observableArrayList(cases);
+    }
+
+    public void updateCases(Integer patId){
+        opCaseId.setItems(getCases(patId));
     }
 	
     @FXML
@@ -72,7 +81,7 @@ public class OPController{
         List<String> narkoseList = narkoseTypResult.map(record -> record.getValue("narkose").toString());
         narkose.getItems().setAll(narkoseList);
 
-        opCaseId.setItems(getCases());
+        opCaseId.setItems(getCases(null));
         System.out.println("Initialize OP-Tab!");
 	}
     

@@ -25,7 +25,7 @@ public class Operation implements Serializable {
     private LocalDateTime nahtzeit;
     private LocalDateTime erstellZeit;
     private LocalDateTime bearbeiterZeit;
-    private Byte          storniert;
+    private Boolean       storniert;
     private Integer       fallId;
     private Integer       opSaal;
     private Integer       narkoseSt;
@@ -64,7 +64,7 @@ public class Operation implements Serializable {
         LocalDateTime nahtzeit,
         LocalDateTime erstellZeit,
         LocalDateTime bearbeiterZeit,
-        Byte          storniert,
+        Boolean       storniert,
         Integer       fallId,
         Integer       opSaal,
         Integer       narkoseSt,
@@ -219,14 +219,14 @@ public class Operation implements Serializable {
     /**
      * Getter for <code>pmiw21g05_v01.operation.storniert</code>.
      */
-    public Byte getStorniert() {
+    public Boolean getStorniert() {
         return this.storniert;
     }
 
     /**
      * Setter for <code>pmiw21g05_v01.operation.storniert</code>.
      */
-    public void setStorniert(Byte storniert) {
+    public void setStorniert(Boolean storniert) {
         this.storniert = storniert;
     }
 

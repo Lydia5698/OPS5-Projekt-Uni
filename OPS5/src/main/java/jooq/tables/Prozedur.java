@@ -64,7 +64,7 @@ public class Prozedur extends TableImpl<ProzedurRecord> {
     /**
      * The column <code>pmiw21g05_v01.prozedur.storniert</code>.
      */
-    public final TableField<ProzedurRecord, Byte> STORNIERT = createField(DSL.name("storniert"), SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<ProzedurRecord, Boolean> STORNIERT = createField(DSL.name("storniert"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     /**
      * The column <code>pmiw21g05_v01.prozedur.erstell_zeit</code>.
@@ -218,7 +218,7 @@ public class Prozedur extends TableImpl<ProzedurRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Integer, String, Byte, LocalDateTime, LocalDateTime, Integer, String, String, String> fieldsRow() {
+    public Row9<Integer, String, Boolean, LocalDateTime, LocalDateTime, Integer, String, String, String> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 }

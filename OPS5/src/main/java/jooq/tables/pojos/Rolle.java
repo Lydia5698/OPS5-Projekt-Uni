@@ -23,7 +23,7 @@ public class Rolle implements Serializable {
     private LocalDateTime erstellZeit;
     private String        ersteller;
     private String        medPersonalPersId;
-    private Byte          storniert;
+    private Boolean       storniert;
 
     public Rolle() {}
 
@@ -46,7 +46,7 @@ public class Rolle implements Serializable {
         LocalDateTime erstellZeit,
         String        ersteller,
         String        medPersonalPersId,
-        Byte          storniert
+        Boolean       storniert
     ) {
         this.opId = opId;
         this.bearbeiter = bearbeiter;
@@ -159,14 +159,14 @@ public class Rolle implements Serializable {
     /**
      * Getter for <code>pmiw21g05_v01.rolle.storniert</code>.
      */
-    public Byte getStorniert() {
+    public Boolean getStorniert() {
         return this.storniert;
     }
 
     /**
      * Setter for <code>pmiw21g05_v01.rolle.storniert</code>.
      */
-    public void setStorniert(Byte storniert) {
+    public void setStorniert(Boolean storniert) {
         this.storniert = storniert;
     }
 
