@@ -5,14 +5,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import jooq.tables.daos.DiagnoseDao;
-import jooq.tables.daos.FallDao;
-import jooq.tables.daos.Icd10CodeStDao;
-import jooq.tables.daos.ProzedurDao;
+import javafx.util.Callback;
+import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
 
-import javax.security.auth.callback.Callback;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,11 +17,11 @@ import java.util.List;
 public class DiagnosisController {
 	
 	@FXML
-	private ComboBox<Integer> diagnosisOpId;
+	private ComboBox<Operation> diagnosisOpId;
 	@FXML
-	private ComboBox<String> diagnosisIcdCode;
+	private ComboBox<Icd10CodeSt> diagnosisIcdCode;
 	@FXML
-	private ComboBox<String> diagnosisType;
+	private ComboBox<DiagnosetypSt> diagnosisType;
 	@FXML
 	private TextField diagnosisFreetext;	
 	@FXML
@@ -62,10 +59,6 @@ public class DiagnosisController {
 	@FXML
 	private TableColumn<Diagnose, String> bearbeiterCol;
 
-	private ObservableList<Integer> diagnoseID = FXCollections.observableArrayList();
-	private ObservableList<String> icdCode = FXCollections.observableArrayList();
-
-
 	@FXML
 	public void initialize() {
 
@@ -73,37 +66,9 @@ public class DiagnosisController {
 		initializeColumns();
 
 		diagnosisTable.setItems(diagnoseView());
-		for (int i = 0; i < diagnoseView().size(); i++){
-			diagnoseID.add(diagnoseView().get(i).getDiagnoseId());
-		} // TODO: 22.11.21 besser darstellen for schleife schlecht
-		/*for (int i = 0; i < icdView().size(); i++){
-			icdCode.add(icdView().get(i).getIcd10Code());
-		}*/ // TODO: 18.11.21 icd10 code
-		diagnosisOpId.setItems(diagnoseID);
-		diagnosisIcdCode.setItems(icdCode);
-
-
-		/*Callback<ListView<Icd10CodeSt>, ListCell<Icd10CodeSt>> cellFactory = new Callback<>(){
-			@Override
-			public ListCell<Icd10CodeSt> call (ListView<Icd10CodeSt> param){
-				return new ListCell<>(){
-
-					@Override
-					protected void updateItem(Icd10CodeSt item, boolean empty){
-						super.updateItem(item, empty);
-						if(item == null || empty){
-							setGraphic(null);
-						}
-						else {
-							setText(item.getIcd10Code());
-						}
-					}
-				};
-			}
-		};*/
-
-
-
+		setDiagnosisOpId();
+		setDiagnosisIcdCode();
+		setDiagnosisDiagnoseTyp();
 
 	}
 	
@@ -150,8 +115,8 @@ public class DiagnosisController {
 			diagID = 8; // hier automatisch generieren !!!
 		}
 		Byte storniert = null;
-		int opID = diagnosisOpId.getValue();
-		String icdCode = diagnosisIcdCode.getValue();
+		int opID = diagnosisOpId.getValue().getOpId();
+		String icdCode = diagnosisIcdCode.getValue().getIcd10Code();
 		//String diagTyp = diagnosisType.getValue(); // Stammdaten mit zahl ersetzten
 		int diagTyp = 1;
 		String freitext = diagnosisFreetext.getText();
@@ -183,6 +148,71 @@ public class DiagnosisController {
 		}
 		return id;
 
+	}
+	private void setDiagnosisOpId(){
+		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<Operation> call(ListView<Operation> medPersonalListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(Operation operation, boolean empty) {
+						super.updateItem(operation, empty);
+						if (operation == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(operation.getOpId().toString());
+						}
+					}
+				};
+			}
+		};
+		diagnosisOpId.setButtonCell(cellFactory.call(null));
+		diagnosisOpId.setCellFactory(cellFactory);
+		diagnosisOpId.getItems().setAll(new OperationDao(Main.configuration).findAll());
+	}
+
+	private void setDiagnosisIcdCode(){
+		Callback<ListView<Icd10CodeSt>, ListCell<Icd10CodeSt>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<Icd10CodeSt> call(ListView<Icd10CodeSt> medPersonalListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(Icd10CodeSt icd10Code, boolean empty) {
+						super.updateItem(icd10Code, empty);
+						if (icd10Code == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(icd10Code.getIcd10Code());
+						}
+					}
+				};
+			}
+		};
+		diagnosisIcdCode.setButtonCell(cellFactory.call(null));
+		diagnosisIcdCode.setCellFactory(cellFactory);
+		diagnosisIcdCode.getItems().setAll(new Icd10CodeStDao(Main.configuration).findAll());
+	}
+
+	private void setDiagnosisDiagnoseTyp(){
+		Callback<ListView<DiagnosetypSt>, ListCell<DiagnosetypSt>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<DiagnosetypSt> call(ListView<DiagnosetypSt> medPersonalListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(DiagnosetypSt diagnosetypSt, boolean empty) {
+						super.updateItem(diagnosetypSt, empty);
+						if (diagnosetypSt == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(diagnosetypSt.getBeschreibung());
+						}
+					}
+				};
+			}
+		};
+		diagnosisType.setButtonCell(cellFactory.call(null));
+		diagnosisType.setCellFactory(cellFactory);
+		diagnosisType.getItems().setAll(new DiagnosetypStDao(Main.configuration).findAll());
 	}
 
 

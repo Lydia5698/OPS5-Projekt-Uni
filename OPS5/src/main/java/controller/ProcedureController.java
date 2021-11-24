@@ -6,11 +6,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import jooq.tables.daos.DiagnoseDao;
+import jooq.tables.daos.Icd10CodeStDao;
+import jooq.tables.daos.OperationDao;
 import jooq.tables.daos.ProzedurDao;
-import jooq.tables.pojos.Diagnose;
-import jooq.tables.pojos.Fall;
-import jooq.tables.pojos.Prozedur;
+import jooq.tables.pojos.*;
 import main.Main;
 
 import java.time.LocalDateTime;
@@ -49,10 +50,10 @@ public class ProcedureController {
 	private TableColumn<Prozedur, String> erstellerCol;
 
 	@FXML
-	private ComboBox<Integer> procedureOpID;
+	private ComboBox<Operation> procedureOpID;
 
 	@FXML
-	private ComboBox<String> procedureOpsCode;
+	private ComboBox<OpsCodeSt> procedureOpsCode;
 
 	@FXML
 	private TextField procedureAnmerkung;
@@ -66,6 +67,7 @@ public class ProcedureController {
     	initializeColumns();
 		procedureTable.setItems(prozedurView());
 		// TODO: 23.11.21 Daten in DB speichern
+		// TODO: 24.11.21 storniert ist noch da nur nicht sichtbar? 
 
 	}
 	
@@ -74,6 +76,7 @@ public class ProcedureController {
 
     	System.out.println("Create procedure!");
     	insertNewProcedure();
+    	setProcedureOpID();
 	}
 
 	public static ObservableList<Prozedur> prozedurView(){
@@ -101,8 +104,8 @@ public class ProcedureController {
 	private void insertNewProcedure() {
     	int prozID = 8; // automatisch generieren?
 		Byte storniert = null;
-    	int opID = procedureOpID.getValue();
-    	String opsCodeValue = procedureOpsCode.getValue();
+    	int opID = procedureOpID.getValue().getOpId();
+    	String opsCodeValue = procedureOpsCode.getValue().getOpsCode();
     	String anmerkungText = procedureAnmerkung.getText();
     	LocalDateTime erstellZeit = null; // nur beim neuen erstellen
     	LocalDateTime bearbeiterZeit = null;
@@ -149,6 +152,28 @@ public class ProcedureController {
 	@FXML
 	void mouseEntered() {
 		flagEditProzedure = true;
+	}
+
+	private void setProcedureOpID(){
+		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<Operation> call(ListView<Operation> medPersonalListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(Operation operation, boolean empty) {
+						super.updateItem(operation, empty);
+						if (operation == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(operation.getOpId().toString());
+						}
+					}
+				};
+			}
+		};
+		procedureOpID.setButtonCell(cellFactory.call(null));
+		procedureOpID.setCellFactory(cellFactory);
+		procedureOpID.getItems().setAll(new OperationDao(Main.configuration).findAll());
 	}
 
 }
