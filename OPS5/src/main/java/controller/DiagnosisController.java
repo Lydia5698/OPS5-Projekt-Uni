@@ -67,6 +67,7 @@ public class DiagnosisController {
 	@FXML
 	private DatePicker dateDiagnosis;
 
+
 	boolean flagEditDiagnose = false;
 
 	@FXML
@@ -110,12 +111,6 @@ public class DiagnosisController {
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 		List<Diagnose> diagnose = diagnoseDao.findAll();
 		return FXCollections.observableArrayList(diagnose);
-	}
-
-	public static ObservableList<jooq.tables.pojos.Icd10CodeSt> icdView(){
-		Icd10CodeStDao icd10CodeStDao = new Icd10CodeStDao(Main.configuration);
-		List<Icd10CodeSt> icd10CodeStList = icd10CodeStDao.findAll();
-		return FXCollections.observableArrayList(icd10CodeStList);
 	}
 
 	private void initializeColumns() {
@@ -298,6 +293,8 @@ public class DiagnosisController {
 		}
 		return true;
 	}
+
+
 
 
 

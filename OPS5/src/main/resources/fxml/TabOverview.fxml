@@ -55,5 +55,6 @@
             <TableColumn fx:id="storniertOPCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>
       <Button fx:id="btnStornieren" layoutX="640.0" layoutY="422.0" mnemonicParsing="false" onAction="#storniereOP" text="Stornieren" />
+      <CheckBox fx:id="stornierteOperation" layoutX="745.0" layoutY="20.0" mnemonicParsing="false" onMouseClicked="#showStornierteOp" text="Zeige stornierte Operationen" />
 	</children>
 </AnchorPane>

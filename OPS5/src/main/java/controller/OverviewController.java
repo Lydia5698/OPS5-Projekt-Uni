@@ -125,8 +125,12 @@ public class OverviewController {
 
     @FXML
     private Button btnDiag;
+
     @FXML
     private Button btnProc;
+
+    @FXML
+    private CheckBox stornierteOperation;
 
 
 
@@ -291,11 +295,26 @@ public class OverviewController {
 
     @FXML
     void storniereOP(ActionEvent event) {
-        opListOperation.getSelectionModel().getSelectedItem().setStorniert((byte) 1);
+        opListOperation.getSelectionModel().getSelectedItem().setStorniert((byte) 1); // TODO: 25.11.21 stornierte Ops nicht anzeigen 
         Operation operation = opListOperation.getSelectionModel().getSelectedItem();
         OperationDao operationDao = new OperationDao(Main.configuration);
         operationDao.update(operation);
     }
+
+    @FXML
+    void showStornierteOp(MouseEvent event) {
+        if(stornierteOperation.isSelected()) {
+            OperationDao operationDao = new OperationDao(Main.configuration);
+            List<Operation> operation = operationDao.fetchByStorniert((byte) 1);
+            opListOperation.setItems(FXCollections.observableArrayList(operation));
+        }
+        else{
+            int CaseId = onEditCase();
+            opListOperation.setItems(operationView(CaseId));
+        }
+    }
+
+
 
 
 
