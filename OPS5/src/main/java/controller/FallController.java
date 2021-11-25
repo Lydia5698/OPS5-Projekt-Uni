@@ -1,5 +1,6 @@
 package controller;
 
+import ExternalFiles.DateTimePicker;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -33,10 +34,10 @@ public class FallController {
     private ComboBox<StationSt> station;
 
     @FXML
-    private DatePicker aufnahmedatum;
+    private DateTimePicker aufnahmedatum;
 
     @FXML
-    private DatePicker entlassungsdatum;
+    private DateTimePicker entlassungsdatum;
 
 
     @FXML
@@ -117,7 +118,7 @@ public class FallController {
 
     private void setAufnahmedatum(){
         //set default value to current time
-        aufnahmedatum.setValue(new Timestamp(System.currentTimeMillis()).toLocalDateTime().toLocalDate());
+        aufnahmedatum.setDateTimeValue(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
     }
 
     public void createFall(ActionEvent actionEvent) {
@@ -127,24 +128,24 @@ public class FallController {
     }
 
     private void insertFall(){
- /**       try{
+        try{
             FallDao fallDao = new FallDao(Main.configuration);
             Fall fall = new Fall();
             fall.setPatId(patient.getValue().getPatId());
-            fall.setFallId(falltyp.getValue().getFallTypId());
+            fall.setFallTyp(falltyp.getValue().getFallTypId());
             fall.setStationSt(station.getValue().getStation());
-            fall.setAufnahmedatum(aufnahmedatum.getValue().atStartOfDay());
-            fall.setEntlassungsdatum(entlassungsdatum.getValue().atStartOfDay());
-            fall.setErsteller(MainController.getEmployeeId());
-            fall.setErsteller("0101052");
+            fall.setAufnahmedatum(aufnahmedatum.getDateTimeValue());
+            fall.setEntlassungsdatum(entlassungsdatum.getDateTimeValue());
+            fall.setErsteller(MainController.getUserId());
             fall.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+            fall.setStorniert(false);
             fallDao.insert(fall);
             System.out.println("Patient wurde eingefügt.");
         }
         catch(DataAccessException e){
             e.printStackTrace();
         }
-*/
+
     }
 
     private void clearFields(){

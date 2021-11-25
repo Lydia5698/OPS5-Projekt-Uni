@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
+<?import ExternalFiles.DateTimePicker?>
 
 <AnchorPane minHeight="180.0" minWidth="200.0" prefHeight="513.0" prefWidth="695.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FallController">
 <children>
@@ -30,8 +31,8 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Station" GridPane.rowIndex="2" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Entlassungsdatum" GridPane.rowIndex="4" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aufnahmedatum" GridPane.rowIndex="3" />
-            <DatePicker id="aufnahemdatum" fx:id="aufnahmedatum" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <DatePicker id="entlassungsdatum" fx:id="entlassungsdatum" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <DateTimePicker id="aufnahemdatum" fx:id="aufnahmedatum" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <DateTimePicker id="entlassungsdatum" fx:id="entlassungsdatum" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <ComboBox fx:id="patient" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" />
             <ComboBox fx:id="falltyp" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <ComboBox fx:id="station" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />

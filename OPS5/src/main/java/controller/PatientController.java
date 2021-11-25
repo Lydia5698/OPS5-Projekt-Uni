@@ -84,7 +84,7 @@ public class PatientController{
 	}
 
 	private void insertPatient(){
-        try{
+        try {
             PatientDao patientDao = new PatientDao(Main.configuration);
             Patient patient = new Patient();
             patient.setName(patientLastname.getText());
@@ -100,7 +100,18 @@ public class PatientController{
             patient.setErsteller(MainController.getUserId());
             patient.setStorniert(false);
 
-            patientDao.insert(patient);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Fehlende Einträge!");
+            if (patient.getVorname() == "") {
+                alert.setContentText("Der Vorname des Patienten muss eingefügt werden!");
+                alert.showAndWait();
+            } else if (patient.getName() == "") {
+                alert.setContentText("Der Nachname des Patienten muss eingefügt werden!");
+                alert.showAndWait();
+            } else {
+                patientDao.insert(patient);
+            }
         }
         catch(DataAccessException e){
             e.printStackTrace();
@@ -117,44 +128,26 @@ public class PatientController{
         patientCellphone.clear();
     }
 
-    private String getBlutgruppe(){
-        String blutGruppe = "";
-        String bG = ((RadioButton)blutgruppe.getSelectedToggle()).getText();
-        switch (bG){
-            case "zerominus":
-                blutGruppe = "0-";
-            case "zeroplus":
-                blutGruppe = "0+";
-            case "aminus":
-                blutGruppe = "A-";
-            case "aplus":
-                blutGruppe = "A+";
-            case "bminus":
-                blutGruppe = "B-";
-            case "bplus":
-                blutGruppe = "B+";
-            case "abminus":
-                blutGruppe = "AB-";
-            case "abplus":
-                blutGruppe = "AB+";
-            default:
-                blutGruppe = "nb.";
+    private String getBlutgruppe() {
+        if (blutgruppe.getSelectedToggle() == null) {
+            return "nb.";
+        } else {
+            return ((RadioButton) blutgruppe.getSelectedToggle()).getText();
         }
-        return blutGruppe;
     }
 
     private String getGeschlecht(){
-        String geschlecht = "";
+        String g = "";
         String sG = ((RadioButton)sex_group.getSelectedToggle()).getText();
         switch (sG){
             case "weiblich":
-                geschlecht = "w";
+                g = "w";
             case "männlich":
-                geschlecht = "m";
+                g = "m";
             case "divers":
-                geschlecht = "d";
+                g = "d";
         }
-        return geschlecht;
+        return g;
     }
 }
 
