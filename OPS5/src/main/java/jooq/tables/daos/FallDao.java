@@ -125,14 +125,14 @@ public class FallDao extends DAOImpl<FallRecord, jooq.tables.pojos.Fall, Integer
      * Fetch records that have <code>storniert BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<jooq.tables.pojos.Fall> fetchRangeOfStorniert(Byte lowerInclusive, Byte upperInclusive) {
+    public List<jooq.tables.pojos.Fall> fetchRangeOfStorniert(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(Fall.FALL.STORNIERT, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storniert IN (values)</code>
      */
-    public List<jooq.tables.pojos.Fall> fetchByStorniert(Byte... values) {
+    public List<jooq.tables.pojos.Fall> fetchByStorniert(Boolean... values) {
         return fetch(Fall.FALL.STORNIERT, values);
     }
 

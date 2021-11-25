@@ -12,6 +12,7 @@ import main.Main;
 import org.jooq.*;
 import org.jooq.exception.DataAccessException;
 
+import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -35,13 +36,13 @@ public class PatientController{
     @FXML
     private TextField patientCellphone;
     @FXML
-    private ToggleGroup sexGroup;
+    private ToggleGroup sex_group;
     @FXML
-    private RadioButton patientFemale;
+    private RadioButton weiblich;
     @FXML
-    private RadioButton patientMale;
+    private RadioButton männlich;
     @FXML
-    private RadioButton patientDiv;
+    private RadioButton divers;
     @FXML
     private ToggleGroup blutgruppe;
     @FXML
@@ -89,13 +90,15 @@ public class PatientController{
             patient.setName(patientLastname.getText());
             patient.setVorname(patientFirstname.getText());
             patient.setGeburtsdatum(patientBirthdate.getValue());
-            patient.setBlutgruppe(blutgruppe.getSelectedToggle().toString());
-            patient.setGeschlecht(sexGroup.getSelectedToggle().toString());
+            patient.setBlutgruppe(getBlutgruppe());
+            patient.setGeschlecht(getGeschlecht());
             patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
             patient.setStrasse(patientStreet.getText());
-            patient.setPostleitzahl(patientPostcode.toString());
-            patient.setGeburtsort(patientBirthplace.toString());
-            patient.setTelefonnummer(patientCellphone.toString());
+            patient.setPostleitzahl(patientPostcode.getText());
+            patient.setGeburtsort(patientBirthplace.getText());
+            patient.setTelefonnummer(patientCellphone.getText());
+            patient.setErsteller(MainController.getUserId());
+            patient.setStorniert(false);
 
             patientDao.insert(patient);
         }
@@ -112,6 +115,46 @@ public class PatientController{
         patientStreet.clear();
         patientPostcode.clear();
         patientCellphone.clear();
+    }
+
+    private String getBlutgruppe(){
+        String blutGruppe = "";
+        String bG = ((RadioButton)blutgruppe.getSelectedToggle()).getText();
+        switch (bG){
+            case "zerominus":
+                blutGruppe = "0-";
+            case "zeroplus":
+                blutGruppe = "0+";
+            case "aminus":
+                blutGruppe = "A-";
+            case "aplus":
+                blutGruppe = "A+";
+            case "bminus":
+                blutGruppe = "B-";
+            case "bplus":
+                blutGruppe = "B+";
+            case "abminus":
+                blutGruppe = "AB-";
+            case "abplus":
+                blutGruppe = "AB+";
+            default:
+                blutGruppe = "nb.";
+        }
+        return blutGruppe;
+    }
+
+    private String getGeschlecht(){
+        String geschlecht = "";
+        String sG = ((RadioButton)sex_group.getSelectedToggle()).getText();
+        switch (sG){
+            case "weiblich":
+                geschlecht = "w";
+            case "männlich":
+                geschlecht = "m";
+            case "divers":
+                geschlecht = "d";
+        }
+        return geschlecht;
     }
 }
 

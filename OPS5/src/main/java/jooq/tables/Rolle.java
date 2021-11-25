@@ -88,7 +88,7 @@ public class Rolle extends TableImpl<RolleRecord> {
     /**
      * The column <code>pmiw21g05_v01.rolle.storniert</code>.
      */
-    public final TableField<RolleRecord, Byte> STORNIERT = createField(DSL.name("storniert"), SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<RolleRecord, Boolean> STORNIERT = createField(DSL.name("storniert"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     private Rolle(Name alias, Table<RolleRecord> aliased) {
         this(alias, aliased, null);
@@ -215,7 +215,7 @@ public class Rolle extends TableImpl<RolleRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Integer, String, Integer, LocalDateTime, LocalDateTime, String, String, Byte> fieldsRow() {
+    public Row8<Integer, String, Integer, LocalDateTime, LocalDateTime, String, String, Boolean> fieldsRow() {
         return (Row8) super.fieldsRow();
     }
 }

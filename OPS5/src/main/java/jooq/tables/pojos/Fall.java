@@ -21,7 +21,7 @@ public class Fall implements Serializable {
     private LocalDateTime entlassungsdatum;
     private LocalDateTime erstellZeit;
     private LocalDateTime bearbeiterZeit;
-    private Byte          storniert;
+    private Boolean       storniert;
     private Integer       patId;
     private String        stationSt;
     private String        ersteller;
@@ -50,7 +50,7 @@ public class Fall implements Serializable {
         LocalDateTime entlassungsdatum,
         LocalDateTime erstellZeit,
         LocalDateTime bearbeiterZeit,
-        Byte          storniert,
+        Boolean       storniert,
         Integer       patId,
         String        stationSt,
         String        ersteller,
@@ -143,14 +143,14 @@ public class Fall implements Serializable {
     /**
      * Getter for <code>pmiw21g05_v01.fall.storniert</code>.
      */
-    public Byte getStorniert() {
+    public Boolean getStorniert() {
         return this.storniert;
     }
 
     /**
      * Setter for <code>pmiw21g05_v01.fall.storniert</code>.
      */
-    public void setStorniert(Byte storniert) {
+    public void setStorniert(Boolean storniert) {
         this.storniert = storniert;
     }
 

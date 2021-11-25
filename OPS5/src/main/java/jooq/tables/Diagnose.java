@@ -79,7 +79,7 @@ public class Diagnose extends TableImpl<DiagnoseRecord> {
     /**
      * The column <code>pmiw21g05_v01.diagnose.storniert</code>.
      */
-    public final TableField<DiagnoseRecord, Byte> STORNIERT = createField(DSL.name("storniert"), SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<DiagnoseRecord, Boolean> STORNIERT = createField(DSL.name("storniert"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     /**
      * The column <code>pmiw21g05_v01.diagnose.op_id</code>.
@@ -236,7 +236,7 @@ public class Diagnose extends TableImpl<DiagnoseRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Integer, String, LocalDateTime, LocalDateTime, LocalDateTime, Byte, Integer, Integer, String, String, String> fieldsRow() {
+    public Row11<Integer, String, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Integer, Integer, String, String, String> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 }

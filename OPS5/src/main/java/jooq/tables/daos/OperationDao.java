@@ -185,14 +185,14 @@ public class OperationDao extends DAOImpl<OperationRecord, jooq.tables.pojos.Ope
      * Fetch records that have <code>storniert BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<jooq.tables.pojos.Operation> fetchRangeOfStorniert(Byte lowerInclusive, Byte upperInclusive) {
+    public List<jooq.tables.pojos.Operation> fetchRangeOfStorniert(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(Operation.OPERATION.STORNIERT, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storniert IN (values)</code>
      */
-    public List<jooq.tables.pojos.Operation> fetchByStorniert(Byte... values) {
+    public List<jooq.tables.pojos.Operation> fetchByStorniert(Boolean... values) {
         return fetch(Operation.OPERATION.STORNIERT, values);
     }
 

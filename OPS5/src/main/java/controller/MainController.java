@@ -101,4 +101,8 @@ public class MainController {
 		employeeId.getSelectionModel().selectFirst();
 	}
 
+	public static String getUserId(){
+		return getInstance().employeeId.getValue().getPersId();
+	}
+
 }

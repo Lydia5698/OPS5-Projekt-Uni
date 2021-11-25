@@ -105,7 +105,7 @@ public class Patient extends TableImpl<PatientRecord> {
     /**
      * The column <code>pmiw21g05_v01.patient.storniert</code>.
      */
-    public final TableField<PatientRecord, Byte> STORNIERT = createField(DSL.name("storniert"), SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<PatientRecord, Boolean> STORNIERT = createField(DSL.name("storniert"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     /**
      * The column <code>pmiw21g05_v01.patient.geburtsort</code>.
@@ -249,7 +249,7 @@ public class Patient extends TableImpl<PatientRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<Integer, String, String, LocalDate, String, String, String, LocalDateTime, String, LocalDateTime, Byte, String, String, String, String> fieldsRow() {
+    public Row15<Integer, String, String, LocalDate, String, String, String, LocalDateTime, String, LocalDateTime, Boolean, String, String, String, String> fieldsRow() {
         return (Row15) super.fieldsRow();
     }
 }
