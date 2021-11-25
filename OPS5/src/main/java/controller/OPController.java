@@ -19,7 +19,7 @@ import jooq.tables.daos.OpTypStDao;
 import jooq.tables.pojos.OpTypSt;
 import jooq.tables.daos.OpSaalStDao;
 import jooq.tables.pojos.OpSaalSt;
-//import jooq.tables.daos.NarkoseStDao;
+import jooq.tables.daos.NarkoseStDao;
 import jooq.tables.pojos.NarkoseSt;
 import main.Main;
 import org.jooq.Record1;
@@ -40,11 +40,9 @@ public class OPController{
     @FXML
     private ComboBox<NarkoseSt> narkose;
     @FXML
-    private ComboBox<Integer> opSurgeonId;
-    @FXML
     private Spinner<Integer> towelBefore = new Spinner<Integer>(0,100, 0);
 
-    //TODO: statt opCaseID mit den PatIDs arbeiten!
+    //TODO: Nicht ganzen Fall anzeigen
     public void setCases(Integer patId){
         FallDao fallDao = new FallDao(Main.configuration);
         List<Fall> cases = Collections.emptyList();
@@ -54,14 +52,35 @@ public class OPController{
         opCaseId.getItems().setAll(FXCollections.observableArrayList(cases));
     }
 
-    public void updateCases(Integer patId){
-        opCaseId.setItems(setCases(patId));
+    //Falls das funktioniert, soll diese Methode die setCases ersetzen.
+    public void setCase(Integer patId){
+        Callback<ListView<Fall>, ListCell<Fall>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<Fall> call(ListView<Fall> caseListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Fall fall, boolean empty) {
+                        //TODO: nur Fälle mit patId
+                        super.updateItem(fall, empty);
+                        if (fall == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            //TODO: mit beschreibenden Attributen
+                            setText(fall.getFallId());
+                        }
+                    }
+                };
+            }
+        };
+        opType.setButtonCell(cellFactory.call(null));
+        opType.setCellFactory(cellFactory);
+        opType.getItems().setAll(new FallDao(Main.configuration).findAll());
     }
 
     private void setFallTyp() {
         Callback<ListView<OpTypSt>, ListCell<OpTypSt>> cellFactory = new Callback<>() {
             @Override
-            public ListCell<OpTypSt> call(ListView<OpTypSt> rolleListView) {
+            public ListCell<OpTypSt> call(ListView<OpTypSt> caseTypListView) {
                 return new ListCell<>() {
                     @Override
                     protected void updateItem(OpTypSt opTyp, boolean empty) {
@@ -83,7 +102,7 @@ public class OPController{
     private void setOpSaal() {
         Callback<ListView<OpSaalSt>, ListCell<OpSaalSt>> cellFactory = new Callback<>() {
             @Override
-            public ListCell<OpSaalSt> call(ListView<OpSaalSt> rolleListView) {
+            public ListCell<OpSaalSt> call(ListView<OpSaalSt> opRoomListView) {
                 return new ListCell<>() {
                     @Override
                     protected void updateItem(OpSaalSt opSaal, boolean empty) {
@@ -102,10 +121,10 @@ public class OPController{
         opRoom.getItems().setAll(new OpSaalStDao(Main.configuration).findAll());
     }
 
-    /*vate void setNarkose() {
+    private void setNarkose() {
         Callback<ListView<NarkoseSt>, ListCell<NarkoseSt>> cellFactory = new Callback<>() {
             @Override
-            public ListCell<NarkoseSt> call(ListView<NarkoseSt> rolleListView) {
+            public ListCell<NarkoseSt> call(ListView<NarkoseSt> narkoseListView) {
                 return new ListCell<>() {
                     @Override
                     protected void updateItem(NarkoseSt nark, boolean empty) {
@@ -123,7 +142,7 @@ public class OPController{
         narkose.setCellFactory(cellFactory);
         narkose.getItems().setAll(new NarkoseStDao(Main.configuration).findAll());
     }
-*/
+
     @FXML
 	public void initialize() {
         /**
@@ -139,15 +158,8 @@ public class OPController{
 */
         setFallTyp();
         setOpSaal();
-        //setNarkose();
-        setCases(null);
-
-        Result<Record1<String>> narkoseTypResult = Main.dslContext.select(Tables.NARKOSE_ST.BESCHREIBUNG.as("narkose"))
-                .from(Tables.NARKOSE_ST)
-                .orderBy(Tables.NARKOSE_ST.BESCHREIBUNG.asc())
-                .fetch();
-        List<String> narkoseList = narkoseTypResult.map(record -> record.getValue("narkose").toString());
-        narkose.getItems().setAll(narkoseList);
+        setNarkose();
+        setCase(null);
 
         System.out.println("Initialize OP-Tab!");
 	}

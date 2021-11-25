@@ -7,6 +7,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ListCell;
+import javafx.util.Callback;
 import javafx.stage.Stage;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
@@ -25,39 +28,42 @@ public class AdmissionController {
 	private Parent root;
 
 	@FXML
-    private ComboBox<String> selectPatient;
-    
-	/**
-	 * For KIS System
-	 */
-    @FXML
-    private CaseController caseController;
-    
-    /**
-	 * For OPS System
-	 */
+    private ComboBox<Patient> selectPatient;
+
     @FXML
     private OPController opController;
 
+	private void setPatient() {
+		Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<Patient> call(ListView<Patient> patientListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(Patient pat, boolean empty) {
+						super.updateItem(pat, empty);
+						if (pat == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(pat.getName() + ", " + pat.getVorname() + ";  " + pat.getPatId());
+						}
+					}
+				};
+			}
+		};
+		selectPatient.setButtonCell(cellFactory.call(null));
+		selectPatient.setCellFactory(cellFactory);
+		selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
+	}
 
 	@FXML
 	public void initialize() {
 		selectPatient.setOnAction(new EventHandler<ActionEvent>(){
 			public void handle(ActionEvent e){
-				opController.updateCases(1);//patientDao.getId(selectPatient.GET().k));  //selectPatient.GET() muss pojos.Patient liefern
+				opController.setCases(selectPatient.getValue().getPatId());
 			}
 		});
-		// mein etwas kläglicher Versuch in die ComboBox einen Patienten zu schreiben, sodass man für die Fälle die PatId ermitteln kann...
-		/*PatientDao patientDao = new PatientDao();
-		List<Integer> result = Main.dslContext.selectFrom(Tables.PATIENT).fetch().getValues(Tables.PATIENT.PAT_ID);
-		List<Patient> patientlist = patientDao.fetchByPatId(result);*/
+		setPatient();
 
-		Result<Record1<String>> result = Main.dslContext.select(DSL.concat(Tables.PATIENT.NAME, DSL.inline(", "), Tables.PATIENT.VORNAME).as("fullname_patient"))
-				.from(Tables.PATIENT)
-				.orderBy(Tables.PATIENT.NAME.asc())
-				.fetch();
-		List<String> patientlist = result.map(record -> record.getValue("fullname_patient").toString());
-		selectPatient.getItems().setAll(patientlist);
     	System.out.println("Initialize Admission-Tab!");
     }	
 	

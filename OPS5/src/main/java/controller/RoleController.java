@@ -20,8 +20,6 @@ import java.util.List;
 
 import static jooq.Tables.*;
 
-//import jooq.tables.daos.RolleDao;
-//import jooq.tables.pojos.Rolle;
 import jooq.tables.pojos.RolleSt;
 import jooq.tables.daos.RolleStDao;
 import jooq.tables.daos.MedPersonalDao;
@@ -30,8 +28,6 @@ import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Operation;
 import jooq.Tables;
 
-//import controller.AdmissionController;
-//import controller.OPController;
 
 public class RoleController{
 
@@ -42,17 +38,6 @@ public class RoleController{
     @FXML
     private ComboBox<Operation> op;
 
-    /*public static ObservableList<Rolle> getDaoRoles(){
-        RolleDao roleDao = new RolleDao(Main.configuration);
-        List<Rolle> roleList = roleDao.fetchByOpId(1);
-        return FXCollections.observableArrayList(roleList);
-    }*/
-/*
-    public static ObservableList<MedPersonal> getDaoMedPersonal(){
-        MedPersonalDao persDao = new MedPersonalDao(Main.condiguration);
-        List<MedPersonal> persList = persDao.
-    }
-*/
     @FXML
     public void initialize() {
         System.out.println("Initialize Role-Tab!");
@@ -60,13 +45,6 @@ public class RoleController{
         setRole();
         setOp();
         setMitarbeiter();
-
-        /*Result<Record1<String>> result = Main.dslContext.select(Tables.MED_PERSONAL.NACHNAME_VORNAME.as("fullname"))
-                .from(Tables.MED_PERSONAL)
-                .orderBy(Tables.MED_PERSONAL.NACHNAME_VORNAME.asc())
-                .fetch();
-        List<String> userlist = result.map(record -> record.getValue("fullname").toString());
-        mitarbeiter.getItems().setAll(userlist);*/
 
     }
 
@@ -95,7 +73,7 @@ public class RoleController{
     private void setOp() {
         Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
             @Override
-            public ListCell<Operation> call(ListView<Operation> rolleListView) {
+            public ListCell<Operation> call(ListView<Operation> opListView) {
                 return new ListCell<>() {
                     @Override
                     protected void updateItem(Operation oper, boolean empty) {
@@ -118,7 +96,7 @@ public class RoleController{
     private void setMitarbeiter() {
         Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
             @Override
-            public ListCell<MedPersonal> call(ListView<MedPersonal> rolleListView) {
+            public ListCell<MedPersonal> call(ListView<MedPersonal> userListView) {
                 return new ListCell<>() {
                     @Override
                     protected void updateItem(MedPersonal user, boolean empty) {
