@@ -3,14 +3,14 @@ import com.google.protobuf.NullValue;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import javafx.util.Callback;
-import jooq.tables.daos.DiagnoseDao;
-import jooq.tables.daos.Icd10CodeStDao;
-import jooq.tables.daos.OperationDao;
-import jooq.tables.daos.ProzedurDao;
+import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
 
@@ -66,17 +66,32 @@ public class ProcedureController {
     	System.out.println("Initialize Procedure-Tab!");
     	initializeColumns();
 		procedureTable.setItems(prozedurView());
+		setProcedureOpID();
+		setProcedureOpsCode();
 		// TODO: 23.11.21 Daten in DB speichern
 		// TODO: 24.11.21 storniert ist noch da nur nicht sichtbar? 
+		// TODO: 24.11.21 buttons speichern und neu erstellen
 
 	}
 	
 	@FXML
-	public void createProcedure() {
+	public void createProcedure(ActionEvent event) {
 
     	System.out.println("Create procedure!");
-    	insertNewProcedure();
-    	setProcedureOpID();
+		Node source = (Node) event.getSource();
+		Stage thisStage = (Stage) source.getScene().getWindow();
+		thisStage.close();
+	}
+	@FXML
+	void createNewProcedure(ActionEvent event) {
+		flagEditProzedure = false;
+		insertNewProcedure();
+		Node source = (Node) event.getSource();
+		Stage thisStage = (Stage) source.getScene().getWindow();
+		thisStage.close();
+
+
+
 	}
 
 	public static ObservableList<Prozedur> prozedurView(){
@@ -103,14 +118,14 @@ public class ProcedureController {
 
 	private void insertNewProcedure() {
     	int prozID = 8; // automatisch generieren?
-		Byte storniert = null;
-    	int opID = procedureOpID.getValue().getOpId();
+		Byte storniert = 0;
+    	int opID = procedureOpID.getValue().getOpId(); //abfangen wenn nichts ausgewählt
     	String opsCodeValue = procedureOpsCode.getValue().getOpsCode();
     	String anmerkungText = procedureAnmerkung.getText();
     	LocalDateTime erstellZeit = null; // nur beim neuen erstellen
     	LocalDateTime bearbeiterZeit = null;
     	String bearbeiter = null; // eingeloggter Benutzer
-    	String ersteller = null;
+    	String ersteller = "00191184"; // TODO: 25.11.21 bearbeiter ersteller eingeloggter Benutzer
 
 		if(flagEditProzedure){
 			prozID = onEditProzedur();
@@ -175,5 +190,29 @@ public class ProcedureController {
 		procedureOpID.setCellFactory(cellFactory);
 		procedureOpID.getItems().setAll(new OperationDao(Main.configuration).findAll());
 	}
+
+	private void setProcedureOpsCode(){
+		Callback<ListView<OpsCodeSt>, ListCell<OpsCodeSt>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<OpsCodeSt> call(ListView<OpsCodeSt> medPersonalListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(OpsCodeSt opsCodeSt, boolean empty) {
+						super.updateItem(opsCodeSt, empty);
+						if (opsCodeSt == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(opsCodeSt.getOpsCode() + " " + opsCodeSt.getBeschreibung());
+						}
+					}
+				};
+			}
+		};
+		procedureOpsCode.setButtonCell(cellFactory.call(null));
+		procedureOpsCode.setCellFactory(cellFactory);
+		procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
+	}
+
+
 
 }

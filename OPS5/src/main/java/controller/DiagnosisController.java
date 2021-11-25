@@ -4,7 +4,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
@@ -60,6 +63,14 @@ public class DiagnosisController {
 	private TableColumn<Diagnose, String> bearbeiterCol;
 
 	@FXML
+	private Button btnDiagnose;
+
+	@FXML
+	private DatePicker dateDiagnosis;
+
+	boolean flagEditDiagnose = false;
+
+	@FXML
 	public void initialize() {
 
 		System.out.println("Initialize Diagnosis-Tab!");
@@ -75,7 +86,21 @@ public class DiagnosisController {
 	@FXML
 	public void createDiagnosis(ActionEvent event){
 		System.out.println("Create diagnosis!");
+		flagEditDiagnose = true;
 		insertNewDiagnose();
+		Node source = (Node) event.getSource();
+		Stage thisStage = (Stage) source.getScene().getWindow();
+		thisStage.close();
+	}
+
+
+	@FXML
+	void createNewDiagnosis(ActionEvent event) {
+		flagEditDiagnose = false;
+		insertNewDiagnose();
+		Node source = (Node) event.getSource();
+		Stage thisStage = (Stage) source.getScene().getWindow();
+		thisStage.close();
 	}
 
 	public static ObservableList<Diagnose> diagnoseView(){
@@ -110,26 +135,40 @@ public class DiagnosisController {
 
 	private void insertNewDiagnose() {
 		int diagID; // automatisch generieren?
-		diagID = onEditDiagnose();
-		if(diagID == 0){
-			diagID = 8; // hier automatisch generieren !!!
-		}
-		Byte storniert = null;
+		Byte storniert = 0;
 		int opID = diagnosisOpId.getValue().getOpId();
 		String icdCode = diagnosisIcdCode.getValue().getIcd10Code();
 		//String diagTyp = diagnosisType.getValue(); // Stammdaten mit zahl ersetzten
 		int diagTyp = 1;
 		String freitext = diagnosisFreetext.getText();
-		LocalDateTime datum = LocalDateTime.now(); // unterscheiden ob neu oder altes Datum nicht überschreiben
-		LocalDateTime erstellZeit = LocalDateTime.now();
-		LocalDateTime bearbeiterZeit = null;
-		String bearbeiter = null; // eingeloggter Benutzer
-		String ersteller = null;
+		//LocalDateTime datum = dateDiagnosis.getValue().atStartOfDay(); // TODO: 25.11.21 local Date to Local date time
+		LocalDateTime datum;
+		String ersteller;
+		LocalDateTime erstellZeit;
+		String bearbeiter;
+		LocalDateTime bearbeiterZeit;
 
-		Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
-		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
-		diagnoseDao.insert(diagnose);
+
+
 		// update dao wenn Flag true
+
+		if(flagEditDiagnose){
+			bearbeiter = null;
+			bearbeiterZeit = LocalDateTime.now();
+			diagID = onEditDiagnose();
+		}
+		else{
+			diagID = 8;
+			ersteller = "00191184";
+			erstellZeit = LocalDateTime.now();
+			bearbeiterZeit = null;
+			bearbeiter = null;
+			datum = LocalDateTime.now();
+
+			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
+			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
+			diagnoseDao.insert(diagnose);
+		}
 
 	}
 
@@ -182,7 +221,7 @@ public class DiagnosisController {
 						if (icd10Code == null || empty) {
 							setGraphic(null);
 						} else {
-							setText(icd10Code.getIcd10Code());
+							setText(icd10Code.getIcd10Code() + " " + icd10Code.getBeschreibung());
 						}
 					}
 				};
@@ -214,6 +253,14 @@ public class DiagnosisController {
 		diagnosisType.setCellFactory(cellFactory);
 		diagnosisType.getItems().setAll(new DiagnosetypStDao(Main.configuration).findAll());
 	}
+
+	@FXML
+	void diagnosisClicked(MouseEvent event) {
+		flagEditDiagnose = true;
+	}
+
+
+
 
 
 }
