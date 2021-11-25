@@ -76,8 +76,9 @@ public class ProcedureController {
 	
 	@FXML
 	public void createProcedure(ActionEvent event) {
-
+		flagEditProzedure = true;
     	System.out.println("Create procedure!");
+    	insertNewProcedure();
 		Node source = (Node) event.getSource();
 		Stage thisStage = (Stage) source.getScene().getWindow();
 		thisStage.close();
@@ -117,7 +118,7 @@ public class ProcedureController {
 	}
 
 	private void insertNewProcedure() {
-    	int prozID = 8; // automatisch generieren?
+    	int prozID = 9; // automatisch generieren?
 		Byte storniert = 0;
     	int opID = procedureOpID.getValue().getOpId(); //abfangen wenn nichts ausgewählt
     	String opsCodeValue = procedureOpsCode.getValue().getOpsCode();
@@ -130,10 +131,11 @@ public class ProcedureController {
 		if(flagEditProzedure){
 			prozID = onEditProzedur();
 			bearbeiterZeit = LocalDateTime.now();
-			// bearbeiter
+			bearbeiter = "0101040";
 			Prozedur prozedur = new Prozedur(prozID,anmerkungText,storniert,erstellZeit,bearbeiterZeit,opID,opsCodeValue,bearbeiter,ersteller);
 			ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
 			prozedurDao.update(prozedur);
+
 		}
 		else {
 			erstellZeit = LocalDateTime.now();
@@ -142,8 +144,6 @@ public class ProcedureController {
 			ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
 			prozedurDao.insert(prozedur);
 		}
-
-
 
     }
 

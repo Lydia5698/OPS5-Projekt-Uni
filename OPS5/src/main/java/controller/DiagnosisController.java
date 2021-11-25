@@ -134,35 +134,33 @@ public class DiagnosisController {
 	}
 
 	private void insertNewDiagnose() {
-		int diagID; // automatisch generieren?
+		Integer diagID = null; // durch null wird sie automatisch generiert
 		Byte storniert = 0;
-		int opID = diagnosisOpId.getValue().getOpId();
+		Integer opID = diagnosisOpId.getValue().getOpId();
 		String icdCode = diagnosisIcdCode.getValue().getIcd10Code();
 		//String diagTyp = diagnosisType.getValue(); // Stammdaten mit zahl ersetzten
-		int diagTyp = 1;
+		Integer diagTyp = 1;
 		String freitext = diagnosisFreetext.getText();
 		//LocalDateTime datum = dateDiagnosis.getValue().atStartOfDay(); // TODO: 25.11.21 local Date to Local date time
 		LocalDateTime datum;
-		String ersteller;
-		LocalDateTime erstellZeit;
-		String bearbeiter;
-		LocalDateTime bearbeiterZeit;
-
-
-
-		// update dao wenn Flag true
+		String ersteller = null;
+		LocalDateTime erstellZeit = null;
+		String bearbeiter = null;
+		LocalDateTime bearbeiterZeit = null; // bei null update nimmt er immer das vorhandene
 
 		if(flagEditDiagnose){
-			bearbeiter = null;
-			bearbeiterZeit = LocalDateTime.now();
 			diagID = onEditDiagnose();
+			bearbeiter = "0101040";
+			bearbeiterZeit = LocalDateTime.now();
+			datum = LocalDateTime.now();
+
+			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
+			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
+			diagnoseDao.update(diagnose);
 		}
 		else{
-			diagID = 8;
 			ersteller = "00191184";
 			erstellZeit = LocalDateTime.now();
-			bearbeiterZeit = null;
-			bearbeiter = null;
 			datum = LocalDateTime.now();
 
 			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
