@@ -44,8 +44,8 @@
             <TableColumn fx:id="opSaalCol" prefWidth="55.0" text="Op Saal" />
             <TableColumn fx:id="bauchtuecherPraeCol" prefWidth="100.0" text="Bauchtücher Prä" />
             <TableColumn fx:id="bauchtuecherPostCol" prefWidth="110.0" text="Bauchtücher Post" />
-            <TableColumn fx:id="schnittzeitCol" prefWidth="75.0" text="Schnittzeit" />
-            <TableColumn fx:id="nahtzeitCol" prefWidth="75.0" text="Nahtzeit" />
+            <TableColumn fx:id="schnittzeitCol" prefWidth="140.0" text="Schnittzeit" />
+            <TableColumn fx:id="nahtzeitCol" prefWidth="140.0" text="Nahtzeit" />
             <TableColumn fx:id="opTypCol" prefWidth="75.0" text="OP Typ" />
             <TableColumn fx:id="narkoseCol" prefWidth="75.0" text="Narkose" />
             <TableColumn fx:id="erstellerOPCol" prefWidth="75.0" text="Ersteller" />

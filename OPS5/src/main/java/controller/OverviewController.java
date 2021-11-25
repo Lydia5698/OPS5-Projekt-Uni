@@ -6,10 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -20,14 +17,9 @@ import javafx.collections.FXCollections;
 import java.time.LocalDateTime;
 
 
-import jooq.tables.daos.DiagnoseDao;
-import jooq.tables.daos.FallDao;
-import jooq.tables.daos.MedPersonalDao;
-import jooq.tables.daos.OperationDao;
-import jooq.tables.pojos.Diagnose;
-import jooq.tables.pojos.Fall;
-import jooq.tables.pojos.MedPersonal;
-import jooq.tables.pojos.Operation;
+import javafx.util.Callback;
+import jooq.tables.daos.*;
+import jooq.tables.pojos.*;
 import main.Main;
 
 
@@ -294,6 +286,28 @@ public class OverviewController {
         return FXCollections.observableArrayList(operation);
     }
 
+   /* private void setCaseFallTyp(){
+        Callback<ListView<FallTypSt>, ListCell<jooq.tables.FallTypSt>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<OpsCodeSt> call(ListView<OpsCodeSt> medPersonalListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(OpsCodeSt opsCodeSt, boolean empty) {
+                        super.updateItem(opsCodeSt, empty);
+                        if (opsCodeSt == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(opsCodeSt.getOpsCode() + " " + opsCodeSt.getBeschreibung());
+                        }
+                    }
+                };
+            }
+        };
+        procedureOpsCode.setButtonCell(cellFactory.call(null));
+        procedureOpsCode.setCellFactory(cellFactory);
+        procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
+    }
+*/
  /*   private void insertNewOperation(int opID) {
         LocalDateTime beginn;
         LocalDateTime ende;
