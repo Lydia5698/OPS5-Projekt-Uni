@@ -54,6 +54,6 @@
             <TableColumn fx:id="bearbeiterzeitOPCol" prefWidth="140.0" text="Bearbeiterzeit" />
             <TableColumn fx:id="storniertOPCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>
-      <Button fx:id="btnStornieren" layoutX="640.0" layoutY="422.0" mnemonicParsing="false" text="Stornieren" />
+      <Button fx:id="btnStornieren" layoutX="640.0" layoutY="422.0" mnemonicParsing="false" onAction="#storniereOP" text="Stornieren" />
 	</children>
 </AnchorPane>

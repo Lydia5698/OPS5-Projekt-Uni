@@ -78,18 +78,23 @@ public class ProcedureController {
 	public void createProcedure(ActionEvent event) {
 		flagEditProzedure = true;
     	System.out.println("Create procedure!");
-    	insertNewProcedure();
-		Node source = (Node) event.getSource();
-		Stage thisStage = (Stage) source.getScene().getWindow();
-		thisStage.close();
+		if(noMissingStatement()){
+			insertNewProcedure();
+			Node source = (Node) event.getSource();
+			Stage thisStage = (Stage) source.getScene().getWindow();
+			thisStage.close();
+		}
+
 	}
 	@FXML
 	void createNewProcedure(ActionEvent event) {
 		flagEditProzedure = false;
-		insertNewProcedure();
-		Node source = (Node) event.getSource();
-		Stage thisStage = (Stage) source.getScene().getWindow();
-		thisStage.close();
+		if(noMissingStatement()){
+			insertNewProcedure();
+			Node source = (Node) event.getSource();
+			Stage thisStage = (Stage) source.getScene().getWindow();
+			thisStage.close();
+		}
 
 
 
@@ -118,9 +123,9 @@ public class ProcedureController {
 	}
 
 	private void insertNewProcedure() {
-    	int prozID = 9; // automatisch generieren?
+    	Integer prozID = null; // durch null automatisch generiert
 		Byte storniert = 0;
-    	int opID = procedureOpID.getValue().getOpId(); //abfangen wenn nichts ausgewählt
+    	Integer opID = procedureOpID.getValue().getOpId(); //abfangen wenn nichts ausgewählt
     	String opsCodeValue = procedureOpsCode.getValue().getOpsCode();
     	String anmerkungText = procedureAnmerkung.getText();
     	LocalDateTime erstellZeit = null; // nur beim neuen erstellen
@@ -162,6 +167,33 @@ public class ProcedureController {
 		}
 		return id;
 
+	}
+
+	public boolean noMissingStatement(){
+		if(procedureOpID.getSelectionModel().isEmpty()){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlende OP-ID");
+			alert.setContentText("Bitte wählen Sie eine Operations-ID aus");
+			alert.show();
+			return false;
+		}
+
+		if(procedureOpsCode.getSelectionModel().isEmpty()){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlender OPS-Code");
+			alert.setContentText("Bitte wählen Sie einen OPS-Code aus");
+			alert.show();
+			return false;
+		}
+
+		if(procedureTable.getSelectionModel().isEmpty() && flagEditProzedure){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlende Prozedur");
+			alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
+			alert.show();
+			return false;
+		}
+		return true;
 	}
 
 	@FXML

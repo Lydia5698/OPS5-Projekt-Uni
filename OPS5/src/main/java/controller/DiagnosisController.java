@@ -13,7 +13,6 @@ import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -87,20 +86,24 @@ public class DiagnosisController {
 	public void createDiagnosis(ActionEvent event){
 		System.out.println("Create diagnosis!");
 		flagEditDiagnose = true;
-		insertNewDiagnose();
-		Node source = (Node) event.getSource();
-		Stage thisStage = (Stage) source.getScene().getWindow();
-		thisStage.close();
+		if(noMissingStatement()){
+			insertNewDiagnose();
+			Node source = (Node) event.getSource();
+			Stage thisStage = (Stage) source.getScene().getWindow();
+			thisStage.close();
+		}
 	}
 
 
 	@FXML
 	void createNewDiagnosis(ActionEvent event) {
 		flagEditDiagnose = false;
-		insertNewDiagnose();
-		Node source = (Node) event.getSource();
-		Stage thisStage = (Stage) source.getScene().getWindow();
-		thisStage.close();
+		if(noMissingStatement()){
+			insertNewDiagnose();
+			Node source = (Node) event.getSource();
+			Stage thisStage = (Stage) source.getScene().getWindow();
+			thisStage.close();
+		}
 	}
 
 	public static ObservableList<Diagnose> diagnoseView(){
@@ -136,10 +139,12 @@ public class DiagnosisController {
 	private void insertNewDiagnose() {
 		Integer diagID = null; // durch null wird sie automatisch generiert
 		Byte storniert = 0;
-		Integer opID = diagnosisOpId.getValue().getOpId();
+		Integer opID = null;
+		if(!diagnosisOpId.getSelectionModel().isEmpty()){
+			opID = diagnosisOpId.getValue().getOpId();
+		}
 		String icdCode = diagnosisIcdCode.getValue().getIcd10Code();
-		//String diagTyp = diagnosisType.getValue(); // Stammdaten mit zahl ersetzten
-		Integer diagTyp = 1;
+		Integer diagTyp = diagnosisType.getValue().getDiagnosetyp();
 		String freitext = diagnosisFreetext.getText();
 		//LocalDateTime datum = dateDiagnosis.getValue().atStartOfDay(); // TODO: 25.11.21 local Date to Local date time
 		LocalDateTime datum;
@@ -255,6 +260,43 @@ public class DiagnosisController {
 	@FXML
 	void diagnosisClicked(MouseEvent event) {
 		flagEditDiagnose = true;
+	}
+
+	public boolean noMissingStatement(){
+
+		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlender Diagnose-Code ");
+			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
+			alert.show();
+			return false;
+		}
+
+		/*if(dateDiagnosis.get){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlendes Datum");
+			alert.setContentText("Bitte tragen Sie ein Datum für die Diagnose ein");
+			alert.show();
+			return true;
+		}*/
+
+		if(diagnosisType.getSelectionModel().isEmpty()){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlender Diagnosetyp");
+			alert.setContentText("Bitte wählen Sie einen Diagnosetyp aus");
+			alert.show();
+			return false;
+		}
+
+
+		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlende Diagnose");
+			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
+			alert.show();
+			return false;
+		}
+		return true;
 	}
 
 

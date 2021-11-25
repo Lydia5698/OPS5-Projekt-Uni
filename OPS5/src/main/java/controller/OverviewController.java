@@ -2,6 +2,7 @@ package controller;
 import java.io.IOException;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -150,12 +151,13 @@ public class OverviewController {
                 //
             }
         });
+
     }
+
 
     private void initializeColumns() {
         // tabellencols werden erstellt
         // create columns
-
 
         // columns Case
         fallIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
@@ -284,7 +286,18 @@ public class OverviewController {
         OperationDao operationDao = new OperationDao(Main.configuration);
         List<Operation> operation = operationDao.fetchByFallId(id);
         return FXCollections.observableArrayList(operation);
+
     }
+
+    @FXML
+    void storniereOP(ActionEvent event) {
+        opListOperation.getSelectionModel().getSelectedItem().setStorniert((byte) 1);
+        Operation operation = opListOperation.getSelectionModel().getSelectedItem();
+        OperationDao operationDao = new OperationDao(Main.configuration);
+        operationDao.update(operation);
+    }
+
+
 
    /* private void setCaseFallTyp(){
         Callback<ListView<FallTypSt>, ListCell<jooq.tables.FallTypSt>> cellFactory = new Callback<>() {
@@ -308,7 +321,7 @@ public class OverviewController {
         procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
     }
 */
- /*   private void insertNewOperation(int opID) {
+    /*private void insertNewOperation(int opID) {
         LocalDateTime beginn;
         LocalDateTime ende;
         Integer       bauchtuecherPrae;
