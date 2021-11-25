@@ -59,6 +59,7 @@ public class RoleController{
 
         setRole();
         setOp();
+        setMitarbeiter();
 
         /*Result<Record1<String>> result = Main.dslContext.select(Tables.MED_PERSONAL.NACHNAME_VORNAME.as("fullname"))
                 .from(Tables.MED_PERSONAL)
@@ -113,6 +114,7 @@ public class RoleController{
         op.getItems().setAll(new OperationDao(Main.configuration).findAll());
     }
 
+    //TODO: Nach Namen sortieren.
     private void setMitarbeiter() {
         Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
             @Override
@@ -124,7 +126,7 @@ public class RoleController{
                         if (user == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(user.getPersId() + " " + user.getNachnameVorname());
+                            setText(user.getNachnameVorname() + " " + user.getPersId());
                         }
                     }
                 };
