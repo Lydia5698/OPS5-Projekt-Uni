@@ -267,7 +267,7 @@ public class DiagnosisController {
 			return false;
 		}
 
-		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().contains("-")){
+		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
 			Alert alert = new Alert(Alert.AlertType.INFORMATION);
 			alert.setTitle("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
