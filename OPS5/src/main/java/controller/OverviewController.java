@@ -19,9 +19,11 @@ import java.time.LocalDateTime;
 
 
 import javafx.util.Callback;
+import jooq.Keys;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.jooq.Result;
 
 
 import java.util.List;
@@ -31,9 +33,11 @@ import java.util.List;
 public class OverviewController {
 	
     @FXML
-    private CheckBox opListFilterPostOp; 
+    private CheckBox opListFilterPostOp;
+
     @FXML
     private TableView<?> opListPatients;
+
     @FXML
     private TableView<Fall> opListCase;
 
@@ -69,8 +73,10 @@ public class OverviewController {
 
     @FXML
     private TableColumn<Fall, Integer> fallTypCol;
+
     @FXML
     private TableView<Operation> opListOperation;
+
     @FXML
     private TableColumn<Operation, Integer> opIDCol;
 
@@ -119,7 +125,6 @@ public class OverviewController {
     @FXML
     private TableColumn<Operation, String> bearbeiterOPCol;
 
-
     @FXML
     private Button btnStornieren;
 
@@ -132,15 +137,15 @@ public class OverviewController {
     @FXML
     private CheckBox stornierteOperation;
 
-
-
     @FXML
 	public void initialize() {
         System.out.println("Initialize OPlist-Tab!");
 
         initializeColumns();
         opListCase.setItems(fallView());
-        // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen
+        // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen join?
+        // TODO: 26.11.21 stornierte Ops rausfiltern
+        // TODO: 26.11.21 diagnose update
         opListCase.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
                 int CaseId = onEditCase();
@@ -157,7 +162,6 @@ public class OverviewController {
         });
 
     }
-
 
     private void initializeColumns() {
         // tabellencols werden erstellt
@@ -217,9 +221,6 @@ public class OverviewController {
         return id;
     }
 
-
-
-    
     @FXML
    	public void createAndShowDiagnosisWindow() {
        	System.out.println("New Patient Window!");
@@ -275,6 +276,7 @@ public class OverviewController {
         FallDao fallDao = new FallDao(Main.configuration);
         List<Fall> fall = fallDao.findAll();
 
+        //Keys.FK_FALL_MED_PERSONAL1.
         return FXCollections.observableArrayList(fall);
     }
 
@@ -313,10 +315,6 @@ public class OverviewController {
             opListOperation.setItems(operationView(CaseId));
         }
     }
-
-
-
-
 
    /* private void setCaseFallTyp(){
         Callback<ListView<FallTypSt>, ListCell<jooq.tables.FallTypSt>> cellFactory = new Callback<>() {

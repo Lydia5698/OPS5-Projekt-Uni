@@ -68,10 +68,6 @@ public class ProcedureController {
 		procedureTable.setItems(prozedurView());
 		setProcedureOpID();
 		setProcedureOpsCode();
-		// TODO: 23.11.21 Daten in DB speichern
-		// TODO: 24.11.21 storniert ist noch da nur nicht sichtbar? 
-		// TODO: 24.11.21 buttons speichern und neu erstellen
-
 	}
 	
 	@FXML
