@@ -4,13 +4,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.pojos.MedPersonal;
-import main.Main;
 
 public class LogInController {
 

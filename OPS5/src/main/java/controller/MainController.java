@@ -11,16 +11,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
-import jooq.Tables;
 import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.pojos.MedPersonal;
 import main.Main;
-import org.jooq.Record1;
-import org.jooq.Result;
-import org.jooq.impl.DSL;
 
 import java.io.IOException;
-import java.util.List;
 
 public class MainController {
 
@@ -91,6 +86,10 @@ public class MainController {
 		createEmployeeComboBox(employeeId,0);
 	}
 
+	/**
+	 * returns the person which is currently logged in
+	 * @return persid from the user
+	 */
 	public static String getUserId(){
 		return getInstance().employeeId.getValue().getPersId();
 	}

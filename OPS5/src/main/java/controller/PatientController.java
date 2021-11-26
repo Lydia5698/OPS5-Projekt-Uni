@@ -1,22 +1,16 @@
 package controller;
 
-import com.sun.javafx.geom.AreaOp;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import javafx.stage.Stage;
 import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Patient;
 import main.Main;
-import org.jooq.*;
 import org.jooq.exception.DataAccessException;
 
-import java.sql.SQLOutput;
 import java.sql.Timestamp;
-import java.util.List;
-
-import static jooq.Tables.*;
 
 
 public class PatientController{
@@ -61,6 +55,8 @@ public class PatientController{
     private RadioButton abminus;
     @FXML
     private RadioButton abplus;
+    @FXML
+    private Button speichern;
 
 
 
@@ -102,14 +98,12 @@ public class PatientController{
             } else if (patient.getName().equals("")) {
                 alert.setContentText("Der Nachname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
-            } else if(patient.getErsteller().equals("") || patient.getErsteller() == null){
-                alert.setContentText("Sie sind nicht eingeloggt! Bitte gehen Sie zur Hauptseite zurück und loggen sich ein.");
-                alert.showAndWait();
             }
             else {
                 patientDao.insert(patient);
                 System.out.println("Creating patient!");
-                clearFields();
+                Stage stage = (Stage) speichern.getScene().getWindow();
+                stage.close();
             }
         }
         catch(DataAccessException e){
@@ -117,21 +111,6 @@ public class PatientController{
         }
 	}
 
-
-    /**
-     * this method clears all fields
-     */
-    private void clearFields(){
-        patientFirstname.clear();
-        patientLastname.clear();
-        patientBirthdate.setValue(null);
-        patientBirthplace.clear();
-        patientStreet.clear();
-        patientPostcode.clear();
-        patientCellphone.clear();
-        sex_group.getSelectedToggle().setSelected(false);
-        blutgruppe.getSelectedToggle().setSelected(false);
-    }
 
     /**
      * this method converts the selected toggle into a string

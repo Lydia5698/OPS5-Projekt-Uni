@@ -4,6 +4,7 @@ import ExternalFiles.DateTimePicker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.FallTypStDao;
@@ -17,6 +18,7 @@ import main.Main;
 import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class FallController {
 
@@ -35,6 +37,9 @@ public class FallController {
     @FXML
     private DateTimePicker entlassungsdatum;
 
+    @FXML
+    private Button speicherbutton;
+
     /**
      * the comboboxes are filled with the entries of the database
      */
@@ -43,7 +48,7 @@ public class FallController {
         setPatient();
         setFallTyp();
         setStation();
-        setAufnahmedatum();
+        entlassungsdatum.setValue(null);
         System.out.println("Initialize Fall-Tab!");
     }
 
@@ -129,56 +134,41 @@ public class FallController {
     }
 
     /**
-     * set the aufnahmedatum to the current date and time
-     */
-    private void setAufnahmedatum(){
-        //set default value to current time
-        aufnahmedatum.setDateTimeValue(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-    }
-
-    /**
-     * inserts the case into the database and clears all Fields after
+     * inserts the case into the database and close the window afterwards
      * @param actionEvent is activated if the user pushes the button
      */
     public void createFall(ActionEvent actionEvent) {
-        insertFall();
-        clearFields();
-        System.out.println("Create Fall");
-    }
-
-    /**
-     * in this method each attribute is set with the input of the user in a new case which is inserted in the database
-     * after that
-     */
-    private void insertFall(){
         try{
             FallDao fallDao = new FallDao(Main.configuration);
             Fall fall = new Fall();
-            fall.setPatId(patient.getValue().getPatId());
-            fall.setFallTyp(falltyp.getValue().getFallTypId());
-            fall.setStationSt(station.getValue().getStation());
-            fall.setAufnahmedatum(aufnahmedatum.getDateTimeValue());
-            fall.setEntlassungsdatum(entlassungsdatum.getDateTimeValue());
+            if(patient.getValue() != null){fall.setPatId(patient.getValue().getPatId());}
+            if(falltyp.getValue() != null){fall.setFallTyp(falltyp.getValue().getFallTypId());}
+            if(station.getValue() != null){fall.setStationSt(station.getValue().getStation());}
+            if(aufnahmedatum.getValue() != null){fall.setAufnahmedatum(aufnahmedatum.getDateTimeValue());}
+            if(entlassungsdatum.getValue() != null){fall.setEntlassungsdatum(entlassungsdatum.getDateTimeValue());}
             fall.setErsteller(MainController.getUserId());
             fall.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
             fall.setStorniert(false);
-            fallDao.insert(fall);
-            System.out.println("Patient wurde eingefügt.");
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Fehlender Eintrag!");
+            if (fall.getPatId() == null) {
+                alert.setContentText("Es wurde kein Patient ausgewählt!");
+                alert.showAndWait();
+            }
+            else {
+                if (fall.getAufnahmedatum() == null) {
+                    fall.setAufnahmedatum(LocalDateTime.now());
+                }
+                fallDao.insert(fall);
+                System.out.println("Creating case!");
+                Stage stage = (Stage) speicherbutton.getScene().getWindow();
+                stage.close();
+            }
         }
         catch(DataAccessException e){
             e.printStackTrace();
         }
-
-    }
-
-    /**
-     * this method clears all fields so the user can insert a new case
-     */
-    private void clearFields(){
-        patient.getSelectionModel().clearSelection();
-        falltyp.getSelectionModel().clearSelection();
-        station.getSelectionModel().clearSelection();
-        setAufnahmedatum();
-        entlassungsdatum.setValue(null);
     }
 }

@@ -14,7 +14,7 @@
 
 <AnchorPane minHeight="180.0" minWidth="200.0" prefHeight="536.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PatientController">
 							<children>
-								<Button layoutX="54.0" layoutY="438.0" mnemonicParsing="false" onAction="#createPatient" prefHeight="25.0" prefWidth="106.0" text="Speichern" />
+								<Button fx:id="speichern" layoutX="54.0" layoutY="438.0" mnemonicParsing="false" onAction="#createPatient" prefHeight="25.0" prefWidth="106.0" text="Speichern" />
 								<GridPane layoutX="54.0" layoutY="78.0" prefHeight="338.0" prefWidth="686.0">
 									<columnConstraints>
 										<ColumnConstraints hgrow="SOMETIMES" maxWidth="217.0" minWidth="10.0" prefWidth="129.0" />
