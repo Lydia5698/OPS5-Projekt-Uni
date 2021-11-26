@@ -80,7 +80,8 @@ public class PatientController{
             patient.setVorname(patientFirstname.getText());
             patient.setGeburtsdatum(patientBirthdate.getValue());
             patient.setBlutgruppe(getBlutgruppe());
-            if(sex_group.getSelectedToggle() != null){patient.setGeschlecht(getGeschlecht());}
+            //if(sex_group.getSelectedToggle() != null){patient.setGeschlecht(getGeschlecht());}
+            patient.setGeschlecht(getGeschlecht());
             patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
             if(!patientStreet.getText().equals("")){patient.setStrasse(patientStreet.getText());}
             if(!patientPostcode.getText().equals("")){patient.setPostleitzahl(patientPostcode.getText());}
@@ -129,17 +130,11 @@ public class PatientController{
      * @return String of the selected sex
      */
     private String getGeschlecht(){
-        String g = "";
+        if(sex_group.getSelectedToggle() == null){return null;}
         String sG = ((RadioButton)sex_group.getSelectedToggle()).getText();
-        switch (sG){
-            case "weiblich":
-                g = "w";
-            case "männlich":
-                g = "m";
-            default :
-                g = "d";
-        }
-        return g;
+        if(sG.equals("weiblich")){return "w";}
+        else if(sG.equals("männlich")){return "m";}
+        else{return "d";}
     }
 }
 
