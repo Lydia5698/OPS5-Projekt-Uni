@@ -72,18 +72,11 @@ public class PatientController{
 
     /**
      * After pressing the button, the entries from the text fields are transferred to the attribute values and the
-     * patient is inserted into the database with the help of the DAO
+     * patient is inserted into the database with the help of the DAO and all fields are cleared after that
      * @param event event which is fired when the button is pushed
      */
     @FXML
     void createPatient(ActionEvent event) {
-        insertPatient();
-        clearFields();
-	    System.out.println("Creating patient!");
-
-	}
-
-	private void insertPatient(){
         try {
             PatientDao patientDao = new PatientDao(Main.configuration);
             Patient patient = new Patient();
@@ -91,33 +84,43 @@ public class PatientController{
             patient.setVorname(patientFirstname.getText());
             patient.setGeburtsdatum(patientBirthdate.getValue());
             patient.setBlutgruppe(getBlutgruppe());
-            patient.setGeschlecht(getGeschlecht());
+            if(sex_group.getSelectedToggle() != null){patient.setGeschlecht(getGeschlecht());}
             patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-            patient.setStrasse(patientStreet.getText());
-            patient.setPostleitzahl(patientPostcode.getText());
-            patient.setGeburtsort(patientBirthplace.getText());
-            patient.setTelefonnummer(patientCellphone.getText());
-            patient.setErsteller(MainController.getUserId());
+            if(!patientStreet.getText().equals("")){patient.setStrasse(patientStreet.getText());}
+            if(!patientPostcode.getText().equals("")){patient.setPostleitzahl(patientPostcode.getText());}
+            if(!patientBirthplace.getText().equals("")){patient.setGeburtsort(patientBirthplace.getText());}
+            if(!patientCellphone.getText().equals("")){patient.setTelefonnummer(patientCellphone.getText());}
+            if(MainController.getUserId() != null){patient.setErsteller(MainController.getUserId());}
             patient.setStorniert(false);
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Fehlende Einträge!");
-            if (patient.getVorname() == "") {
+            if (patient.getVorname().equals("")) {
                 alert.setContentText("Der Vorname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
-            } else if (patient.getName() == "") {
+            } else if (patient.getName().equals("")) {
                 alert.setContentText("Der Nachname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
-            } else {
+            } else if(patient.getErsteller().equals("") || patient.getErsteller() == null){
+                alert.setContentText("Sie sind nicht eingeloggt! Bitte gehen Sie zur Hauptseite zurück und loggen sich ein.");
+                alert.showAndWait();
+            }
+            else {
                 patientDao.insert(patient);
+                System.out.println("Creating patient!");
+                clearFields();
             }
         }
         catch(DataAccessException e){
             e.printStackTrace();
         }
-    }
+	}
 
+
+    /**
+     * this method clears all fields
+     */
     private void clearFields(){
         patientFirstname.clear();
         patientLastname.clear();
@@ -126,8 +129,14 @@ public class PatientController{
         patientStreet.clear();
         patientPostcode.clear();
         patientCellphone.clear();
+        sex_group.getSelectedToggle().setSelected(false);
+        blutgruppe.getSelectedToggle().setSelected(false);
     }
 
+    /**
+     * this method converts the selected toggle into a string
+     * @return String of the selected blutgruppe
+     */
     private String getBlutgruppe() {
         if (blutgruppe.getSelectedToggle() == null) {
             return "nb.";
@@ -136,6 +145,10 @@ public class PatientController{
         }
     }
 
+    /**
+     * this method converts the selected toggle into a sex
+     * @return String of the selected sex
+     */
     private String getGeschlecht(){
         String g = "";
         String sG = ((RadioButton)sex_group.getSelectedToggle()).getText();
@@ -144,7 +157,7 @@ public class PatientController{
                 g = "w";
             case "männlich":
                 g = "m";
-            case "divers":
+            default :
                 g = "d";
         }
         return g;

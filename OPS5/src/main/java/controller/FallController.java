@@ -1,8 +1,6 @@
 package controller;
 
 import ExternalFiles.DateTimePicker;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -19,8 +17,6 @@ import main.Main;
 import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FallController {
 
@@ -39,7 +35,9 @@ public class FallController {
     @FXML
     private DateTimePicker entlassungsdatum;
 
-
+    /**
+     * the comboboxes are filled with the entries of the database
+     */
     @FXML
     public void initialize() {
         setPatient();
@@ -49,6 +47,11 @@ public class FallController {
         System.out.println("Initialize Fall-Tab!");
     }
 
+    /**
+     * but all patients into the combobox to select one of them
+     * each patient is represented by its lastname and first name
+     * can't be null for insert a new case!!
+     */
     private void setPatient() {
         Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
             @Override
@@ -69,9 +72,13 @@ public class FallController {
         patient.setButtonCell(cellFactory.call(null));
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
-        patient.getSelectionModel().selectFirst();
     }
 
+    /**
+     * but all casetypes into the combox to select one of them
+     * each type is represented by its description
+     * can be null
+     */
     private void setFallTyp(){
         Callback<ListView<FallTypSt>, ListCell<FallTypSt>> cellFactory = new Callback<>() {
             @Override
@@ -94,6 +101,11 @@ public class FallController {
         falltyp.getItems().setAll(new FallTypStDao(Main.configuration).findAll());
     }
 
+    /**
+     * but all stations into the combox to select one of them
+     * each station is represented by its description
+     * can be null
+     */
     private void setStation(){
         Callback<ListView<StationSt>, ListCell<StationSt>> cellFactory = new Callback<>() {
             @Override
@@ -116,17 +128,28 @@ public class FallController {
         station.getItems().setAll(new StationStDao(Main.configuration).findAll());
     }
 
+    /**
+     * set the aufnahmedatum to the current date and time
+     */
     private void setAufnahmedatum(){
         //set default value to current time
         aufnahmedatum.setDateTimeValue(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
     }
 
+    /**
+     * inserts the case into the database and clears all Fields after
+     * @param actionEvent is activated if the user pushes the button
+     */
     public void createFall(ActionEvent actionEvent) {
         insertFall();
         clearFields();
         System.out.println("Create Fall");
     }
 
+    /**
+     * in this method each attribute is set with the input of the user in a new case which is inserted in the database
+     * after that
+     */
     private void insertFall(){
         try{
             FallDao fallDao = new FallDao(Main.configuration);
@@ -148,12 +171,14 @@ public class FallController {
 
     }
 
+    /**
+     * this method clears all fields so the user can insert a new case
+     */
     private void clearFields(){
         patient.getSelectionModel().clearSelection();
         falltyp.getSelectionModel().clearSelection();
         station.getSelectionModel().clearSelection();
-        aufnahmedatum.setValue(null);
+        setAufnahmedatum();
         entlassungsdatum.setValue(null);
     }
-
 }

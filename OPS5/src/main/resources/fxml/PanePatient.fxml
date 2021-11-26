@@ -41,7 +41,7 @@
 										<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Geschlecht" GridPane.rowIndex="4" />
 										<HBox prefHeight="38.0" prefWidth="460.0" spacing="40.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <children>
-                  <RadioButton fx:id="weiblich" mnemonicParsing="false" selected="true" text="weiblich">
+                  <RadioButton fx:id="weiblich" mnemonicParsing="false" text="weiblich">
                      <toggleGroup>
                         <ToggleGroup fx:id="sex_group" />
                      </toggleGroup>

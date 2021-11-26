@@ -1,7 +1,12 @@
 package controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import jooq.Tables;
 import jooq.tables.daos.MedPersonalDao;
@@ -11,9 +16,12 @@ import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MainController {
+
+	private Parent root;
 
 	/**
 	 * Singleton instance of MainController, access via getInstance() method. 
@@ -73,12 +81,45 @@ public class MainController {
 	public static void setInstance(MainController instance) {
 		MainController.instance = instance;
 	}
-/**
-	public static String getEmployeeId(){
-		return employeeId.getValue().getPersId();
-	}
-*/
+
+	/**
+	 * show all employees in a combobox by their persid and their name
+	 */
 	private void setEmployeeId(){
+		createEmployeeComboBox(employeeId,0);
+	}
+
+	public static String getUserId(){
+		return getInstance().employeeId.getValue().getPersId();
+	}
+
+	/**
+	 * clears the selection of the employee and opens a new window to log in
+	 * @param actionEvent
+	 */
+	public void log_out(ActionEvent actionEvent) {
+		employeeId.getSelectionModel().clearSelection();
+		System.out.println("New Login Window!");
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader();
+			fxmlLoader.setLocation(getClass().getResource("/fxml/PaneLogIn.fxml"));
+			root = fxmlLoader.load();
+			Stage stage = new Stage();
+			stage.setTitle("Login");
+			stage.setScene(new Scene(root));
+			stage.show();
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * sets all employees into a combobox
+	 * @param employee the combobox
+	 * @param i the index of the selected employee
+	 */
+	public static void createEmployeeComboBox(ComboBox<MedPersonal> employee, int i){
 		Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
 			@Override
 			public ListCell<MedPersonal> call(ListView<MedPersonal> medPersonalListView) {
@@ -95,14 +136,17 @@ public class MainController {
 				};
 			}
 		};
-		employeeId.setButtonCell(cellFactory.call(null));
-		employeeId.setCellFactory(cellFactory);
-		employeeId.getItems().setAll(new MedPersonalDao(Main.configuration).findAll());
-		employeeId.getSelectionModel().selectFirst();
+		employee.setButtonCell(cellFactory.call(null));
+		employee.setCellFactory(cellFactory);
+		employee.getItems().setAll(new MedPersonalDao(Main.configuration).findAll());
+		employee.getSelectionModel().select(i);
 	}
 
-	public static String getUserId(){
-		return getInstance().employeeId.getValue().getPersId();
+	/**
+	 * !!! only used by LogOutController when nobody is logedin!!!
+	 * @param i index of selected employee in log in window
+	 */
+	public static void setEmployee(int i){
+		createEmployeeComboBox(instance.employeeId, i);
 	}
-
 }

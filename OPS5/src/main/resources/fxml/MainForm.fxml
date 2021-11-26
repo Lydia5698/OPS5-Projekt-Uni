@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="566.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="566.0" prefWidth="1030.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
 	<center>
 		<TabPane prefHeight="114.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
 			<tabs>
@@ -33,7 +33,7 @@
    <bottom>
       <Pane prefHeight="59.0" prefWidth="815.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="btnLogout" layoutX="742.0" layoutY="17.0" mnemonicParsing="false" text="Log Out" />
+            <Button fx:id="btnLogout" layoutX="742.0" layoutY="17.0" mnemonicParsing="false" onAction="#log_out" text="Log Out" />
             <ComboBox fx:id="employeeId" layoutX="585.0" layoutY="17.0" prefWidth="150.0" />
             <Label fx:id="systemMessage" layoutX="467.0" layoutY="21.0" text="User Informationen" />
          </children>

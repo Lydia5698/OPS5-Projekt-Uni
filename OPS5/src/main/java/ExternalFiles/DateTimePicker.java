@@ -7,6 +7,7 @@ package ExternalFiles;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextFormatter;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
@@ -40,6 +41,8 @@ public class DateTimePicker extends DatePicker{
         setFormat(DefaultFormat);
         setConverter(new InternalConverter());
         alignColumnCountWithFormat();
+        // the following line is inserted afterwards to fix the problem that the user input is really used
+        getEditor().setTextFormatter(new TextFormatter<>(getConverter()));
 
         // Syncronize changes to the underlying date value back to the dateTimeValue
         valueProperty().addListener((observable, oldValue, newValue) -> {
