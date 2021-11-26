@@ -3,10 +3,13 @@ package controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import jooq.Tables;
 import jooq.tables.daos.MedPersonalDao;
@@ -74,7 +77,6 @@ public class MainController {
 	/**
 	 * Is called once from the Main class to initialize the Instance! Do not use
 	 * this Method unless you know exactly what you are doing!
-	 * 
 	 * @param instance
 	 *            the instance to set
 	 */
@@ -107,6 +109,10 @@ public class MainController {
 			Stage stage = new Stage();
 			stage.setTitle("Login");
 			stage.setScene(new Scene(root));
+			stage.initStyle(StageStyle.UNDECORATED);
+			stage.initModality(Modality.WINDOW_MODAL);
+			stage.initOwner(
+					((Node)actionEvent.getSource()).getScene().getWindow() );
 			stage.show();
 		}catch (IOException e) {
 			e.printStackTrace();
