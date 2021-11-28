@@ -48,7 +48,7 @@ public class FallController {
         setPatient();
         setFallTyp();
         setStation();
-        entlassungsdatum.setValue(null);
+        entlassungsdatum.getEditor().clear();
         System.out.println("Initialize Fall-Tab!");
     }
 
@@ -134,7 +134,8 @@ public class FallController {
     }
 
     /**
-     * inserts the case into the database and close the window afterwards
+     * After pressing the button, the entries are transferred to the attribute values and the
+     * case is inserted into the database with the help of the DAO and the window is closed afterwards
      * @param actionEvent is activated if the user pushes the button
      */
     public void createFall(ActionEvent actionEvent) {
@@ -150,6 +151,7 @@ public class FallController {
             fall.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
             fall.setStorniert(false);
 
+            //checking for values which can not be null (in this case it is only the patient)
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Fehlender Eintrag!");
@@ -158,11 +160,13 @@ public class FallController {
                 alert.showAndWait();
             }
             else {
+                //if the aufnahmedatum is null set it to the current date and time
                 if (fall.getAufnahmedatum() == null) {
                     fall.setAufnahmedatum(LocalDateTime.now());
                 }
                 fallDao.insert(fall);
                 System.out.println("Creating case!");
+                //close the window
                 Stage stage = (Stage) speicherbutton.getScene().getWindow();
                 stage.close();
             }

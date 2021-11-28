@@ -68,7 +68,7 @@ public class PatientController{
 
     /**
      * After pressing the button, the entries from the text fields are transferred to the attribute values and the
-     * patient is inserted into the database with the help of the DAO and all fields are cleared after that
+     * patient is inserted into the database with the help of the DAO and the window is closed afterwards
      * @param event event which is fired when the button is pushed
      */
     @FXML
@@ -80,7 +80,6 @@ public class PatientController{
             patient.setVorname(patientFirstname.getText());
             patient.setGeburtsdatum(patientBirthdate.getValue());
             patient.setBlutgruppe(getBlutgruppe());
-            //if(sex_group.getSelectedToggle() != null){patient.setGeschlecht(getGeschlecht());}
             patient.setGeschlecht(getGeschlecht());
             patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
             if(!patientStreet.getText().equals("")){patient.setStrasse(patientStreet.getText());}
@@ -90,6 +89,7 @@ public class PatientController{
             if(MainController.getUserId() != null){patient.setErsteller(MainController.getUserId());}
             patient.setStorniert(false);
 
+            //checking for values which can not be null (in this case it is the patients first and lastname)
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Fehlende Einträge!");
@@ -103,6 +103,7 @@ public class PatientController{
             else {
                 patientDao.insert(patient);
                 System.out.println("Creating patient!");
+                //close the window
                 Stage stage = (Stage) speichern.getScene().getWindow();
                 stage.close();
             }
