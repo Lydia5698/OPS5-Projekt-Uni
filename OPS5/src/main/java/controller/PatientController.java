@@ -78,6 +78,7 @@ public class PatientController{
             Patient patient = new Patient();
             patient.setName(patientLastname.getText());
             patient.setVorname(patientFirstname.getText());
+            //if the value of the datepicker cant be converted to localdate, it sets automatically null
             patient.setGeburtsdatum(patientBirthdate.getValue());
             patient.setBlutgruppe(getBlutgruppe());
             patient.setGeschlecht(getGeschlecht());

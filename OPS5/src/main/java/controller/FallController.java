@@ -78,8 +78,9 @@ public class FallController {
         patient.setButtonCell(cellFactory.call(null));
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
-        //patient.setEditable(true);
-        //TextFields.bindAutoCompletion(patient.getEditor(),cellFactory);
+
+        patient.setEditable(true);
+        TextFields.bindAutoCompletion(patient.getEditor(),patient.getItems());
     }
 
     /**
@@ -107,8 +108,6 @@ public class FallController {
         falltyp.setButtonCell(cellFactory.call(null));
         falltyp.setCellFactory(cellFactory);
         falltyp.getItems().setAll(new FallTypStDao(Main.configuration).findAll());
-        //falltyp.setEditable(true);
-        //TextFields.bindAutoCompletion(falltyp.getEditor(), falltyp.getItems());
     }
 
     /**
