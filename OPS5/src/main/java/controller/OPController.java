@@ -26,13 +26,17 @@ import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import ExternalFiles.DateTimePicker;
+
 
 public class OPController{	
     
     @FXML
     private ComboBox<Fall> opCaseId;
-	@FXML
-    private DatePicker opDate;
+    @FXML
+    private DateTimePicker opDateBegin;
+    @FXML
+    private DateTimePicker opDateEnd;
     @FXML
     private ComboBox<OpTypSt> opType;
     @FXML
@@ -40,19 +44,35 @@ public class OPController{
     @FXML
     private ComboBox<NarkoseSt> narkose;
     @FXML
+    private DateTimePicker cutTime;
+    @FXML
+    private DateTimePicker sewTime;
+    @FXML
     private Spinner<Integer> towelBefore = new Spinner<Integer>(0,100, 0);
+    @FXML
+    private Spinner<Integer> towelAfter = new Spinner<Integer>(0,100,0);
 
-    //TODO: Nicht ganzen Fall anzeigen
-    public void setCases(Integer patId){
-        FallDao fallDao = new FallDao(Main.configuration);
-        List<Fall> cases = Collections.emptyList();
-        if(patId != null) {
-            cases = fallDao.fetchByPatId(patId);
-        }
-        opCaseId.getItems().setAll(FXCollections.observableArrayList(cases));
-    }
+    public Integer getOpCaseId() { return opCaseId.getSelectionModel().getSelectedItem().getFallId(); }
 
-    //Falls das funktioniert, soll diese Methode die setCases ersetzen.
+    public DateTimePicker getOpDateBegin() {return opDateBegin;}
+
+    public DateTimePicker getOpDateEnd() {return opDateEnd;}
+
+    public OpTypSt getOpType() {return opType.getSelectionModel().getSelectedItem();}
+
+    public OpSaalSt getOpRoom() {return opRoom.getSelectionModel().getSelectedItem();}
+
+    public NarkoseSt getNarkose() {return narkose.getSelectionModel().getSelectedItem();}
+
+    public DateTimePicker getCutTime() {return cutTime;}
+
+    public DateTimePicker getSewTime() {return sewTime;}
+
+    public Integer getTowelBefore() {return (Integer) towelBefore.getValue();}
+
+    public Integer getTowelAfter() {return (Integer) towelAfter.getValue();}
+
+
     public void setCase(Integer patId){
         Callback<ListView<Fall>, ListCell<Fall>> cellFactory = new Callback<>() {
             @Override
@@ -60,21 +80,20 @@ public class OPController{
                 return new ListCell<>() {
                     @Override
                     protected void updateItem(Fall fall, boolean empty) {
-                        //TODO: nur Fälle mit patId
                         super.updateItem(fall, empty);
-                        if (fall == null || empty) {
+                        if (fall == null || empty){
                             setGraphic(null);
                         } else {
-                            //TODO: mit beschreibenden Attributen
-                            setText(fall.getFallId());
+                            setText("FallID: " + fall.getFallId().toString() + " , Aufnahme: " + fall.getAufnahmedatum());
                         }
                     }
                 };
             }
         };
-        opType.setButtonCell(cellFactory.call(null));
-        opType.setCellFactory(cellFactory);
-        opType.getItems().setAll(new FallDao(Main.configuration).findAll());
+        opCaseId.setButtonCell(cellFactory.call(null));
+        opCaseId.setCellFactory(cellFactory);
+        opCaseId.getItems().setAll(new FallDao(Main.configuration).fetchByPatId(patId));
+        opCaseId.valueProperty().set(null);
     }
 
     private void setFallTyp() {
@@ -145,17 +164,7 @@ public class OPController{
 
     @FXML
 	public void initialize() {
-        /**
-        Result<Record1<Integer>> opcase = Main.dslContext.select(Tables.FALL.FALL_ID.as("op_case"))
-                .from(Tables.FALL)
-                .join(Tables.PATIENT)
-                .on(Tables.FALL.PAT_ID.eq(Tables.PATIENT.PAT_ID))
-                .where(Tables.PATIENT.PAT_ID.eq(2))
-                .fetch();
 
-        List<Integer> opcase_list = opcase.map(record -> record.getValue("op_case").);
-        opType.getItems().setAll(opcase_list);
-*/
         setFallTyp();
         setOpSaal();
         setNarkose();

@@ -1,6 +1,9 @@
 package controller;
+
 import java.io.IOException;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,11 +12,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
 import javafx.stage.Stage;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import jooq.Tables;
+import jooq.tables.pojos.Operation;
+import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Patient;
 import jooq.tables.daos.PatientDao;
 import jooq.tables.records.PatientRecord;
@@ -59,7 +66,7 @@ public class AdmissionController {
 	public void initialize() {
 		selectPatient.setOnAction(new EventHandler<ActionEvent>(){
 			public void handle(ActionEvent e){
-				opController.setCases(selectPatient.getValue().getPatId());
+				opController.setCase(selectPatient.getValue().getPatId());
 			}
 		});
 		setPatient();
@@ -69,8 +76,49 @@ public class AdmissionController {
 	
     @FXML
 	public void create() {
-    	System.out.println("Creating Case/OP!");
-    }
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Error");
+		alert.setHeaderText("Fehlende Einträge!");
+		if (opController.getOpCaseId() == null){
+			alert.setContentText("Es muss ein Fall ausgewählt werden!");
+			alert.showAndWait();
+		}
+		else if(opController.getOpDateBegin().getDateTimeValue() == null){
+			alert.setContentText("Es muss ein gültiger Beginn eingetragen werden!");
+			alert.showAndWait();
+		}
+		else if(opController.getOpDateEnd().getDateTimeValue() == null){
+			alert.setContentText("Es muss ein gültiges Ende eingetragen werden!");
+			alert.showAndWait();
+		}
+		else {
+			//TODO: Bauchtücher Werte werden noch nicht richtig in die Datenbank eingefügt.
+			Operation operation = new Operation(
+					null, //opId -> automatisch mit AutoIncrement gesetzt
+					opController.getOpDateBegin().getDateTimeValue(), //beginn
+					opController.getOpDateEnd().getDateTimeValue(), //ende
+					opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
+					opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
+					opController.getCutTime().getDateTimeValue(), //schnittzeit
+					opController.getSewTime().getDateTimeValue(), //nahtzeit
+					new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
+					null, //bearbeiterZeit
+					false, //storniert
+					opController.getOpCaseId(), //fallId
+					opController.getOpRoom().getCode(), //opSaal
+					opController.getNarkose().getNarkose(), //narkoseSt
+					opController.getOpType().getOpTyp(), //opTypSt
+					MainController.getUserId(), //ersteller
+					null //bearbeiter
+			);
+			OperationDao operationDao = new OperationDao(Main.configuration);
+			operationDao.insert(operation);
+			Alert confirm = new Alert(AlertType.INFORMATION);
+			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+			confirm.showAndWait();
+		}
+		System.out.println("Creating OP!");
+	}
 
     @FXML
 	public void createRole(){

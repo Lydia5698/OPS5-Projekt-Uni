@@ -17,6 +17,8 @@ import org.jooq.Record1;
 import org.jooq.Result;
 
 import java.util.List;
+import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 import static jooq.Tables.*;
 
@@ -26,6 +28,8 @@ import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.pojos.MedPersonal;
 import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Operation;
+import jooq.tables.daos.RolleDao;
+import jooq.tables.pojos.Rolle;
 import jooq.Tables;
 
 
@@ -132,28 +136,36 @@ public class RoleController{
             alert.setContentText("Es muss eine Rolle ausgewählt werden!");
             alert.showAndWait();
         }
-        else{ //es fehlt noch der Ersteller!
-            //List<Record> records = Main.dslContext.insertInto(Tables.ROLLE, Tables.ROLLE.OP_ID, Tables.ROLLE.ROLLE_ST, Tables.ROLLE.MED_PERSONAL, Tables.ROLLE.STORNIERT)
-            // .values(op, role, mitarbeiter, false)
-            //System.out.println("Saved role!");
+        else{
+            Rolle insertRole = new Rolle(
+                    op.getSelectionModel().getSelectedItem().getOpId(), //opId
+                    null, //bearbeiter
+                    role.getSelectionModel().getSelectedItem().getRolle(), //rolleSt
+                    null, //bearbeiterZeit
+                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
+                    MainController.getUserId(), //ersteller
+                    mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonalPersId
+                    false //storniert
+            );
+            RolleDao roleDao = new RolleDao(Main.configuration);
+            roleDao.insert(insertRole);
+            Alert confirm = new Alert(AlertType.INFORMATION);
+            confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+            confirm.showAndWait();
         }
-//	    List<Record> records = Main.dslContext.insertInto(PATIENT, PATIENT.NAME, PATIENT.VORNAME, PATIENT.GEBURTSDATUM, PATIENT.BLUTGRUPPE,
-        //              PATIENT.GESCHLECHT, PATIENT.GEBURTSORT, PATIENT.STRASSE, PATIENT.POSTLEITZAHL, PATIENT.TELEFONNUMMER).values(
-        //                    getPatientLastname().getText(), getPatientFirstname().getText(), getPatientBirthdate().getValue(),
-        //          getBlutgruppe().getSelectedToggle(), getSexGroup().getSelectedToggle(), getPatientBirthplace().getText(),
-        //        getPatientStreet().getText(), getPatientPostcode().getText(), getPatientCellphone().getText());
-        //System.out.println(getSexGroup().getSelectedToggle());
         System.out.println("Creating role!");
     }
 
 
-    public ComboBox getMitarbeiter() {
+    public ComboBox<MedPersonal> getMitarbeiter() {
         return mitarbeiter;
     }
 
-    public ComboBox getRole() {
+    public ComboBox<RolleSt> getRole() {
         return role;
     }
+
+    //public ComboBox<Operation> getOp() {return op;}
 
     }
 
