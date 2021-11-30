@@ -57,7 +57,7 @@ public class OverviewController {
     private TableColumn<Fall, LocalDateTime> bearbeiterzeitCol;
 
     @FXML
-    private TableColumn<Fall, Byte> storniertCol;
+    private TableColumn<Fall, Boolean> storniertCol;
 
     @FXML
     private TableColumn<Fall, Integer> patientenIDCol;
@@ -105,7 +105,7 @@ public class OverviewController {
     private TableColumn<Operation, LocalDateTime> bearbeiterzeitOPCol;
 
     @FXML
-    private TableColumn<Operation, Byte> storniertOPCol;
+    private TableColumn<Operation, Boolean> storniertOPCol;
 
     @FXML
     private TableColumn<Operation, Integer> fallIdOPCol;
@@ -297,7 +297,7 @@ public class OverviewController {
 
     @FXML
     void storniereOP(ActionEvent event) {
-        opListOperation.getSelectionModel().getSelectedItem().setStorniert((byte) 1); // TODO: 25.11.21 stornierte Ops nicht anzeigen 
+        opListOperation.getSelectionModel().getSelectedItem().setStorniert(true); // TODO: 25.11.21 stornierte Ops nicht anzeigen
         Operation operation = opListOperation.getSelectionModel().getSelectedItem();
         OperationDao operationDao = new OperationDao(Main.configuration);
         operationDao.update(operation);
@@ -307,7 +307,7 @@ public class OverviewController {
     void showStornierteOp(MouseEvent event) {
         if(stornierteOperation.isSelected()) {
             OperationDao operationDao = new OperationDao(Main.configuration);
-            List<Operation> operation = operationDao.fetchByStorniert((byte) 1);
+            List<Operation> operation = operationDao.fetchByStorniert(true);
             opListOperation.setItems(FXCollections.observableArrayList(operation));
         }
         else{

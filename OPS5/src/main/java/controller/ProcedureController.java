@@ -29,7 +29,7 @@ public class ProcedureController {
 	private TableColumn<Prozedur, String> anmerkungCol;
 
 	@FXML
-	private TableColumn<Prozedur, Byte> storniertCol;
+	private TableColumn<Prozedur, Boolean> storniertCol;
 
 	@FXML
 	private TableColumn<Prozedur, LocalDateTime> erstelltzeitCol;
@@ -120,7 +120,7 @@ public class ProcedureController {
 
 	private void insertNewProcedure() {
     	Integer prozID = null; // durch null automatisch generiert
-		Byte storniert = 0;
+		boolean storniert = false;
     	Integer opID = procedureOpID.getValue().getOpId(); //abfangen wenn nichts ausgewählt
     	String opsCodeValue = procedureOpsCode.getValue().getOpsCode();
     	String anmerkungText = procedureAnmerkung.getText();

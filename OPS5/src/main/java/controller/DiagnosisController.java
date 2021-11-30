@@ -44,7 +44,7 @@ public class DiagnosisController {
 	private TableColumn<Diagnose, LocalDateTime> bearbeiterzeitCol;
 
 	@FXML
-	private TableColumn<Diagnose, Byte> storniertCol;
+	private TableColumn<Diagnose, Boolean> storniertCol;
 
 	@FXML
 	private TableColumn<Diagnose, Integer> opIDCol;
@@ -133,7 +133,7 @@ public class DiagnosisController {
 
 	private void insertNewDiagnose() {
 		Integer diagID = null; // durch null wird sie automatisch generiert
-		Byte storniert = 0;
+		boolean storniert = false;
 		Integer opID = null;
 		if(!diagnosisOpId.getSelectionModel().isEmpty()){
 			opID = diagnosisOpId.getValue().getOpId();
