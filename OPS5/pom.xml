@@ -60,6 +60,10 @@
 				<version>0.0.8</version>
 				<configuration>
 					<mainClass>main.Main</mainClass>
+					<options>
+						<option>--add-exports</option>
+						<option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
+					</options>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -193,6 +197,11 @@
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq-codegen</artifactId>
 			<version>${jooq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.controlsfx</groupId>
+			<artifactId>controlsfx</artifactId>
+			<version>11.1.0</version>
 		</dependency>
 	</dependencies>
 </project>

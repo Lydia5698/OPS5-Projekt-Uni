@@ -15,6 +15,7 @@ import jooq.tables.pojos.FallTypSt;
 import jooq.tables.pojos.Patient;
 import jooq.tables.pojos.StationSt;
 import main.Main;
+import org.controlsfx.control.textfield.TextFields;
 import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
@@ -77,6 +78,8 @@ public class FallController {
         patient.setButtonCell(cellFactory.call(null));
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
+        //patient.setEditable(true);
+        //TextFields.bindAutoCompletion(patient.getEditor(),cellFactory);
     }
 
     /**
@@ -104,6 +107,8 @@ public class FallController {
         falltyp.setButtonCell(cellFactory.call(null));
         falltyp.setCellFactory(cellFactory);
         falltyp.getItems().setAll(new FallTypStDao(Main.configuration).findAll());
+        //falltyp.setEditable(true);
+        //TextFields.bindAutoCompletion(falltyp.getEditor(), falltyp.getItems());
     }
 
     /**
@@ -131,6 +136,12 @@ public class FallController {
         station.setButtonCell(cellFactory.call(null));
         station.setCellFactory(cellFactory);
         station.getItems().setAll(new StationStDao(Main.configuration).findAll());
+//
+//        station.setButtonCell(cellFactory.call(null));
+//        station.setCellFactory(cellFactory);
+//        station.setEditable(true);
+//        station.setVisibleRowCount(5);
+//        TextFields.bindAutoCompletion(station.getEditor(), station.getItems());
     }
 
     /**
