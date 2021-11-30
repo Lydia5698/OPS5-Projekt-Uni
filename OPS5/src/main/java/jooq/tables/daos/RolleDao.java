@@ -149,14 +149,14 @@ public class RolleDao extends DAOImpl<RolleRecord, jooq.tables.pojos.Rolle, Reco
      * Fetch records that have <code>storniert BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<jooq.tables.pojos.Rolle> fetchRangeOfStorniert(Byte lowerInclusive, Byte upperInclusive) {
+    public List<jooq.tables.pojos.Rolle> fetchRangeOfStorniert(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(Rolle.ROLLE.STORNIERT, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storniert IN (values)</code>
      */
-    public List<jooq.tables.pojos.Rolle> fetchByStorniert(Byte... values) {
+    public List<jooq.tables.pojos.Rolle> fetchByStorniert(Boolean... values) {
         return fetch(Rolle.ROLLE.STORNIERT, values);
     }
 }

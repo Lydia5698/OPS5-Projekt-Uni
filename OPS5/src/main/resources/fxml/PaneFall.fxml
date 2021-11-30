@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Text?>
+<?import ExternalFiles.DateTimePicker?>
+
+<AnchorPane minHeight="180.0" minWidth="200.0" prefHeight="513.0" prefWidth="695.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FallController">
+<children>
+    <Button fx:id="speicherbutton" layoutX="54.0" layoutY="438.0" mnemonicParsing="false" onAction="#createFall" prefHeight="25.0" prefWidth="106.0" text="Speichern" />
+    <GridPane layoutX="43.0" layoutY="85.0" prefHeight="332.0" prefWidth="689.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="217.0" minWidth="10.0" prefWidth="217.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="365.0" minWidth="10.0" prefWidth="364.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+        <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Patient" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Falltyp" GridPane.rowIndex="1" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Station" GridPane.rowIndex="2" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Entlassungsdatum" GridPane.rowIndex="4" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Aufnahmedatum" GridPane.rowIndex="3" />
+            <DateTimePicker id="aufnahemdatum" fx:id="aufnahmedatum" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <DateTimePicker id="entlassungsdatum" fx:id="entlassungsdatum" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <ComboBox fx:id="patient" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" />
+            <ComboBox fx:id="falltyp" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ComboBox fx:id="station" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        </children>
+    </GridPane>
+      <Text layoutX="210.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Im Notfall kann hier ein neuer Fall angelegt werden" />
+</children>
+</AnchorPane>

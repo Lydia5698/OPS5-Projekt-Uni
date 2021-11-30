@@ -125,14 +125,14 @@ public class DiagnoseDao extends DAOImpl<DiagnoseRecord, jooq.tables.pojos.Diagn
      * Fetch records that have <code>storniert BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<jooq.tables.pojos.Diagnose> fetchRangeOfStorniert(Byte lowerInclusive, Byte upperInclusive) {
+    public List<jooq.tables.pojos.Diagnose> fetchRangeOfStorniert(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(Diagnose.DIAGNOSE.STORNIERT, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storniert IN (values)</code>
      */
-    public List<jooq.tables.pojos.Diagnose> fetchByStorniert(Byte... values) {
+    public List<jooq.tables.pojos.Diagnose> fetchByStorniert(Boolean... values) {
         return fetch(Diagnose.DIAGNOSE.STORNIERT, values);
     }
 

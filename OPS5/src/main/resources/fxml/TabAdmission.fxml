@@ -16,8 +16,8 @@
                   <ComboBox fx:id="selectPatient" layoutX="374.0" layoutY="29.0" prefWidth="150.0" />
                </children>
             </AnchorPane>
-            <Button layoutX="554.0" layoutY="27.0" mnemonicParsing="false" onAction="#createAndShowNewPatientWindow" text="Patient anlegen" />
-            <Button layoutX="708.0" layoutY="27.0" mnemonicParsing="false" text="OPS: Notfall anlegen" />
+            <Button layoutX="554.0" layoutY="27.0" mnemonicParsing="false" onAction="#createAndShowNewPatientWindow" text=" Notfall: Patient anlegen" />
+            <Button layoutX="708.0" layoutY="27.0" mnemonicParsing="false" onAction="#createAndShowNewFallWindow" text="Notfall: Fall anlegen" />
          </children>
       </Pane>
       <Pane layoutY="60.0" prefHeight="243.0" prefWidth="876.0">
