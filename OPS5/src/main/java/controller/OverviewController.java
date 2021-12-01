@@ -165,7 +165,7 @@ public class OverviewController {
     private TableColumn<Patient, LocalDateTime> paErstellzeit;
 
     @FXML
-    private TableColumn<Patient, Byte> paStorniert;
+    private TableColumn<Patient, Boolean> paStorniert;
 
     @FXML
     private TableColumn<Patient, String> paGeburtsort;
@@ -206,7 +206,7 @@ public class OverviewController {
         });
         // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen
 
-        opListCase.setItems(fallView());
+        //opListCase.setItems(fallView());
         // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen join?
         // TODO: 26.11.21 stornierte Ops rausfiltern
         // TODO: 26.11.21 diagnose update
