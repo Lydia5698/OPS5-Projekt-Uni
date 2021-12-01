@@ -12,10 +12,22 @@
 		<CheckBox fx:id="opListFilterPostOp" layoutX="20.0" layoutY="20.0" mnemonicParsing="false" text="Zeige entlassene Patienten (KIS)" />
 		<TableView fx:id="opListPatients" layoutX="20.0" layoutY="45.0" prefHeight="409.0" prefWidth="363.0">
 			<columns>
-            	<TableColumn prefWidth="101.0" text="Patient-ID" />
-				<TableColumn prefWidth="69.0" text="Vorname" />
-				<TableColumn prefWidth="98.0" text="Nachname" />
-            	<TableColumn prefWidth="96.0" text="Geburtsdatum" />
+            	<TableColumn fx:id="paId" prefWidth="101.0" text="Patient-ID" />
+				<TableColumn fx:id="paFirstname" prefWidth="69.0" text="Vorname" />
+				<TableColumn fx:id="paLastname" prefWidth="98.0" text="Nachname" />
+            	<TableColumn fx:id="paBirthdate" prefWidth="96.0" text="Geburtsdatum" />
+                <TableColumn fx:id="paBlutgruppe" prefWidth="96.0" text="Blutgruppe" />
+                <TableColumn fx:id="paGeschlecht" prefWidth="96.0" text="Geschlecht" />
+                <TableColumn fx:id="paBearbeiter" prefWidth="96.0" text="Bearbeiter" />
+                <TableColumn fx:id="paBearbeiterzeit" prefWidth="96.0" text="Bearbeiterzeit" />
+                <TableColumn fx:id="paErsteller" prefWidth="96.0" text="Ersteller" />
+                <TableColumn fx:id="paErstellzeit" prefWidth="96.0" text="Erstellzeit" />
+                <TableColumn fx:id="paStorniert" prefWidth="96.0" text="Storniert" />
+                <TableColumn fx:id="paGeburtsort" prefWidth="96.0" text="Geburtsort" />
+                <TableColumn fx:id="paStrasse" prefWidth="96.0" text="Strasse" />
+                <TableColumn fx:id="paPostleitzahl" prefWidth="96.0" text="Postleitzahl" />
+                <TableColumn fx:id="paTelefonnummer" prefWidth="96.0" text="Telefonnummer" />
+
 			</columns>
 		</TableView>
       <TableView fx:id="opListCase" layoutX="400.0" layoutY="45.0" prefHeight="353.0" prefWidth="331.0">
