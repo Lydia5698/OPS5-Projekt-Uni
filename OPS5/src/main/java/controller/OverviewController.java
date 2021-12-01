@@ -2,14 +2,12 @@ package controller;
 import java.io.IOException;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -21,11 +19,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
+
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+
+import javafx.util.Callback;
+import jooq.Keys;
+import jooq.tables.daos.*;
+import jooq.tables.pojos.*;
+import main.Main;
+import org.jooq.Result;
+
 
 
 import java.util.List;
@@ -35,9 +42,11 @@ import java.util.List;
 public class OverviewController {
 	
     @FXML
-    private CheckBox opListFilterPostOp; 
+    private CheckBox opListFilterPostOp;
+
     @FXML
     private TableView<Patient> opListPatients;
+
     @FXML
     private TableView<Fall> opListCase;
 
@@ -57,7 +66,7 @@ public class OverviewController {
     private TableColumn<Fall, LocalDateTime> bearbeiterzeitCol;
 
     @FXML
-    private TableColumn<Fall, Byte> storniertCol;
+    private TableColumn<Fall, Boolean> storniertCol;
 
     @FXML
     private TableColumn<Fall, Integer> patientenIDCol;
@@ -73,8 +82,10 @@ public class OverviewController {
 
     @FXML
     private TableColumn<Fall, Integer> fallTypCol;
+
     @FXML
     private TableView<Operation> opListOperation;
+
     @FXML
     private TableColumn<Operation, Integer> opIDCol;
 
@@ -103,7 +114,7 @@ public class OverviewController {
     private TableColumn<Operation, LocalDateTime> bearbeiterzeitOPCol;
 
     @FXML
-    private TableColumn<Operation, Byte> storniertOPCol;
+    private TableColumn<Operation, Boolean> storniertOPCol;
 
     @FXML
     private TableColumn<Operation, Integer> fallIdOPCol;
@@ -169,22 +180,17 @@ public class OverviewController {
     private TableColumn<Patient, String> paTelefonnummer;
 
 
-
-
-
-
-
-
-
     @FXML
     private Button btnStornieren;
 
     @FXML
     private Button btnDiag;
+
     @FXML
     private Button btnProc;
 
-
+    @FXML
+    private CheckBox stornierteOperation;
 
     @FXML
 	public void initialize() {
@@ -199,6 +205,11 @@ public class OverviewController {
             }
         });
         // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen
+
+        opListCase.setItems(fallView());
+        // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen join?
+        // TODO: 26.11.21 stornierte Ops rausfiltern
+        // TODO: 26.11.21 diagnose update
         opListCase.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
                 int CaseId = onEditCase();
@@ -213,6 +224,7 @@ public class OverviewController {
                 //
             }
         });
+
     }
 
     private void initializeColumns() {
@@ -304,10 +316,6 @@ public class OverviewController {
         return id;
     }
 
-
-
-
-    
     @FXML
    	public void createAndShowDiagnosisWindow() {
        	System.out.println("New Patient Window!");
@@ -376,6 +384,7 @@ public class OverviewController {
         FallDao fallDao = new FallDao(Main.configuration);
         List<Fall> fall = fallDao.fetchByPatId(patientId);
 
+        //Keys.FK_FALL_MED_PERSONAL1.
         return FXCollections.observableArrayList(fall);
     }
 
@@ -391,9 +400,53 @@ public class OverviewController {
         OperationDao operationDao = new OperationDao(Main.configuration);
         List<Operation> operation = operationDao.fetchByFallId(id);
         return FXCollections.observableArrayList(operation);
+
     }
 
- /*   private void insertNewOperation(int opID) {
+    @FXML
+    void storniereOP(ActionEvent event) {
+        opListOperation.getSelectionModel().getSelectedItem().setStorniert(true); // TODO: 25.11.21 stornierte Ops nicht anzeigen
+        Operation operation = opListOperation.getSelectionModel().getSelectedItem();
+        OperationDao operationDao = new OperationDao(Main.configuration);
+        operationDao.update(operation);
+    }
+
+    @FXML
+    void showStornierteOp(MouseEvent event) {
+        if(stornierteOperation.isSelected()) {
+            OperationDao operationDao = new OperationDao(Main.configuration);
+            List<Operation> operation = operationDao.fetchByStorniert(true);
+            opListOperation.setItems(FXCollections.observableArrayList(operation));
+        }
+        else{
+            int CaseId = onEditCase();
+            opListOperation.setItems(operationView(CaseId));
+        }
+    }
+
+   /* private void setCaseFallTyp(){
+        Callback<ListView<FallTypSt>, ListCell<jooq.tables.FallTypSt>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<OpsCodeSt> call(ListView<OpsCodeSt> medPersonalListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(OpsCodeSt opsCodeSt, boolean empty) {
+                        super.updateItem(opsCodeSt, empty);
+                        if (opsCodeSt == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(opsCodeSt.getOpsCode() + " " + opsCodeSt.getBeschreibung());
+                        }
+                    }
+                };
+            }
+        };
+        procedureOpsCode.setButtonCell(cellFactory.call(null));
+        procedureOpsCode.setCellFactory(cellFactory);
+        procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
+    }
+*/
+    /*private void insertNewOperation(int opID) {
         LocalDateTime beginn;
         LocalDateTime ende;
         Integer       bauchtuecherPrae;

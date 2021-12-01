@@ -27,7 +27,7 @@ public class Patient implements Serializable {
     private LocalDateTime bearbeiterZeit;
     private String        ersteller;
     private LocalDateTime erstellZeit;
-    private Byte          storniert;
+    private Boolean       storniert;
     private String        geburtsort;
     private String        strasse;
     private String        postleitzahl;
@@ -64,7 +64,7 @@ public class Patient implements Serializable {
         LocalDateTime bearbeiterZeit,
         String        ersteller,
         LocalDateTime erstellZeit,
-        Byte          storniert,
+        Boolean       storniert,
         String        geburtsort,
         String        strasse,
         String        postleitzahl,
@@ -230,14 +230,14 @@ public class Patient implements Serializable {
     /**
      * Getter for <code>pmiw21g05_v01.patient.storniert</code>.
      */
-    public Byte getStorniert() {
+    public Boolean getStorniert() {
         return this.storniert;
     }
 
     /**
      * Setter for <code>pmiw21g05_v01.patient.storniert</code>.
      */
-    public void setStorniert(Byte storniert) {
+    public void setStorniert(Boolean storniert) {
         this.storniert = storniert;
     }
 

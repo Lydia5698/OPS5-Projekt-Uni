@@ -6,12 +6,16 @@ package jooq.tables.daos;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import jooq.Tables;
 import jooq.tables.Fall;
 import jooq.tables.records.FallRecord;
 
-import org.jooq.Configuration;
+import main.Main;
+import org.jooq.*;
 import org.jooq.impl.DAOImpl;
+import org.jooq.impl.DSL;
 
 
 /**
@@ -125,14 +129,14 @@ public class FallDao extends DAOImpl<FallRecord, jooq.tables.pojos.Fall, Integer
      * Fetch records that have <code>storniert BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<jooq.tables.pojos.Fall> fetchRangeOfStorniert(Byte lowerInclusive, Byte upperInclusive) {
+    public List<jooq.tables.pojos.Fall> fetchRangeOfStorniert(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(Fall.FALL.STORNIERT, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storniert IN (values)</code>
      */
-    public List<jooq.tables.pojos.Fall> fetchByStorniert(Byte... values) {
+    public List<jooq.tables.pojos.Fall> fetchByStorniert(Boolean... values) {
         return fetch(Fall.FALL.STORNIERT, values);
     }
 
@@ -210,4 +214,17 @@ public class FallDao extends DAOImpl<FallRecord, jooq.tables.pojos.Fall, Integer
     public List<jooq.tables.pojos.Fall> fetchByFallTyp(Integer... values) {
         return fetch(Fall.FALL.FALL_TYP, values);
     }
+
+    /*
+    public List<jooq.tables.pojos.Fall> fetchWithForeinKeys(){
+
+        Result<String> result = Main.dslContext.select()
+                .from(Tables.FALL)
+                .join(Tables.FALL).on(Tables.MED_PERSONAL.PERS_ID.eq(Tables.FALL.BEARBEITER))
+                .join(Tables.FALL).on(Tables.FALL_TYP_ST.FALL_TYP_ID.eq(Tables.FALL.FALL_TYP))
+                .fetch();
+        List<String> medpersonal_list = result.map(record -> record.getValue("id_name_medPersonal").toString());
+
+    }*/
+
 }

@@ -80,14 +80,14 @@ public class ProzedurDao extends DAOImpl<ProzedurRecord, jooq.tables.pojos.Proze
      * Fetch records that have <code>storniert BETWEEN lowerInclusive AND
      * upperInclusive</code>
      */
-    public List<jooq.tables.pojos.Prozedur> fetchRangeOfStorniert(Byte lowerInclusive, Byte upperInclusive) {
+    public List<jooq.tables.pojos.Prozedur> fetchRangeOfStorniert(Boolean lowerInclusive, Boolean upperInclusive) {
         return fetchRange(Prozedur.PROZEDUR.STORNIERT, lowerInclusive, upperInclusive);
     }
 
     /**
      * Fetch records that have <code>storniert IN (values)</code>
      */
-    public List<jooq.tables.pojos.Prozedur> fetchByStorniert(Byte... values) {
+    public List<jooq.tables.pojos.Prozedur> fetchByStorniert(Boolean... values) {
         return fetch(Prozedur.PROZEDUR.STORNIERT, values);
     }
 

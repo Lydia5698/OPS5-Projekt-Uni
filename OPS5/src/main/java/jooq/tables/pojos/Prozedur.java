@@ -18,7 +18,7 @@ public class Prozedur implements Serializable {
 
     private Integer       prozId;
     private String        anmerkung;
-    private Byte          storniert;
+    private Boolean       storniert;
     private LocalDateTime erstellZeit;
     private LocalDateTime bearbeiterZeit;
     private Integer       opId;
@@ -43,7 +43,7 @@ public class Prozedur implements Serializable {
     public Prozedur(
         Integer       prozId,
         String        anmerkung,
-        Byte          storniert,
+        Boolean       storniert,
         LocalDateTime erstellZeit,
         LocalDateTime bearbeiterZeit,
         Integer       opId,
@@ -93,14 +93,14 @@ public class Prozedur implements Serializable {
     /**
      * Getter for <code>pmiw21g05_v01.prozedur.storniert</code>.
      */
-    public Byte getStorniert() {
+    public Boolean getStorniert() {
         return this.storniert;
     }
 
     /**
      * Setter for <code>pmiw21g05_v01.prozedur.storniert</code>.
      */
-    public void setStorniert(Byte storniert) {
+    public void setStorniert(Boolean storniert) {
         this.storniert = storniert;
     }
 

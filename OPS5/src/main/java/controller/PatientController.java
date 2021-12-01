@@ -2,19 +2,15 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 
-import jooq.tables.Patient;
+import javafx.stage.Stage;
 import jooq.tables.daos.PatientDao;
+import jooq.tables.pojos.Patient;
 import main.Main;
-import org.jooq.*;
+import org.jooq.exception.DataAccessException;
 
-import java.util.List;
-
-import static jooq.Tables.*;
+import java.sql.Timestamp;
 
 
 public class PatientController{
@@ -34,13 +30,13 @@ public class PatientController{
     @FXML
     private TextField patientCellphone;
     @FXML
-    private ToggleGroup sexGroup;
+    private ToggleGroup sex_group;
     @FXML
-    private RadioButton patientFemale;
+    private RadioButton weiblich;
     @FXML
-    private RadioButton patientMale;
+    private RadioButton männlich;
     @FXML
-    private RadioButton patientDiv;
+    private RadioButton divers;
     @FXML
     private ToggleGroup blutgruppe;
     @FXML
@@ -59,6 +55,8 @@ public class PatientController{
     private RadioButton abminus;
     @FXML
     private RadioButton abplus;
+    @FXML
+    private Button speichern;
 
 
 
@@ -67,65 +65,78 @@ public class PatientController{
 	public void initialize() {
     	System.out.println("Initialize Patient-Tab!");
 	}
-	
+
+    /**
+     * After pressing the button, the entries from the text fields are transferred to the attribute values and the
+     * patient is inserted into the database with the help of the DAO and the window is closed afterwards
+     * @param event event which is fired when the button is pushed
+     */
     @FXML
     void createPatient(ActionEvent event) {
-//	    List<Record> records = Main.dslContext.insertInto(PATIENT, PATIENT.NAME, PATIENT.VORNAME, PATIENT.GEBURTSDATUM, PATIENT.BLUTGRUPPE,
-  //              PATIENT.GESCHLECHT, PATIENT.GEBURTSORT, PATIENT.STRASSE, PATIENT.POSTLEITZAHL, PATIENT.TELEFONNUMMER).values(
-    //                    getPatientLastname().getText(), getPatientFirstname().getText(), getPatientBirthdate().getValue(),
-      //          getBlutgruppe().getSelectedToggle(), getSexGroup().getSelectedToggle(), getPatientBirthplace().getText(),
-        //        getPatientStreet().getText(), getPatientPostcode().getText(), getPatientCellphone().getText());
-	    //System.out.println(getSexGroup().getSelectedToggle());
-	    System.out.println("Creating patient!");
+        try {
+            PatientDao patientDao = new PatientDao(Main.configuration);
+            Patient patient = new Patient();
+            patient.setName(patientLastname.getText());
+            patient.setVorname(patientFirstname.getText());
+            //if the value of the datepicker cant be converted to localdate, it sets automatically null
+            patient.setGeburtsdatum(patientBirthdate.getValue());
+            patient.setBlutgruppe(getBlutgruppe());
+            patient.setGeschlecht(getGeschlecht());
+            patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+            if(!patientStreet.getText().equals("")){patient.setStrasse(patientStreet.getText());}
+            if(!patientPostcode.getText().equals("")){patient.setPostleitzahl(patientPostcode.getText());}
+            if(!patientBirthplace.getText().equals("")){patient.setGeburtsort(patientBirthplace.getText());}
+            if(!patientCellphone.getText().equals("")){patient.setTelefonnummer(patientCellphone.getText());}
+            if(MainController.getUserId() != null){patient.setErsteller(MainController.getUserId());}
+            patient.setStorniert(false);
+
+            //checking for values which can not be null (in this case it is the patients first and lastname)
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Fehlende Einträge!");
+            if (patient.getVorname().equals("")) {
+                alert.setContentText("Der Vorname des Patienten muss eingefügt werden!");
+                alert.showAndWait();
+            } else if (patient.getName().equals("")) {
+                alert.setContentText("Der Nachname des Patienten muss eingefügt werden!");
+                alert.showAndWait();
+            }
+            else {
+                patientDao.insert(patient);
+                System.out.println("Creating patient!");
+                //close the window
+                Stage stage = (Stage) speichern.getScene().getWindow();
+                stage.close();
+            }
+        }
+        catch(DataAccessException e){
+            e.printStackTrace();
+        }
 	}
 
 
-    public TextField getPatientFirstname() {
-        return patientFirstname;
+    /**
+     * this method converts the selected toggle into a string
+     * @return String of the selected blutgruppe
+     */
+    private String getBlutgruppe() {
+        if (blutgruppe.getSelectedToggle() == null) {
+            return "nb.";
+        } else {
+            return ((RadioButton) blutgruppe.getSelectedToggle()).getText();
+        }
     }
 
-    public TextField getPatientLastname() {
-        return patientLastname;
-    }
-
-    public DatePicker getPatientBirthdate() {
-        return patientBirthdate;
-    }
-
-    public TextField getPatientBirthplace() {
-        return patientBirthplace;
-    }
-
-    public TextField getPatientStreet() {
-        return patientStreet;
-    }
-
-    public TextField getPatientPostcode() {
-        return patientPostcode;
-    }
-
-    public TextField getPatientCellphone() {
-        return patientCellphone;
-    }
-
-    public ToggleGroup getSexGroup() {
-        return sexGroup;
-    }
-
-    public RadioButton getPatientFemale() {
-        return patientFemale;
-    }
-
-    public RadioButton getPatientMale() {
-        return patientMale;
-    }
-
-    public RadioButton getPatientDiv() {
-        return patientDiv;
-    }
-
-    public ToggleGroup getBlutgruppe() {
-        return blutgruppe;
+    /**
+     * this method converts the selected toggle into a sex
+     * @return String of the selected sex
+     */
+    private String getGeschlecht(){
+        if(sex_group.getSelectedToggle() == null){return null;}
+        String sG = ((RadioButton)sex_group.getSelectedToggle()).getText();
+        if(sG.equals("weiblich")){return "w";}
+        else if(sG.equals("männlich")){return "m";}
+        else{return "d";}
     }
 }
 

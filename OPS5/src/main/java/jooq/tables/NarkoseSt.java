@@ -102,6 +102,11 @@ public class NarkoseSt extends TableImpl<NarkoseStRecord> {
     }
 
     @Override
+    public UniqueKey<NarkoseStRecord> getPrimaryKey() {
+        return Keys.KEY_NARKOSE_ST_PRIMARY;
+    }
+
+    @Override
     public List<UniqueKey<NarkoseStRecord>> getUniqueKeys() {
         return Arrays.asList(Keys.KEY_NARKOSE_ST_NARKOSE);
     }

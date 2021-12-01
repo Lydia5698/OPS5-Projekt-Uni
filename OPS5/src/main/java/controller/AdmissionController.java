@@ -2,6 +2,7 @@ package controller;
 import java.io.IOException;
 import java.util.List;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -66,6 +67,20 @@ public class AdmissionController {
     	}
     	
     }
-    
-    
+
+
+	public void createAndShowNewFallWindow(ActionEvent actionEvent) {
+		System.out.println("New Fall Window!");
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader();
+			fxmlLoader.setLocation(getClass().getResource("/fxml/PaneFall.fxml"));
+			root = fxmlLoader.load();
+			Stage stage = new Stage();
+			stage.setTitle("Fall");
+			stage.setScene(new Scene(root));
+			stage.show();
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

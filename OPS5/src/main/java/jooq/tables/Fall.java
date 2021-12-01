@@ -79,7 +79,7 @@ public class Fall extends TableImpl<FallRecord> {
     /**
      * The column <code>pmiw21g05_v01.fall.storniert</code>.
      */
-    public final TableField<FallRecord, Byte> STORNIERT = createField(DSL.name("storniert"), SQLDataType.TINYINT.nullable(false), this, "");
+    public final TableField<FallRecord, Boolean> STORNIERT = createField(DSL.name("storniert"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     /**
      * The column <code>pmiw21g05_v01.fall.pat_id</code>.
@@ -236,7 +236,7 @@ public class Fall extends TableImpl<FallRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Integer, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Byte, Integer, String, String, String, Integer> fieldsRow() {
+    public Row11<Integer, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Integer, String, String, String, Integer> fieldsRow() {
         return (Row11) super.fieldsRow();
     }
 }
