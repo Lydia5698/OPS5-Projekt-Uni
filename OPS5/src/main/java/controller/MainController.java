@@ -22,7 +22,7 @@ public class MainController {
 	private Parent root;
 
 	/**
-	 * Singleton instance of MainController, access via getInstance() method. 
+	 * Singleton instance of MainController, access via getInstance() method.
 	 * Is always initialized by the Main classes init method if the application is started via that class (which it should always be).
 	 */
 	private static MainController instance;
@@ -61,7 +61,7 @@ public class MainController {
 	 * Use this Method to access the current Instance of the Main Controller from
 	 * anywhere via MainController.getInstance(). This allows accessing all nested
 	 * Controllers and their fields!
-	 * 
+	 *
 	 * @return the instance of the MainController as initialized by the FXMLLoader
 	 *         in main.
 	 */
