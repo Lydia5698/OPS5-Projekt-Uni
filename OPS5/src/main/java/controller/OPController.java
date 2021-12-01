@@ -52,23 +52,43 @@ public class OPController{
     @FXML
     private Spinner<Integer> towelAfter = new Spinner<Integer>(0,100,0);
 
-    public Integer getOpCaseId() { return opCaseId.getSelectionModel().getSelectedItem().getFallId(); }
+    public Integer getOpCaseId() {
+        if(opCaseId.getSelectionModel().getSelectedItem() != null){
+            return opCaseId.getSelectionModel().getSelectedItem().getFallId();
+        }
+        return null;
+    }
 
     public DateTimePicker getOpDateBegin() {return opDateBegin;}
 
     public DateTimePicker getOpDateEnd() {return opDateEnd;}
 
-    public OpTypSt getOpType() {return opType.getSelectionModel().getSelectedItem();}
+    public Integer getOpType() {
+        if(opType.getSelectionModel().getSelectedItem() != null){
+            return opType.getSelectionModel().getSelectedItem().getOpTyp();
+        }
+        return null;
+    }
 
-    public OpSaalSt getOpRoom() {return opRoom.getSelectionModel().getSelectedItem();}
+    public Integer getOpRoomCode() {
+        if(opRoom.getSelectionModel().getSelectedItem() != null){
+            return opRoom.getSelectionModel().getSelectedItem().getCode();
+        }
+        return null;
+    }
 
-    public NarkoseSt getNarkose() {return narkose.getSelectionModel().getSelectedItem();}
+    public Integer getNarkose() {
+        if(narkose.getSelectionModel().getSelectedItem() != null){
+            return narkose.getSelectionModel().getSelectedItem().getNarkose();
+        }
+        return null;
+    }
 
     public DateTimePicker getCutTime() {return cutTime;}
 
     public DateTimePicker getSewTime() {return sewTime;}
-
-    public Integer getTowelBefore() {return (Integer) towelBefore.getValue();}
+    //TODO: Bauchtücher Werte werden noch nicht richtig ausgelesen.
+    public Integer getTowelBefore() {return (Integer) towelBefore.getValue();} // System.out.println("before: " + (Integer) towelBefore.getValue());
 
     public Integer getTowelAfter() {return (Integer) towelAfter.getValue();}
 

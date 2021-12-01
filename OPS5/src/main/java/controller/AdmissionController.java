@@ -92,7 +92,6 @@ public class AdmissionController {
 			alert.showAndWait();
 		}
 		else {
-			//TODO: Bauchtücher Werte werden noch nicht richtig in die Datenbank eingefügt.
 			Operation operation = new Operation(
 					null, //opId -> automatisch mit AutoIncrement gesetzt
 					opController.getOpDateBegin().getDateTimeValue(), //beginn
@@ -105,14 +104,14 @@ public class AdmissionController {
 					null, //bearbeiterZeit
 					false, //storniert
 					opController.getOpCaseId(), //fallId
-					opController.getOpRoom().getCode(), //opSaal
-					opController.getNarkose().getNarkose(), //narkoseSt
-					opController.getOpType().getOpTyp(), //opTypSt
+					opController.getOpRoomCode(), //opSaal
+					opController.getNarkose(), //narkoseSt
+					opController.getOpType(), //opTypSt
 					MainController.getUserId(), //ersteller
 					null //bearbeiter
 			);
 			OperationDao operationDao = new OperationDao(Main.configuration);
-			operationDao.insert(operation);
+			//operationDao.insert(operation);
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 			confirm.showAndWait();
