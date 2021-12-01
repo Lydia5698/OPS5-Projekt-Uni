@@ -237,10 +237,10 @@ public class OverviewController {
         paLastname.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getName()));
         paBirthdate.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsdatum()));
         paBlutgruppe.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBlutgruppe()));
-        paGeschlecht.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeschlecht()));
-        paBearbeiter.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiter()));
+        paGeschlecht.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.geschlechtConverter(features.getValue().getGeschlecht())));
+        paBearbeiter.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
         paBearbeiterzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
-        paErsteller.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErsteller()));
+        paErsteller.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
         paErstellzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
         paStorniert.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
         paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));

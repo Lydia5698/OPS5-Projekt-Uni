@@ -18,10 +18,10 @@
             	<TableColumn fx:id="paBirthdate" prefWidth="96.0" text="Geburtsdatum" />
                 <TableColumn fx:id="paBlutgruppe" prefWidth="96.0" text="Blutgruppe" />
                 <TableColumn fx:id="paGeschlecht" prefWidth="96.0" text="Geschlecht" />
-                <TableColumn fx:id="paBearbeiter" prefWidth="96.0" text="Bearbeiter" />
-                <TableColumn fx:id="paBearbeiterzeit" prefWidth="96.0" text="Bearbeiterzeit" />
-                <TableColumn fx:id="paErsteller" prefWidth="96.0" text="Ersteller" />
-                <TableColumn fx:id="paErstellzeit" prefWidth="96.0" text="Erstellzeit" />
+                <TableColumn fx:id="paBearbeiter" prefWidth="150.0" text="Bearbeiter" />
+                <TableColumn fx:id="paBearbeiterzeit" prefWidth="140.0" text="Bearbeiterzeit" />
+                <TableColumn fx:id="paErsteller" prefWidth="150.0" text="Ersteller" />
+                <TableColumn fx:id="paErstellzeit" prefWidth="140.0" text="Erstellzeit" />
                 <TableColumn fx:id="paStorniert" prefWidth="96.0" text="Storniert" />
                 <TableColumn fx:id="paGeburtsort" prefWidth="96.0" text="Geburtsort" />
                 <TableColumn fx:id="paStrasse" prefWidth="96.0" text="Strasse" />
