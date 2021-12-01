@@ -15,12 +15,24 @@ import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+
 
 
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+
+import javafx.util.Callback;
+import jooq.Keys;
+import jooq.tables.daos.*;
+import jooq.tables.pojos.*;
+import main.Main;
+
 
 
 import java.util.List;
@@ -33,7 +45,7 @@ public class OverviewController {
     private CheckBox opListFilterPostOp;
 
     @FXML
-    private TableView<?> opListPatients;
+    private TableView<Patient> opListPatients;
 
     @FXML
     private TableView<Fall> opListCase;
@@ -123,6 +135,52 @@ public class OverviewController {
     private TableColumn<Operation, String> bearbeiterOPCol;
 
     @FXML
+    private TableColumn<Patient, Integer> paId;
+
+    @FXML
+    private TableColumn<Patient, String> paFirstname;
+
+    @FXML
+    private TableColumn<Patient, String> paLastname;
+
+    @FXML
+    private TableColumn<Patient, LocalDate> paBirthdate;
+
+    @FXML
+    private TableColumn<Patient, String> paBlutgruppe;
+
+    @FXML
+    private TableColumn<Patient, String> paGeschlecht;
+
+    @FXML
+    private TableColumn<Patient, String> paBearbeiter;
+
+    @FXML
+    private TableColumn<Patient, LocalDateTime> paBearbeiterzeit;
+
+    @FXML
+    private TableColumn<Patient, String> paErsteller;
+
+    @FXML
+    private TableColumn<Patient, LocalDateTime> paErstellzeit;
+
+    @FXML
+    private TableColumn<Patient, Boolean> paStorniert;
+
+    @FXML
+    private TableColumn<Patient, String> paGeburtsort;
+
+    @FXML
+    private TableColumn<Patient, String> paStrasse;
+
+    @FXML
+    private TableColumn<Patient, String> paPostleitzahl;
+
+    @FXML
+    private TableColumn<Patient, String> paTelefonnummer;
+
+
+    @FXML
     private Button btnStornieren;
 
     @FXML
@@ -139,7 +197,16 @@ public class OverviewController {
         System.out.println("Initialize OPlist-Tab!");
 
         initializeColumns();
-        opListCase.setItems(fallView());
+        opListPatients.setItems(patientView());
+        opListPatients.setOnMouseClicked((MouseEvent event) -> {
+            if (event.getClickCount() > 0) {
+                int patientId = onEditPatient();
+                opListCase.setItems(fallView(patientId));
+            }
+        });
+        // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen
+
+        //opListCase.setItems(fallView());
         // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen join?
         // TODO: 26.11.21 stornierte Ops rausfiltern
         // TODO: 26.11.21 diagnose update
@@ -163,6 +230,26 @@ public class OverviewController {
     private void initializeColumns() {
         // tabellencols werden erstellt
         // create columns
+
+        // columns Patient
+        paId.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getPatId()));
+        paFirstname.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getVorname()));
+        paLastname.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getName()));
+        paBirthdate.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsdatum()));
+        paBlutgruppe.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBlutgruppe()));
+        paGeschlecht.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeschlecht()));
+        paBearbeiter.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiter()));
+        paBearbeiterzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+        paErsteller.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErsteller()));
+        paErstellzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
+        paStorniert.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));
+        paStrasse.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStrasse()));
+        paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));
+        paPostleitzahl.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getPostleitzahl()));
+        paTelefonnummer.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getTelefonnummer()));
+
+
 
         // columns Case
         fallIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
@@ -194,6 +281,17 @@ public class OverviewController {
         opTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.opTypConverter(features.getValue().getOpTypSt())));
         erstellerOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
         bearbeiterOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
+
+    }
+
+    public int onEditPatient() {
+        int id = 0;
+        // check the table's selected item and get selected item
+        if (opListPatients.getSelectionModel().getSelectedItem() != null) {
+            Patient selected = opListPatients.getSelectionModel().getSelectedItem();
+            id = selected.getPatId();
+        }
+        return id;
 
     }
 
@@ -269,9 +367,22 @@ public class OverviewController {
        	
     }
 
-    public static ObservableList<Fall> fallView(){
+    public static ObservableList<Patient> patientView(){
+        //PatientDao patientDao = new PatientDao(Main.configuration);
+        DSLContext context = DSL.using(Main.configuration);
+        List<Patient> patients = context
+                .selectDistinct(jooq.tables.Patient.PATIENT.asterisk())
+                .from(jooq.tables.Patient.PATIENT)
+                .leftJoin(jooq.tables.Fall.FALL).onKey()
+                .leftSemiJoin(jooq.tables.Operation.OPERATION).onKey()
+                .fetchInto(Patient.class);
+
+        return FXCollections.observableArrayList(patients);
+    }
+
+    public static ObservableList<Fall> fallView(int patientId){
         FallDao fallDao = new FallDao(Main.configuration);
-        List<Fall> fall = fallDao.findAll();
+        List<Fall> fall = fallDao.fetchByPatId(patientId);
 
         //Keys.FK_FALL_MED_PERSONAL1.
         return FXCollections.observableArrayList(fall);
