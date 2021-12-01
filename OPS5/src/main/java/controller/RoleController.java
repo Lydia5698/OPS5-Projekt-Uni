@@ -32,7 +32,9 @@ import jooq.tables.daos.RolleDao;
 import jooq.tables.pojos.Rolle;
 import jooq.Tables;
 
-
+/**
+ * The RoleController is responsible for creating a new role.
+ */
 public class RoleController{
 
     @FXML
@@ -42,6 +44,10 @@ public class RoleController{
     @FXML
     private ComboBox<Operation> op;
 
+    /**
+     * This method is called when the window is created.
+     * It calls the methods for setting the values of the comboboxes
+     */
     @FXML
     public void initialize() {
         System.out.println("Initialize Role-Tab!");
@@ -52,6 +58,10 @@ public class RoleController{
 
     }
 
+    /**
+     * This method is called when initialising the window.
+     * It sets all role types of the database as choosing options of the combobox.
+     */
     private void setRole() {
         Callback<ListView<RolleSt>, ListCell<RolleSt>> cellFactory = new Callback<>() {
             @Override
@@ -74,6 +84,10 @@ public class RoleController{
         role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
     }
 
+    /**
+     * This method is called when initialising the window.
+     * It sets all operaitions of the database as choosing options of the combobox.
+     */
     private void setOp() {
         Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
             @Override
@@ -96,6 +110,10 @@ public class RoleController{
         op.getItems().setAll(new OperationDao(Main.configuration).findAll());
     }
 
+    /**
+     * This method is called when initialising the window.
+     * It sets all medical users of the database as choosing options of the combobox.
+     */
     //TODO: Nach Namen sortieren.
     private void setMitarbeiter() {
         Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
@@ -119,8 +137,12 @@ public class RoleController{
         mitarbeiter.getItems().setAll(new MedPersonalDao(Main.configuration).findAll());
     }
 
+    /**
+     * This method is called when the save-button is pushed.
+     * It checks that every attribute is selected and created a new role that gets inserted into the database.
+     */
     @FXML
-    void createRole(ActionEvent event) {
+    void createRole() {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText("Fehlende Einträge!");
@@ -156,16 +178,5 @@ public class RoleController{
         System.out.println("Creating role!");
     }
 
-
-    public ComboBox<MedPersonal> getMitarbeiter() {
-        return mitarbeiter;
-    }
-
-    public ComboBox<RolleSt> getRole() {
-        return role;
-    }
-
-    //public ComboBox<Operation> getOp() {return op;}
-
-    }
+}
 

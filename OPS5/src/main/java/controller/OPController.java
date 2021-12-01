@@ -28,7 +28,10 @@ import org.jooq.impl.DSL;
 
 import ExternalFiles.DateTimePicker;
 
-
+/**
+ * The OPController is visually a part of the Admission window.
+ * It contains the fields needed for a new operation.
+ */
 public class OPController{	
     
     @FXML
@@ -48,9 +51,9 @@ public class OPController{
     @FXML
     private DateTimePicker sewTime;
     @FXML
-    private Spinner<Integer> towelBefore = new Spinner<Integer>(0,100, 0);
+    private Spinner<Integer> towelsBefore = new Spinner<Integer>(0,100, 0);
     @FXML
-    private Spinner<Integer> towelAfter = new Spinner<Integer>(0,100,0);
+    private Spinner<Integer> towelsAfter = new Spinner<Integer>(0,100,0);
 
     public Integer getOpCaseId() {
         if(opCaseId.getSelectionModel().getSelectedItem() != null){
@@ -59,10 +62,22 @@ public class OPController{
         return null;
     }
 
+    /**
+     * This method returns the time and date of the beginning of the operation.
+     * @return an DateTimePicker object with the selected beginning time.
+     */
     public DateTimePicker getOpDateBegin() {return opDateBegin;}
 
+    /**
+     * This method returns the time and date of the ending of the operation.
+     * @return an DateTimePicker object with the selected ending time.
+     */
     public DateTimePicker getOpDateEnd() {return opDateEnd;}
 
+    /**
+     * Getter for the operation type.
+     * @return the int value of the OpTyp.
+     */
     public Integer getOpType() {
         if(opType.getSelectionModel().getSelectedItem() != null){
             return opType.getSelectionModel().getSelectedItem().getOpTyp();
@@ -70,6 +85,10 @@ public class OPController{
         return null;
     }
 
+    /**
+     * Getter for the operation room.
+     * @return the int value of the code of the selected OpRoom.
+     */
     public Integer getOpRoomCode() {
         if(opRoom.getSelectionModel().getSelectedItem() != null){
             return opRoom.getSelectionModel().getSelectedItem().getCode();
@@ -77,6 +96,10 @@ public class OPController{
         return null;
     }
 
+    /**
+     * Getter for the type of Narkose.
+     * @return the int value of Narkose.
+     */
     public Integer getNarkose() {
         if(narkose.getSelectionModel().getSelectedItem() != null){
             return narkose.getSelectionModel().getSelectedItem().getNarkose();
@@ -84,15 +107,36 @@ public class OPController{
         return null;
     }
 
+    /**
+     * Getter for the cutting time.
+     * @return an DateTimePicker object with the selected cutting time.
+     */
     public DateTimePicker getCutTime() {return cutTime;}
 
+    /**
+     * Getter for the sewing time.
+     * @return an DateTimePicker object with the selected sewing time.
+     */
     public DateTimePicker getSewTime() {return sewTime;}
-    //TODO: Bauchtücher Werte werden noch nicht richtig ausgelesen.
-    public Integer getTowelBefore() {return (Integer) towelBefore.getValue();} // System.out.println("before: " + (Integer) towelBefore.getValue());
 
-    public Integer getTowelAfter() {return (Integer) towelAfter.getValue();}
+    /**
+     * Getter for the amount of belly towels before the operation.
+     * @return int value of belly towels before the operation.
+     */
+    public Integer getTowelBefore() {return (Integer) towelsBefore.getValue();}
 
+    /**
+     * Getter for the amount of belly towels after the operation.
+     * @return int value of belly towels after the operation.
+     */
+    public Integer getTowelAfter() {return (Integer) towelsAfter.getValue();}
 
+    /**
+     * Sets the values for the combobox of the cases.
+     * This method is called when the window gets initialized and every time, a new patient is selected.
+     * It then displayes all cases of the selected patient.
+     * @param patId of the selected patient.
+     */
     public void setCase(Integer patId){
         Callback<ListView<Fall>, ListCell<Fall>> cellFactory = new Callback<>() {
             @Override
@@ -116,6 +160,10 @@ public class OPController{
         opCaseId.valueProperty().set(null);
     }
 
+    /**
+     * This method is called when initialising the window.
+     * It sets all case types of the database as choosing options of the combobox.
+     */
     private void setFallTyp() {
         Callback<ListView<OpTypSt>, ListCell<OpTypSt>> cellFactory = new Callback<>() {
             @Override
@@ -137,7 +185,10 @@ public class OPController{
         opType.setCellFactory(cellFactory);
         opType.getItems().setAll(new OpTypStDao(Main.configuration).findAll());
     }
-
+    /**
+     * This method is called when initialising the window.
+     * It sets all operation rooms of the database as choosing options of the combobox.
+     */
     private void setOpSaal() {
         Callback<ListView<OpSaalSt>, ListCell<OpSaalSt>> cellFactory = new Callback<>() {
             @Override
@@ -159,7 +210,10 @@ public class OPController{
         opRoom.setCellFactory(cellFactory);
         opRoom.getItems().setAll(new OpSaalStDao(Main.configuration).findAll());
     }
-
+    /**
+     * This method is called when initialising the window.
+     * It sets all Narkose types of the database as choosing options of the combobox.
+     */
     private void setNarkose() {
         Callback<ListView<NarkoseSt>, ListCell<NarkoseSt>> cellFactory = new Callback<>() {
             @Override
@@ -182,6 +236,10 @@ public class OPController{
         narkose.getItems().setAll(new NarkoseStDao(Main.configuration).findAll());
     }
 
+    /**
+     * This method is called when the window is initialized.
+     * It calls the methods for initializing the comboboxes.
+     */
     @FXML
 	public void initialize() {
 

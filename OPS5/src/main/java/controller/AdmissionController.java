@@ -1,5 +1,7 @@
 package controller;
 
+import main.Main;
+
 import java.io.IOException;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -18,18 +20,23 @@ import javafx.util.Callback;
 import javafx.stage.Stage;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
+
 import jooq.Tables;
 import jooq.tables.pojos.Operation;
 import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Patient;
 import jooq.tables.daos.PatientDao;
 import jooq.tables.records.PatientRecord;
-import main.Main;
+
 import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
 
+/**
+ * The class AdmissionController is responsible for creating a new operation.
+ * It also contains the buttons for opening windows to creating new roles and patients.
+ */
 public class AdmissionController {
 	
 	private Parent root;
@@ -40,6 +47,10 @@ public class AdmissionController {
     @FXML
     private OPController opController;
 
+//TODO: Nur Patienten, die nicht storniert sind!
+	/**
+	 * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
+	 */
 	private void setPatient() {
 		Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
 			@Override
@@ -62,6 +73,10 @@ public class AdmissionController {
 		selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
 	}
 
+	/**
+	 * When the window for creating an operation is opened, this method is called.
+	 * The patients can be selected and the initial case id gets selected by the chosen patient, which can be null.
+	 */
 	@FXML
 	public void initialize() {
 		selectPatient.setOnAction(new EventHandler<ActionEvent>(){
@@ -72,9 +87,14 @@ public class AdmissionController {
 		setPatient();
 
     	System.out.println("Initialize Admission-Tab!");
-    }	
-	
-    @FXML
+    }
+
+	/**
+	 * This method is called when a button is pushed.
+	 * Checks are run that all input is valid and all the non-nullable objects have a value.
+	 * A new operation is created and inserted into the database.
+	 */
+	@FXML
 	public void create() {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
@@ -91,7 +111,7 @@ public class AdmissionController {
 			alert.setContentText("Es muss ein gültiges Ende eingetragen werden!");
 			alert.showAndWait();
 		}
-		else {
+		else { //TODO: Op-Beginn muss vor dem Ende sein!
 			Operation operation = new Operation(
 					null, //opId -> automatisch mit AutoIncrement gesetzt
 					opController.getOpDateBegin().getDateTimeValue(), //beginn
@@ -111,7 +131,7 @@ public class AdmissionController {
 					null //bearbeiter
 			);
 			OperationDao operationDao = new OperationDao(Main.configuration);
-			//operationDao.insert(operation);
+			operationDao.insert(operation);
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 			confirm.showAndWait();
@@ -119,6 +139,9 @@ public class AdmissionController {
 		System.out.println("Creating OP!");
 	}
 
+	/**
+	 * When the button for creating a new role is pushed, a new window is opened.
+	 */
     @FXML
 	public void createRole(){
 		System.out.println("Creating Role in new window!");
@@ -134,8 +157,8 @@ public class AdmissionController {
 			e.printStackTrace();
 		}
 	}
-    
-    @FXML
+
+	@FXML
 	public void createAndShowNewPatientWindow() {
     	System.out.println("New Patient Window!");
     	try {
