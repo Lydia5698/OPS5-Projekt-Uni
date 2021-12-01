@@ -1,6 +1,7 @@
 package controller;
 import java.io.IOException;
 
+import ExternalFiles.Converter;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.collections.ObservableList;
@@ -18,12 +18,9 @@ import javafx.collections.FXCollections;
 import java.time.LocalDateTime;
 
 
-import javafx.util.Callback;
-import jooq.Keys;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
-import org.jooq.Result;
 
 
 import java.util.List;
@@ -60,7 +57,7 @@ public class OverviewController {
     private TableColumn<Fall, Boolean> storniertCol;
 
     @FXML
-    private TableColumn<Fall, Integer> patientenIDCol;
+    private TableColumn<Fall, String> patientenIDCol;
 
     @FXML
     private TableColumn<Fall,String> stationCol;
@@ -72,7 +69,7 @@ public class OverviewController {
     private TableColumn<Fall, String> bearbeiterCol;
 
     @FXML
-    private TableColumn<Fall, Integer> fallTypCol;
+    private TableColumn<Fall, String> fallTypCol;
 
     @FXML
     private TableView<Operation> opListOperation;
@@ -114,10 +111,10 @@ public class OverviewController {
     private TableColumn<Operation, Integer> opSaalCol;
 
     @FXML
-    private TableColumn<Operation, Integer> narkoseCol;
+    private TableColumn<Operation, String> narkoseCol;
 
     @FXML
-    private TableColumn<Operation, Integer> opTypCol;
+    private TableColumn<Operation, String> opTypCol;
 
     @FXML
     private TableColumn<Operation, String> erstellerOPCol;
@@ -174,11 +171,11 @@ public class OverviewController {
         erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
         bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
         storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
-        patientenIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getPatId()));
+        patientenIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.patientConverter(features.getValue().getPatId())));
         stationCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStationSt()));
-        erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErsteller()));
-        bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiter()));
-        fallTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallTyp()));
+        erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
+        bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
+        fallTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.fallTypConverter(features.getValue().getFallTyp())));
 
         // columns Operation
         opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
@@ -193,10 +190,10 @@ public class OverviewController {
         storniertOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
         fallIdOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
         opSaalCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpSaal()));
-        narkoseCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getNarkoseSt()));
-        opTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpTypSt()));
-        erstellerOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErsteller()));
-        bearbeiterOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiter()));
+        narkoseCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.narkoseConverter(features.getValue().getNarkoseSt())));
+        opTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.opTypConverter(features.getValue().getOpTypSt())));
+        erstellerOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
+        bearbeiterOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
 
     }
 
@@ -315,7 +312,6 @@ public class OverviewController {
             opListOperation.setItems(operationView(CaseId));
         }
     }
-
    /* private void setCaseFallTyp(){
         Callback<ListView<FallTypSt>, ListCell<jooq.tables.FallTypSt>> cellFactory = new Callback<>() {
             @Override
