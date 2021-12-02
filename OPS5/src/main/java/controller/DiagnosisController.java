@@ -1,5 +1,6 @@
 package controller;
 import ExternalFiles.Converter;
+import ExternalFiles.DateTimePicker;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,6 +18,9 @@ import main.Main;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * This Controller displays the Diagnosis. You can create a new one or edit an existent
+ */
 public class DiagnosisController {
 	
 	@FXML
@@ -63,27 +67,33 @@ public class DiagnosisController {
 	private TableColumn<Diagnose, String> bearbeiterCol;
 
 	@FXML
-	private Button btnDiagnose;
-
-	@FXML
-	private DatePicker dateDiagnosis;
+	private DateTimePicker dateDiagnosis;
 
 
 	boolean flagEditDiagnose = false;
 
+	/**
+	 * This Methode initialize the TableView for the existing Diagnosis and shows the Op-IDs, ICD-10 codes and
+	 * the Diagnosis Type in the Comboboxes
+	 */
 	@FXML
 	public void initialize() {
 
 		System.out.println("Initialize Diagnosis-Tab!");
-		initializeColumns();
 
+		initializeColumns();
 		diagnosisTable.setItems(diagnoseView());
 		setDiagnosisOpId();
 		setDiagnosisIcdCode();
 		setDiagnosisDiagnoseTyp();
 
 	}
-	
+
+	/**
+	 * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
+	 * a Diagnosis. If the User isn't missing any necessary Values the Diagnose is edited and the Window closes
+	 * @param event the event of pushing the Speichern Button
+	 */
 	@FXML
 	public void createDiagnosis(ActionEvent event){
 		System.out.println("Create diagnosis!");
@@ -97,6 +107,11 @@ public class DiagnosisController {
 	}
 
 
+	/**
+	 * Launches when the Button Neue Diagnose is pressed. It sets the flag false so that we know that the user wants to create
+	 * a new Diagnosis. If the User isn't missing any necessary Values the Diagnose is saved and the Window closes
+	 * @param event the event of pushing the Neue Diagnose Button
+	 */
 	@FXML
 	void createNewDiagnosis(ActionEvent event) {
 		flagEditDiagnose = false;
@@ -108,17 +123,23 @@ public class DiagnosisController {
 		}
 	}
 
+	/**
+	 * Collects all Diagnosis from the Database and saves them in a observable Array List from Type Diagnose pojo
+	 * @return all Diagnosis
+	 */
 	public static ObservableList<Diagnose> diagnoseView(){
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 		List<Diagnose> diagnose = diagnoseDao.findAll();
 		return FXCollections.observableArrayList(diagnose);
 	}
 
+	/**
+	 * Initializes all Columns from the Table View diagnosisTable
+	 */
 	private void initializeColumns() {
-		// tabellencols werden erstellt
 		// create columns
 
-		// columns Case
+		// columns Diagnosis
 		diagIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getDiagnoseId()));
 		textCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getKlartextDiagnose()));
 		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getDatum()));
@@ -132,35 +153,36 @@ public class DiagnosisController {
 		bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
 	}
 
+	/**
+	 * Inserts or edits a Diagnose in the Database.
+	 */
 	private void insertNewDiagnose() {
-		Integer diagID = null; // durch null wird sie automatisch generiert
+		Integer diagID = null;
 		boolean storniert = false;
-		Integer opID = null;
-		if(!diagnosisOpId.getSelectionModel().isEmpty()){
-			opID = diagnosisOpId.getValue().getOpId();
-		}
+		Integer opID = diagnosisOpId.getValue().getOpId();
 		String icdCode = diagnosisIcdCode.getValue().getIcd10Code();
 		Integer diagTyp = diagnosisType.getValue().getDiagnosetyp();
 		String freitext = diagnosisFreetext.getText();
-		//LocalDateTime datum = dateDiagnosis.getValue().atStartOfDay(); // TODO: 25.11.21 local Date to Local date time
 		LocalDateTime datum;
 		String ersteller = null;
 		LocalDateTime erstellZeit = null;
 		String bearbeiter = null;
-		LocalDateTime bearbeiterZeit = null; // bei null update nimmt er immer das vorhandene
+		LocalDateTime bearbeiterZeit = null;
 
+		// Edits Diagnosis
 		if(flagEditDiagnose){
 			diagID = onEditDiagnose();
-			bearbeiter = "0101040";
+			bearbeiter = MainController.getUserId();
 			bearbeiterZeit = LocalDateTime.now();
-			datum = LocalDateTime.now();
+			datum = dateDiagnosis.getDateTimeValue();
 
 			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.update(diagnose);
 		}
+		// Creates new Diagnosis
 		else{
-			ersteller = "00191184";
+			ersteller = MainController.getUserId();
 			erstellZeit = LocalDateTime.now();
 			datum = LocalDateTime.now();
 
@@ -171,12 +193,10 @@ public class DiagnosisController {
 
 	}
 
-	/*
-	 boolean insertEmployee(Employee employee);
-    boolean updateEmployee(Employee employee);
-    boolean deleteEmployee(Employee employee);
+	/**
+	 * Gets the Diagnosis ID from the selected Diagnosis in the Table View
+	 * @return Diagnosis ID
 	 */
-
 	public int onEditDiagnose() {
 		int id = 0;
 		// check the table's selected item and get selected item
@@ -187,6 +207,10 @@ public class DiagnosisController {
 		return id;
 
 	}
+
+	/**
+	 * Gets all the Operation IDs and  saves them in the diagnosisOpId Combobox
+	 */
 	private void setDiagnosisOpId(){
 		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
 			@Override
@@ -209,6 +233,9 @@ public class DiagnosisController {
 		diagnosisOpId.getItems().setAll(new OperationDao(Main.configuration).findAll());
 	}
 
+	/**
+	 * Gets all the ICD-10 codes and the description and saves them in the diagnosisIcdCode Combobox
+	 */
 	private void setDiagnosisIcdCode(){
 		Callback<ListView<Icd10CodeSt>, ListCell<Icd10CodeSt>> cellFactory = new Callback<>() {
 			@Override
@@ -231,6 +258,9 @@ public class DiagnosisController {
 		diagnosisIcdCode.getItems().setAll(new Icd10CodeStDao(Main.configuration).findAll());
 	}
 
+	/**
+	 * Gets all the Diagnosis Types and saves them in the diagnosisType Combobox
+	 */
 	private void setDiagnosisDiagnoseTyp(){
 		Callback<ListView<DiagnosetypSt>, ListCell<DiagnosetypSt>> cellFactory = new Callback<>() {
 			@Override
@@ -253,11 +283,18 @@ public class DiagnosisController {
 		diagnosisType.getItems().setAll(new DiagnosetypStDao(Main.configuration).findAll());
 	}
 
+	/**
+	 * Gets triggered when a Diagnosis in the TableView gets selected
+	 */
 	@FXML
-	void diagnosisClicked(MouseEvent event) {
+	void diagnosisClicked() {
 		flagEditDiagnose = true;
 	}
 
+	/**
+	 * Checks if all the necessary Values for the Diagnosis are selected
+	 * @return boolean if no Statement is missing
+	 */
 	public boolean noMissingStatement(){
 
 		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
@@ -275,14 +312,6 @@ public class DiagnosisController {
 			alert.show();
 			return false;
 		}
-
-		/*if(dateDiagnosis.get){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle("Fehlendes Datum");
-			alert.setContentText("Bitte tragen Sie ein Datum für die Diagnose ein");
-			alert.show();
-			return true;
-		}*/
 
 		if(diagnosisType.getSelectionModel().isEmpty()){
 			Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -303,13 +332,4 @@ public class DiagnosisController {
 		return true;
 
 	}
-
-
-
-
-
-
-
-
-
 }

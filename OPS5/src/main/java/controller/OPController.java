@@ -55,6 +55,12 @@ public class OPController{
         return null;
     }
 
+    public void setOpCaseId(Fall fall){
+        opCaseId.getSelectionModel().select(fall);
+    }
+
+
+
     /**
      * This method returns the time and date of the beginning of the operation.
      * @return an DateTimePicker object with the selected beginning time.
@@ -291,4 +297,5 @@ public class OPController{
         towelsAfter.decrement(towelsAfter.getValue());
     }
     
+
 }

@@ -16,6 +16,9 @@ import main.Main;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * This Controller displays the Procedure. You can create a new one or edit an existent
+ */
 public class ProcedureController {
 	
 	@FXML
@@ -59,6 +62,10 @@ public class ProcedureController {
 
 	boolean flagEditProzedure = false;
 
+	/**
+	 * This Methode initialize the TableView for the existing Procedures and shows the Op-IDs and the OPs codes
+	 * in the Comboboxes
+	 */
     @FXML
 	public void initialize() {
 
@@ -68,7 +75,12 @@ public class ProcedureController {
 		setProcedureOpID();
 		setProcedureOpsCode();
 	}
-	
+
+	/**
+	 *  Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
+	 * 	a Procedure. If the User isn't missing any necessary Values the Procedure is edited and the Window closes
+	 * 	@param event the event of pushing the Speichern Button
+	 */
 	@FXML
 	public void createProcedure(ActionEvent event) {
 		flagEditProzedure = true;
@@ -81,6 +93,12 @@ public class ProcedureController {
 		}
 
 	}
+
+	/**
+	 * Launches when the Button Neue Prozedur is pressed. It sets the flag false so that we know that the user wants to create
+	 * a new Procedure. If the User isn't missing any necessary Values the Procedure is saved and the Window closes
+	 * @param event the event of pushing the Neue Diagnose Button
+	 */
 	@FXML
 	void createNewProcedure(ActionEvent event) {
 		flagEditProzedure = false;
@@ -90,22 +108,25 @@ public class ProcedureController {
 			Stage thisStage = (Stage) source.getScene().getWindow();
 			thisStage.close();
 		}
-
-
-
 	}
 
+	/**
+	 *  Collects all Procedures from the Database and saves them in a observable Array List from Type Prozedur pojo
+	 *  @return all Procedures
+	 */
 	public static ObservableList<Prozedur> prozedurView(){
 		ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
 		List<Prozedur> prozedur = prozedurDao.findAll();
 		return FXCollections.observableArrayList(prozedur);
 	}
 
+	/**
+	 *  Initializes all Columns from the Table View procedureTable
+	 */
 	private void initializeColumns() {
-		// tabellencols werden erstellt
 		// create columns
 
-		// columns Case
+		// columns Procedure
 		prozCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getProzId()));
 		anmerkungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getAnmerkung()));
 		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
@@ -117,29 +138,34 @@ public class ProcedureController {
 		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
 	}
 
+	/**
+	 * Inserts or edits a Procedure in the Database.
+	 */
 	private void insertNewProcedure() {
-    	Integer prozID = null; // durch null automatisch generiert
+    	Integer prozID = null;
 		boolean storniert = false;
-    	Integer opID = procedureOpID.getValue().getOpId(); //abfangen wenn nichts ausgewählt
+    	Integer opID = procedureOpID.getValue().getOpId();
     	String opsCodeValue = procedureOpsCode.getValue().getOpsCode();
     	String anmerkungText = procedureAnmerkung.getText();
-    	LocalDateTime erstellZeit = null; // nur beim neuen erstellen
+    	LocalDateTime erstellZeit = null;
     	LocalDateTime bearbeiterZeit = null;
-    	String bearbeiter = null; // eingeloggter Benutzer
-    	String ersteller = "00191184"; // TODO: 25.11.21 bearbeiter ersteller eingeloggter Benutzer
+    	String bearbeiter = null;
+    	String ersteller = null;
 
+    	// Edit Procedure
 		if(flagEditProzedure){
 			prozID = onEditProzedur();
 			bearbeiterZeit = LocalDateTime.now();
-			bearbeiter = "0101040";
+			bearbeiter = MainController.getUserId();
 			Prozedur prozedur = new Prozedur(prozID,anmerkungText,storniert,erstellZeit,bearbeiterZeit,opID,opsCodeValue,bearbeiter,ersteller);
 			ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
 			prozedurDao.update(prozedur);
 
 		}
+		// new Procedure
 		else {
 			erstellZeit = LocalDateTime.now();
-			// ersteller
+			ersteller = MainController.getUserId();
 			Prozedur prozedur = new Prozedur(prozID,anmerkungText,storniert,erstellZeit,bearbeiterZeit,opID,opsCodeValue,bearbeiter,ersteller);
 			ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
 			prozedurDao.insert(prozedur);
@@ -147,12 +173,10 @@ public class ProcedureController {
 
     }
 
-	/*
-	 boolean insertEmployee(Employee employee);
-    boolean updateEmployee(Employee employee);
-    boolean deleteEmployee(Employee employee);
+	/**
+	 * Gets the Procedure ID from the selected Procedure in the Table View
+	 * @return Procedure ID
 	 */
-
 	public int onEditProzedur() {
 		int id = 0;
 		// check the table's selected item and get selected item
@@ -164,6 +188,10 @@ public class ProcedureController {
 
 	}
 
+	/**
+	 *  Checks if all the necessary Values for the Procedure are selected
+	 * 	@return boolean if no Statement is missing
+	 */
 	public boolean noMissingStatement(){
 		if(procedureOpID.getSelectionModel().isEmpty()){
 			Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -191,11 +219,17 @@ public class ProcedureController {
 		return true;
 	}
 
+	/**
+	 * Gets triggered when a Procedure in the TableView gets selected
+	 */
 	@FXML
 	void mouseEntered() {
 		flagEditProzedure = true;
 	}
 
+	/**
+	 * Gets all the Operation IDs and saves them in the procedureOpID Combobox
+	 */
 	private void setProcedureOpID(){
 		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
 			@Override
@@ -218,6 +252,9 @@ public class ProcedureController {
 		procedureOpID.getItems().setAll(new OperationDao(Main.configuration).findAll());
 	}
 
+	/**
+	 * Gets all the OPs codes and saves them in the procedureOpsCode Combobox
+	 */
 	private void setProcedureOpsCode(){
 		Callback<ListView<OpsCodeSt>, ListCell<OpsCodeSt>> cellFactory = new Callback<>() {
 			@Override
@@ -239,9 +276,4 @@ public class ProcedureController {
 		procedureOpsCode.setCellFactory(cellFactory);
 		procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
 	}
-
-
-
-
-
 }
