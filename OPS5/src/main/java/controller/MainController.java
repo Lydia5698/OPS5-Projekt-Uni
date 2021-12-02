@@ -39,8 +39,7 @@ public class MainController {
 	private AdmissionController admissionController;
 	@FXML
 	private PatientController patientController;
-	@FXML
-	private CaseController fallIdController;
+
 	@FXML
 	private OPController opController;
 	@FXML

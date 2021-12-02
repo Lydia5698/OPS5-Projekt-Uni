@@ -205,7 +205,8 @@ public class OverviewController {
         });
 
         // TODO: 26.11.21 stornierte Ops rausfiltern
-        // TODO: 26.11.21 diagnose update
+        // TODO: 02.12.21 op tabelle nach einfügen aktualisieren 
+        
         // When a Case gets selected the corresponding Operations show
         opListCase.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
@@ -461,6 +462,10 @@ public class OverviewController {
             int CaseId = onEditCase();
             opListOperation.setItems(operationView(CaseId));
         }
+    }
+
+    public static Integer getOpId() {
+        return opId;
     }
 
 
