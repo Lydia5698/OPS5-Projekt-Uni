@@ -38,9 +38,12 @@ import org.jooq.Result;
 import java.util.List;
 
 
-
+/**
+ * This Controller displays all Patients that had an Operation and their corresponding Cases and Operations. You can
+ * filter the Operations to only see the canceled Operations. And you can edit oder create new Diagnosis and Procedures
+ */
 public class OverviewController {
-	
+
     @FXML
     private CheckBox opListFilterPostOp;
 
@@ -179,56 +182,51 @@ public class OverviewController {
     @FXML
     private TableColumn<Patient, String> paTelefonnummer;
 
-
-    @FXML
-    private Button btnStornieren;
-
-    @FXML
-    private Button btnDiag;
-
-    @FXML
-    private Button btnProc;
-
     @FXML
     private CheckBox stornierteOperation;
 
+    private static Integer opId;
+
+    /**
+     * This Methode initializes the TableViews for the Patients and their corresponding Cases and Operations
+     */
     @FXML
 	public void initialize() {
         System.out.println("Initialize OPlist-Tab!");
 
         initializeColumns();
         opListPatients.setItems(patientView());
+        // When a Patient gets selected the corresponding Cases show
         opListPatients.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
                 int patientId = onEditPatient();
                 opListCase.setItems(fallView(patientId));
             }
         });
-        // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen
 
-        //opListCase.setItems(fallView());
-        // TODO: 23.11.21 medPersonal(); nur die Namen rausfiltern und in die Tabelle einfügen join?
         // TODO: 26.11.21 stornierte Ops rausfiltern
         // TODO: 26.11.21 diagnose update
+        // When a Case gets selected the corresponding Operations show
         opListCase.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
                 int CaseId = onEditCase();
                 opListOperation.setItems(operationView(CaseId));
             }
         });
-
+        // When a Operation gets double clicked you can edit this Operation
         opListOperation.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 1) {
-                int opId = onEditOperation();
+                opId = onEditOperation();
                 createAndShowOperationWindow();
-                //
             }
         });
 
     }
 
+    /**
+     * 	Initializes all Columns from the Table Views opListPatients, opListCase and opListOperation
+     */
     private void initializeColumns() {
-        // tabellencols werden erstellt
         // create columns
 
         // columns Patient
@@ -248,8 +246,6 @@ public class OverviewController {
         paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));
         paPostleitzahl.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getPostleitzahl()));
         paTelefonnummer.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getTelefonnummer()));
-
-
 
         // columns Case
         fallIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
@@ -284,6 +280,10 @@ public class OverviewController {
 
     }
 
+    /**
+     *  Gets the Patient ID from the selected Patient in the Table View
+     * 	@return Patient ID
+     */
     public int onEditPatient() {
         int id = 0;
         // check the table's selected item and get selected item
@@ -295,6 +295,10 @@ public class OverviewController {
 
     }
 
+    /**
+     *  Gets the Case ID from the selected Case in the Table View
+     *  @return Case ID
+     */
     public int onEditCase() {
         int id = 0;
             // check the table's selected item and get selected item
@@ -306,6 +310,10 @@ public class OverviewController {
 
     }
 
+    /**
+     * Gets the Operation ID from the selected Operation in the Table View
+     * @return Operation ID
+     */
     public int onEditOperation() {
         int id = 0;
         // check the table's selected item and get selected item
@@ -316,6 +324,9 @@ public class OverviewController {
         return id;
     }
 
+    /**
+     * Shows the Diagnosis Window where you can edit or create a new Diagnosis
+     */
     @FXML
    	public void createAndShowDiagnosisWindow() {
        	System.out.println("New Patient Window!");
@@ -333,12 +344,15 @@ public class OverviewController {
        	
     }
 
+    /**
+     * Shows the Operation Window where you can edit a Operation
+     */
     @FXML
     public void createAndShowOperationWindow() {
         System.out.println("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOp.fxml"));
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOpEdit.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.setTitle("Operation Bearbeiten");
@@ -349,7 +363,10 @@ public class OverviewController {
         }
 
     }
-    
+
+    /**
+     * Shows the Procedure Window where you can edit or create a new Procedure
+     */
     @FXML
    	public void createAndShowProcedureWindow() {
        	System.out.println("New Patient Window!");
@@ -367,6 +384,10 @@ public class OverviewController {
        	
     }
 
+    /**
+     * Collects all Patients from the Database and saves them in a observable Array List from Type Patient pojo
+     * @return all Patients
+     */
     public static ObservableList<Patient> patientView(){
         //PatientDao patientDao = new PatientDao(Main.configuration);
         DSLContext context = DSL.using(Main.configuration);
@@ -380,22 +401,33 @@ public class OverviewController {
         return FXCollections.observableArrayList(patients);
     }
 
+    /**
+     * Collects all Cases from the Database and saves them in a observable Array List from Type Fall pojo
+     * @param patientId Patient ID from the selected Patient in the Table view
+     * @return all cases by Patient ID
+     */
     public static ObservableList<Fall> fallView(int patientId){
         FallDao fallDao = new FallDao(Main.configuration);
         List<Fall> fall = fallDao.fetchByPatId(patientId);
-
-        //Keys.FK_FALL_MED_PERSONAL1.
         return FXCollections.observableArrayList(fall);
     }
 
+    /**
+     * Collects the Medical staff from the Database and saves them in a observable Array List from Type MedPersonal pojo
+     * @return the Medical staff
+     */
     public static ObservableList<MedPersonal> medPersonal(){
         MedPersonalDao medPersonalDao = new MedPersonalDao(Main.configuration);
         List<MedPersonal> medPersonalList = medPersonalDao.findAll();
-
         return FXCollections.observableArrayList(medPersonalList);
     }
 
 
+    /**
+     * Collects all Operations from the Database and saves them in a observable Array List from Type Operation pojo
+     * @param id Case ID from the selected Case in the Table view
+     * @return all Operations by Case
+     */
     public static ObservableList<Operation> operationView(Integer id){
         OperationDao operationDao = new OperationDao(Main.configuration);
         List<Operation> operation = operationDao.fetchByFallId(id);
@@ -403,16 +435,23 @@ public class OverviewController {
 
     }
 
+    /**
+     * Deletes an selected Operation (sets storniert true) and updates this Operation
+     *
+     */
     @FXML
-    void storniereOP(ActionEvent event) {
+    void storniereOP() {
         opListOperation.getSelectionModel().getSelectedItem().setStorniert(true); // TODO: 25.11.21 stornierte Ops nicht anzeigen
         Operation operation = opListOperation.getSelectionModel().getSelectedItem();
         OperationDao operationDao = new OperationDao(Main.configuration);
         operationDao.update(operation);
     }
 
+    /**
+     * Shows all deleted Operations in the Table View
+     */
     @FXML
-    void showStornierteOp(MouseEvent event) {
+    void showStornierteOp() {
         if(stornierteOperation.isSelected()) {
             OperationDao operationDao = new OperationDao(Main.configuration);
             List<Operation> operation = operationDao.fetchByStorniert(true);
@@ -424,57 +463,8 @@ public class OverviewController {
         }
     }
 
-   /* private void setCaseFallTyp(){
-        Callback<ListView<FallTypSt>, ListCell<jooq.tables.FallTypSt>> cellFactory = new Callback<>() {
-            @Override
-            public ListCell<OpsCodeSt> call(ListView<OpsCodeSt> medPersonalListView) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(OpsCodeSt opsCodeSt, boolean empty) {
-                        super.updateItem(opsCodeSt, empty);
-                        if (opsCodeSt == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            setText(opsCodeSt.getOpsCode() + " " + opsCodeSt.getBeschreibung());
-                        }
-                    }
-                };
-            }
-        };
-        procedureOpsCode.setButtonCell(cellFactory.call(null));
-        procedureOpsCode.setCellFactory(cellFactory);
-        procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
+    public static Integer getOpId() {
+        return opId;
     }
-*/
-    /*private void insertNewOperation(int opID) {
-        LocalDateTime beginn;
-        LocalDateTime ende;
-        Integer       bauchtuecherPrae;
-        Integer       bauchtuecherPost;
-        LocalDateTime schnittzeit;
-        LocalDateTime nahtzeit;
-        LocalDateTime erstellZeit;
-        LocalDateTime bearbeiterZeit;
-        Byte          storniert;
-        Integer       fallId;
-        Integer       opSaal;
-        Integer       narkoseSt;
-        Integer       opTypSt;
-        String        ersteller;
-        String        bearbeiter;
-
-        Operation operation = new Operation(opID,beginn,ende,bauchtuecherPrae,bauchtuecherPost,schnittzeit,nahtzeit,
-                erstellZeit,bearbeiterZeit,storniert,fallId,opSaal,narkoseSt,opTypSt,ersteller,bearbeiter);
-        OperationDao operationDao = new OperationDao(Main.configuration);
-        operationDao.insert(operation);
-        // reicht bei update die opID? als schlüssel
-    }*/
-
-	/*
-	 boolean insertEmployee(Employee employee);
-    boolean updateEmployee(Employee employee);
-    boolean deleteEmployee(Employee employee);
-	 */
-
 
 }

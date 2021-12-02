@@ -1,5 +1,12 @@
 package controller;
 
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import jooq.tables.daos.DiagnoseDao;
+import jooq.tables.daos.FallDao;
+import jooq.tables.pojos.Diagnose;
+import jooq.tables.pojos.Fall;
 import main.Main;
 
 import java.io.IOException;
@@ -12,10 +19,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
 import javafx.stage.Stage;
@@ -47,6 +50,12 @@ public class AdmissionController {
 
     @FXML
     private OPController opController;
+
+	@FXML
+	private Button saveBtn;
+
+	private boolean flagOpEdit = false;
+	private Integer opId = null;
 
 //TODO: Nur Patienten, die nicht storniert sind!
 	/**
@@ -100,7 +109,7 @@ public class AdmissionController {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
 		alert.setHeaderText("Fehlende Einträge!");
-		if (opController.getOpCaseId() == null){
+		if (opController.getOpCaseId() == null){ // TODO: 02.12.21 Fall darf null sein wenn man eine Op bearbeitet 
 			alert.setContentText("Es muss ein Fall ausgewählt werden!");
 			alert.showAndWait();
 		}
@@ -113,26 +122,44 @@ public class AdmissionController {
 			alert.showAndWait();
 		}
 		else { //TODO: Op-Beginn muss vor dem Ende sein!
+			String ersteller = MainController.getUserId();
+			LocalDateTime erstellZeit = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
+			String bearbeiter = null;
+			LocalDateTime bearbeiterZeit = null;
+
+			if(flagOpEdit){
+				bearbeiter = MainController.getUserId();
+				bearbeiterZeit = LocalDateTime.now();
+				ersteller = null;
+				erstellZeit = null;
+			}
 			Operation operation = new Operation(
-					null, //opId -> automatisch mit AutoIncrement gesetzt
+					opId, //opId -> automatisch mit AutoIncrement gesetzt
 					opController.getOpDateBegin().getDateTimeValue(), //beginn
 					opController.getOpDateEnd().getDateTimeValue(), //ende
 					opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
 					opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
 					opController.getCutTime().getDateTimeValue(), //schnittzeit
 					opController.getSewTime().getDateTimeValue(), //nahtzeit
-					new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
-					null, //bearbeiterZeit
+					erstellZeit, //erstellZeit
+					bearbeiterZeit, //bearbeiterZeit
 					false, //storniert
 					opController.getOpCaseId(), //fallId
 					opController.getOpRoomCode(), //opSaal
 					opController.getNarkose(), //narkoseSt
 					opController.getOpType(), //opTypSt
-					MainController.getUserId(), //ersteller
-					null //bearbeiter
+					ersteller, //ersteller
+					bearbeiter //bearbeiter
 			);
+
 			OperationDao operationDao = new OperationDao(Main.configuration);
-			operationDao.insert(operation);
+			if(flagOpEdit){
+				operationDao.update(operation);
+			}
+			else {
+				operationDao.insert(operation);
+
+			}
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 			confirm.showAndWait();
@@ -191,4 +218,16 @@ public class AdmissionController {
 			e.printStackTrace();
 		}
 	}
+
+	@FXML
+	public void saveEditOp(ActionEvent event) {
+    	flagOpEdit = true;
+    	opId = OverviewController.getOpId();
+    	create();
+		Node source = (Node) event.getSource();
+		Stage thisStage = (Stage) source.getScene().getWindow();
+		thisStage.close();
+	}
+
+
 }

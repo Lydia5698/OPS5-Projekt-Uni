@@ -2,11 +2,7 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ListCell;
+import javafx.scene.control.*;
 import javafx.util.Callback;
 
 import java.util.List;
@@ -61,6 +57,12 @@ public class OPController{
         }
         return null;
     }
+
+    public void setOpCaseId(Fall fall){
+        opCaseId.getSelectionModel().select(fall);
+    }
+
+
 
     /**
      * This method returns the time and date of the beginning of the operation.
@@ -250,6 +252,5 @@ public class OPController{
 
         System.out.println("Initialize OP-Tab!");
 	}
-    
-    
+
 }

@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
+<?import ExternalFiles.DateTimePicker?>
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DiagnosisController">
 	<children>
       <Button fx:id="btnDiagnose" layoutX="400.0" layoutY="472.0" mnemonicParsing="false" onAction="#createNewDiagnosis" text="Neue Diagnose" />
@@ -53,7 +54,7 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Der verhasste Freitext" GridPane.rowIndex="4" />
             <TextField fx:id="diagnosisFreetext" prefHeight="119.0" prefWidth="400.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Text layoutX="10.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datum" wrappingWidth="41.33447265625" GridPane.rowIndex="2" />
-            <DatePicker fx:id="dateDiagnosis" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <DateTimePicker fx:id="dateDiagnosis" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
       </GridPane>
 	</children>
