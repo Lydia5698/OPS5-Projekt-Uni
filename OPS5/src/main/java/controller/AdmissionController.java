@@ -108,7 +108,7 @@ public class AdmissionController {
 	public void create() {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
-		if (opController.getOpCaseId() == null){ //TODO: 02.12.21 Fall darf null sein wenn man eine Op bearbeitet
+		if (opController.getOpCaseId() == null){
 			alert.setHeaderText("Fehlende Einträge!");
 			alert.setContentText("Es muss ein Fall ausgewählt werden!");
 			alert.showAndWait();
@@ -156,50 +156,67 @@ public class AdmissionController {
 			}
 		}
 		else { //TODO: Op-Beginn muss vor dem Ende sein!
-			String ersteller = MainController.getUserId();
-			LocalDateTime erstellZeit = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
-			String bearbeiter = null;
-			LocalDateTime bearbeiterZeit = null;
 
-			if(flagOpEdit){
-				bearbeiter = MainController.getUserId();
-				bearbeiterZeit = LocalDateTime.now();
-				ersteller = null;
-				erstellZeit = null;
-			}
 			Operation operation = new Operation(
-					opId, //opId -> automatisch mit AutoIncrement gesetzt
+					null, //opId -> automatisch mit AutoIncrement gesetzt
 					opController.getOpDateBegin(), //beginn
 					opController.getOpDateEnd(), //ende
 					opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
 					opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
 					opController.getCutTime(), //schnittzeit
 					opController.getSewTime(), //nahtzeit
-					erstellZeit,
-					bearbeiterZeit, //bearbeiterZeit
+					new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
+					null, //bearbeiterZeit
 					false, //storniert
 					opController.getOpCaseId(), //fallId
 					opController.getOpRoomCode(), //opSaal
 					opController.getNarkose(), //narkoseSt
 					opController.getOpType(), //opTypSt
-					ersteller, //ersteller
-					bearbeiter //bearbeiter
+					MainController.getUserId(), //ersteller
+					null //bearbeiter
 			);
 
 			OperationDao operationDao = new OperationDao(Main.configuration);
-			if(flagOpEdit){
-				operationDao.update(operation);
-			}
-			else {
-				operationDao.insert(operation);
+			operationDao.insert(operation);
 
-			}
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 			confirm.showAndWait();
 			clearFields();
 		}
 		System.out.println("Creating OP!");
+	}
+
+	/**
+	 * Edits an existing Operation
+	 */
+	public void editOperation(){
+
+		Operation operation = new Operation(
+				opId, //opId -> the operation to be edited
+				opController.getOpDateBegin(), //beginn
+				opController.getOpDateEnd(), //ende
+				opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
+				opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
+				opController.getCutTime(), //schnittzeit
+				opController.getSewTime(), //nahtzeit
+				null, //erstellZeit
+				LocalDateTime.now(), //bearbeiterZeit
+				false, //storniert
+				opController.getOpCaseId(), //fallId
+				opController.getOpRoomCode(), //opSaal
+				opController.getNarkose(), //narkoseSt
+				opController.getOpType(), //opTypSt
+				null, //ersteller
+				MainController.getUserId() //bearbeiter
+		);
+		OperationDao operationDao = new OperationDao(Main.configuration);
+		operationDao.update(operation);
+
+		Alert confirm = new Alert(AlertType.INFORMATION);
+		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+		confirm.showAndWait();
+
 	}
 
 	/**
@@ -262,11 +279,17 @@ public class AdmissionController {
     	opController.clearFields();
 	}
 
+	/**
+	 *  Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
+	 * 	the Operation. The Operation is edited and the Window closes
+	 * 	@param event the event of pushing the Speichern Button
+	 *
+	 */
 	@FXML
 	public void saveEditOp(ActionEvent event) {
     	flagOpEdit = true;
     	opId = OverviewController.getOpId();
-    	create();
+    	editOperation();
 		Node source = (Node) event.getSource();
 		Stage thisStage = (Stage) source.getScene().getWindow();
 		thisStage.close();

@@ -12,7 +12,7 @@ import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
 
 
 public class Server {
-    int port = 1011;
+ /*   int port = 1011;
     boolean useTls = false;
     HapiContext context = new DefaultHapiContext();
     HL7Service server = context.newServer(port, useTls);
@@ -46,4 +46,6 @@ public class Server {
     connection.close();
 
     server.stopAndWait();
+    */
+
 }
