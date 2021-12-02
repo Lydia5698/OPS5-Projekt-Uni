@@ -79,8 +79,8 @@ public class FallController {
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
 
-        patient.setEditable(true);
-        TextFields.bindAutoCompletion(patient.getEditor(),patient.getItems());
+        //patient.setEditable(true);
+        //TextFields.bindAutoCompletion(patient.getEditor(),patient.getItems());
     }
 
     /**
@@ -168,6 +168,22 @@ public class FallController {
             if (fall.getPatId() == null) {
                 alert.setContentText("Es wurde kein Patient ausgewählt!");
                 alert.showAndWait();
+            }
+            else if(fall.getEntlassungsdatum() != null){
+                if(fall.getAufnahmedatum() == null){
+                    if(fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
+                        alert.setHeaderText("Falscher Eintrag!");
+                        alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
+                        alert.showAndWait();
+                    }
+                }
+                else {
+                    if (fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())) {
+                        alert.setHeaderText("Falscher Eintrag!");
+                        alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
+                        alert.showAndWait();
+                    }
+                }
             }
             else {
                 //if the aufnahmedatum is null set it to the current date and time

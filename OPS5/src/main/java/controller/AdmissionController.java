@@ -99,12 +99,53 @@ public class AdmissionController {
 	public void create() {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
-		alert.setHeaderText("Fehlende Einträge!");
 		if (opController.getOpCaseId() == null){
+			alert.setHeaderText("Fehlende Einträge!");
 			alert.setContentText("Es muss ein Fall ausgewählt werden!");
 			alert.showAndWait();
+		}//Op-Ende vor Op-Start
+		else if(opController.getOpDateEnd() != null && opController.getOpDateBegin() != null){
+			if(opController.getOpDateEnd().isBefore(opController.getOpDateBegin())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Das Op-Ende kann nicht vor dem Op-Start sein!");
+				alert.showAndWait();
+			}
+		}//Schnittzeit vor Op-Beginn
+		else if(opController.getOpDateBegin() != null && opController.getCutTime() != null){
+			if(opController.getOpDateBegin().isAfter(opController.getCutTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Schnittzeit kann nicht vor dem Op-Start sein!");
+				alert.showAndWait();
+			}
+		}//Schnittzeit nach Op-Ende
+		else if(opController.getOpDateEnd() != null && opController.getCutTime() != null){
+			if(opController.getOpDateEnd().isBefore(opController.getCutTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Schnittzeit kann nicht nach dem Op-Ende sein!");
+				alert.showAndWait();
+			}
+		}//Nahtzeit vor Op-Beginn
+		else if(opController.getOpDateBegin() != null && opController.getSewTime() != null){
+			if(opController.getOpDateBegin().isAfter(opController.getSewTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Nahtzeit kann nicht vor dem Op-Start sein!");
+				alert.showAndWait();
+			}
+		}//Nahtzeit vor Schnittzeit
+		else if(opController.getCutTime() != null && opController.getSewTime() != null){
+			if(opController.getCutTime().isAfter(opController.getSewTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Nahtzeit kann nicht vor der Schnittzeit sein!");
+				alert.showAndWait();
+			}
+		}//Nahtzeit nach Op-Ende
+		else if(opController.getOpDateEnd() != null && opController.getSewTime() != null){
+			if(opController.getOpDateEnd().isBefore(opController.getSewTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
+				alert.showAndWait();
+			}
 		}
-		// TODO Änderung in meinen Aufau!!!
 		else { //TODO: Op-Beginn muss vor dem Ende sein!
 			Operation operation = new Operation(
 					null, //opId -> automatisch mit AutoIncrement gesetzt
