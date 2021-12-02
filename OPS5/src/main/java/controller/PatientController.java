@@ -11,6 +11,7 @@ import main.Main;
 import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 
 public class PatientController{
@@ -93,13 +94,22 @@ public class PatientController{
             //checking for values which can not be null (in this case it is the patients first and lastname)
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("Fehlende Einträge!");
             if (patient.getVorname().equals("")) {
+                alert.setHeaderText("Fehlende Einträge!");
                 alert.setContentText("Der Vorname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
             } else if (patient.getName().equals("")) {
+                alert.setHeaderText("Fehlende Einträge!");
                 alert.setContentText("Der Nachname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
+            }
+            //invalid birthdate
+            else if(patientBirthdate != null){
+                if(patientBirthdate.getValue().isAfter(LocalDate.now())){
+                    alert.setHeaderText("Falscher Eintrag!");
+                    alert.setContentText("Das gewählte Geburtsdatum liegt in der Zukunft!");
+                    alert.showAndWait();
+                }
             }
             else {
                 patientDao.insert(patient);

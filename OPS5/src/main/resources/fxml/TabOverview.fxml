@@ -18,10 +18,10 @@
             	<TableColumn fx:id="paBirthdate" prefWidth="96.0" text="Geburtsdatum" />
                 <TableColumn fx:id="paBlutgruppe" prefWidth="96.0" text="Blutgruppe" />
                 <TableColumn fx:id="paGeschlecht" prefWidth="96.0" text="Geschlecht" />
-                <TableColumn fx:id="paBearbeiter" prefWidth="96.0" text="Bearbeiter" />
-                <TableColumn fx:id="paBearbeiterzeit" prefWidth="96.0" text="Bearbeiterzeit" />
-                <TableColumn fx:id="paErsteller" prefWidth="96.0" text="Ersteller" />
-                <TableColumn fx:id="paErstellzeit" prefWidth="96.0" text="Erstellzeit" />
+                <TableColumn fx:id="paBearbeiter" prefWidth="150.0" text="Bearbeiter" />
+                <TableColumn fx:id="paBearbeiterzeit" prefWidth="140.0" text="Bearbeiterzeit" />
+                <TableColumn fx:id="paErsteller" prefWidth="150.0" text="Ersteller" />
+                <TableColumn fx:id="paErstellzeit" prefWidth="140.0" text="Erstellzeit" />
                 <TableColumn fx:id="paStorniert" prefWidth="96.0" text="Storniert" />
                 <TableColumn fx:id="paGeburtsort" prefWidth="96.0" text="Geburtsort" />
                 <TableColumn fx:id="paStrasse" prefWidth="96.0" text="Strasse" />
@@ -35,12 +35,12 @@
             <TableColumn fx:id="fallIDCol" maxWidth="500.0" prefWidth="45.0" text="Fall-ID" />
             <TableColumn fx:id="aufnahmeCol" maxWidth="700.0" minWidth="30.0" prefWidth="140.0" text="Aufnahmedatum" />
             <TableColumn fx:id="entlassungCol" prefWidth="140.0" text="Entlassungsdatum" />
-            <TableColumn fx:id="patientenIDCol" text="Patienten-ID" />
+            <TableColumn fx:id="patientenIDCol" text="Patienten" />
             <TableColumn fx:id="stationCol" prefWidth="75.0" text="Station" />
             <TableColumn fx:id="fallTypCol" prefWidth="115.0" text="Stationär/Ambulant" />
-            <TableColumn fx:id="erstellerCol" prefWidth="75.0" text="Ersteller" />
+            <TableColumn fx:id="erstellerCol" prefWidth="150.0" text="Ersteller" />
             <TableColumn fx:id="erstellzeitCol" prefWidth="140.0" text="Erstellzeit" />
-            <TableColumn fx:id="bearbeiterCol" prefWidth="75.0" text="Bearbeiter" />
+            <TableColumn fx:id="bearbeiterCol" prefWidth="150.0" text="Bearbeiter" />
             <TableColumn fx:id="bearbeiterzeitCol" prefWidth="140.0" text="Bearbeiterzeit" />
             <TableColumn fx:id="storniertCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>
@@ -58,11 +58,11 @@
             <TableColumn fx:id="bauchtuecherPostCol" prefWidth="110.0" text="Bauchtücher Post" />
             <TableColumn fx:id="schnittzeitCol" prefWidth="140.0" text="Schnittzeit" />
             <TableColumn fx:id="nahtzeitCol" prefWidth="140.0" text="Nahtzeit" />
-            <TableColumn fx:id="opTypCol" prefWidth="75.0" text="OP Typ" />
-            <TableColumn fx:id="narkoseCol" prefWidth="75.0" text="Narkose" />
-            <TableColumn fx:id="erstellerOPCol" prefWidth="75.0" text="Ersteller" />
+            <TableColumn fx:id="opTypCol" prefWidth="130.0" text="OP Typ" />
+            <TableColumn fx:id="narkoseCol" prefWidth="130.0" text="Narkose" />
+            <TableColumn fx:id="erstellerOPCol" prefWidth="150.0" text="Ersteller" />
             <TableColumn fx:id="erstellzeitOPCol" prefWidth="140.0" text="Erstellzeit" />
-            <TableColumn fx:id="bearbeiterOPCol" prefWidth="75.0" text="Bearbeiter" />
+            <TableColumn fx:id="bearbeiterOPCol" prefWidth="150.0" text="Bearbeiter" />
             <TableColumn fx:id="bearbeiterzeitOPCol" prefWidth="140.0" text="Bearbeiterzeit" />
             <TableColumn fx:id="storniertOPCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>

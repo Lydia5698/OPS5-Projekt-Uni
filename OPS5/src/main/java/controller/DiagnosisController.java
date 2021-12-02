@@ -1,4 +1,5 @@
 package controller;
+import ExternalFiles.Converter;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,7 +51,7 @@ public class DiagnosisController {
 	private TableColumn<Diagnose, Integer> opIDCol;
 
 	@FXML
-	private TableColumn<Diagnose, Integer> diagnosetypCol;
+	private TableColumn<Diagnose, String> diagnosetypCol;
 
 	@FXML
 	private TableColumn<Diagnose, String> icdCol;
@@ -125,10 +126,10 @@ public class DiagnosisController {
 		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
 		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
 		opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
-		diagnosetypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getDiagnosetyp()));
+		diagnosetypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.diagnoseTypConverter(features.getValue().getDiagnosetyp())));
 		icdCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getIcd10Code()));
-		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErsteller()));
-		bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiter()));
+		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
+		bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
 	}
 
 	private void insertNewDiagnose() {

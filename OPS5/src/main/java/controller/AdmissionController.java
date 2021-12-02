@@ -82,7 +82,7 @@ public class AdmissionController {
 	public void initialize() {
 		selectPatient.setOnAction(new EventHandler<ActionEvent>(){
 			public void handle(ActionEvent e){
-				opController.setCase(selectPatient.getValue().getPatId());
+				if(selectPatient.getValue() != null){opController.setCase(selectPatient.getValue().getPatId());}
 			}
 		});
 		setPatient();
@@ -99,28 +99,62 @@ public class AdmissionController {
 	public void create() {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
-		alert.setHeaderText("Fehlende Einträge!");
 		if (opController.getOpCaseId() == null){
+			alert.setHeaderText("Fehlende Einträge!");
 			alert.setContentText("Es muss ein Fall ausgewählt werden!");
 			alert.showAndWait();
-		}
-		else if(opController.getOpDateBegin().getDateTimeValue() == null){
-			alert.setContentText("Es muss ein gültiger Beginn eingetragen werden!");
-			alert.showAndWait();
-		}
-		else if(opController.getOpDateEnd().getDateTimeValue() == null){
-			alert.setContentText("Es muss ein gültiges Ende eingetragen werden!");
-			alert.showAndWait();
+		}//Op-Ende vor Op-Start
+		else if(opController.getOpDateEnd() != null && opController.getOpDateBegin() != null){
+			if(opController.getOpDateEnd().isBefore(opController.getOpDateBegin())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Das Op-Ende kann nicht vor dem Op-Start sein!");
+				alert.showAndWait();
+			}
+		}//Schnittzeit vor Op-Beginn
+		else if(opController.getOpDateBegin() != null && opController.getCutTime() != null){
+			if(opController.getOpDateBegin().isAfter(opController.getCutTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Schnittzeit kann nicht vor dem Op-Start sein!");
+				alert.showAndWait();
+			}
+		}//Schnittzeit nach Op-Ende
+		else if(opController.getOpDateEnd() != null && opController.getCutTime() != null){
+			if(opController.getOpDateEnd().isBefore(opController.getCutTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Schnittzeit kann nicht nach dem Op-Ende sein!");
+				alert.showAndWait();
+			}
+		}//Nahtzeit vor Op-Beginn
+		else if(opController.getOpDateBegin() != null && opController.getSewTime() != null){
+			if(opController.getOpDateBegin().isAfter(opController.getSewTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Nahtzeit kann nicht vor dem Op-Start sein!");
+				alert.showAndWait();
+			}
+		}//Nahtzeit vor Schnittzeit
+		else if(opController.getCutTime() != null && opController.getSewTime() != null){
+			if(opController.getCutTime().isAfter(opController.getSewTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Nahtzeit kann nicht vor der Schnittzeit sein!");
+				alert.showAndWait();
+			}
+		}//Nahtzeit nach Op-Ende
+		else if(opController.getOpDateEnd() != null && opController.getSewTime() != null){
+			if(opController.getOpDateEnd().isBefore(opController.getSewTime())){
+				alert.setHeaderText("Falscher Eintrag!");
+				alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
+				alert.showAndWait();
+			}
 		}
 		else { //TODO: Op-Beginn muss vor dem Ende sein!
 			Operation operation = new Operation(
 					null, //opId -> automatisch mit AutoIncrement gesetzt
-					opController.getOpDateBegin().getDateTimeValue(), //beginn
-					opController.getOpDateEnd().getDateTimeValue(), //ende
+					opController.getOpDateBegin(), //beginn
+					opController.getOpDateEnd(), //ende
 					opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
 					opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
-					opController.getCutTime().getDateTimeValue(), //schnittzeit
-					opController.getSewTime().getDateTimeValue(), //nahtzeit
+					opController.getCutTime(), //schnittzeit
+					opController.getSewTime(), //nahtzeit
 					new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
 					null, //bearbeiterZeit
 					false, //storniert
@@ -136,6 +170,7 @@ public class AdmissionController {
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 			confirm.showAndWait();
+			clearFields();
 		}
 		System.out.println("Creating OP!");
 	}
@@ -190,5 +225,13 @@ public class AdmissionController {
 		}catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * after succussfully insertion of operation set all fields to default
+	 */
+	private void clearFields(){
+    	selectPatient.getSelectionModel().clearSelection();
+    	opController.clearFields();
 	}
 }

@@ -1,18 +1,10 @@
 package controller;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ListCell;
+import javafx.scene.control.*;
 import javafx.util.Callback;
 
-import java.util.List;
-import java.util.Collections;
+import java.time.LocalDateTime;
 
-import jooq.Tables;
 import jooq.tables.daos.FallDao;
 import jooq.tables.pojos.Fall;
 import jooq.tables.daos.OpTypStDao;
@@ -22,9 +14,6 @@ import jooq.tables.pojos.OpSaalSt;
 import jooq.tables.daos.NarkoseStDao;
 import jooq.tables.pojos.NarkoseSt;
 import main.Main;
-import org.jooq.Record1;
-import org.jooq.Result;
-import org.jooq.impl.DSL;
 
 import ExternalFiles.DateTimePicker;
 
@@ -55,6 +44,10 @@ public class OPController{
     @FXML
     private Spinner<Integer> towelsAfter = new Spinner<Integer>(0,100,0);
 
+    /**
+     * This method returns the integer of the selected integer
+     * @return the integer of the selected op case
+     */
     public Integer getOpCaseId() {
         if(opCaseId.getSelectionModel().getSelectedItem() != null){
             return opCaseId.getSelectionModel().getSelectedItem().getFallId();
@@ -66,13 +59,28 @@ public class OPController{
      * This method returns the time and date of the beginning of the operation.
      * @return an DateTimePicker object with the selected beginning time.
      */
-    public DateTimePicker getOpDateBegin() {return opDateBegin;}
+    public LocalDateTime getOpDateBegin() {
+        if(opDateBegin.getDateTimeValue() != null){
+            return opDateBegin.getDateTimeValue();
+        }
+        else{
+            return null;
+        }
+    }
+
 
     /**
      * This method returns the time and date of the ending of the operation.
      * @return an DateTimePicker object with the selected ending time.
      */
-    public DateTimePicker getOpDateEnd() {return opDateEnd;}
+    public LocalDateTime getOpDateEnd() {
+        if(opDateEnd.getDateTimeValue() != null){
+            return opDateEnd.getDateTimeValue();
+        }
+        else{
+            return null;
+        }
+    }
 
     /**
      * Getter for the operation type.
@@ -111,13 +119,27 @@ public class OPController{
      * Getter for the cutting time.
      * @return an DateTimePicker object with the selected cutting time.
      */
-    public DateTimePicker getCutTime() {return cutTime;}
+    public LocalDateTime getCutTime() {
+        if(cutTime.getDateTimeValue() != null){
+            return cutTime.getDateTimeValue();
+        }
+        else{
+            return null;
+        }
+    }
 
     /**
      * Getter for the sewing time.
      * @return an DateTimePicker object with the selected sewing time.
      */
-    public DateTimePicker getSewTime() {return sewTime;}
+    public LocalDateTime getSewTime() {
+        if(sewTime.getDateTimeValue() != null){
+            return sewTime.getDateTimeValue();
+        }
+        else{
+            return null;
+        }
+    }
 
     /**
      * Getter for the amount of belly towels before the operation.
@@ -162,9 +184,9 @@ public class OPController{
 
     /**
      * This method is called when initialising the window.
-     * It sets all case types of the database as choosing options of the combobox.
+     * It sets all types of operations of the database as choosing options of the combobox.
      */
-    private void setFallTyp() {
+    private void setOpTyp() {
         Callback<ListView<OpTypSt>, ListCell<OpTypSt>> cellFactory = new Callback<>() {
             @Override
             public ListCell<OpTypSt> call(ListView<OpTypSt> caseTypListView) {
@@ -243,13 +265,30 @@ public class OPController{
     @FXML
 	public void initialize() {
 
-        setFallTyp();
+        setOpTyp();
         setOpSaal();
         setNarkose();
         setCase(null);
+        opDateEnd.getEditor().clear();
+        cutTime.getEditor().clear();
+        sewTime.getEditor().clear();
 
         System.out.println("Initialize OP-Tab!");
 	}
-    
+
+    /**
+     * after the successfully insertion of an operation set all fields to default
+     */
+	public void clearFields(){
+        opType.getSelectionModel().clearSelection();
+        opRoom.getSelectionModel().clearSelection();
+        narkose.getSelectionModel().clearSelection();
+        opCaseId.getSelectionModel().clearSelection();
+        opDateEnd.getEditor().clear();
+        cutTime.getEditor().clear();
+        sewTime.getEditor().clear();
+        towelsBefore.decrement(towelsBefore.getValue());
+        towelsAfter.decrement(towelsAfter.getValue());
+    }
     
 }

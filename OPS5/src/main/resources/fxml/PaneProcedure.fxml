@@ -19,9 +19,9 @@
             <TableColumn fx:id="opIDCol" prefWidth="44.0" text="Op-ID" />
             <TableColumn fx:id="opsCol" prefWidth="191.0" text="OPS-Code" />
             <TableColumn fx:id="anmerkungCol" prefWidth="500.0" text="Anmerkung" />
-            <TableColumn fx:id="erstellerCol" minWidth="0.0" prefWidth="75.0" text="Ersteller" />
+            <TableColumn fx:id="erstellerCol" minWidth="0.0" prefWidth="150.0" text="Ersteller" />
             <TableColumn fx:id="erstelltzeitCol" prefWidth="140.0" text="Erstellzeit" />
-            <TableColumn fx:id="bearbeiterCol" prefWidth="75.0" text="Bearbeiter" />
+            <TableColumn fx:id="bearbeiterCol" prefWidth="150.0" text="Bearbeiter" />
             <TableColumn fx:id="bearbeiterzeitCol" prefWidth="140.0" text="Bearbeiterzeit" />
             <TableColumn fx:id="storniertCol" text="Storniert" />
          </columns>
