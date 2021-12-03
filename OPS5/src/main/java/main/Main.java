@@ -1,5 +1,8 @@
 package main;
 
+import ca.uhn.hl7v2.DefaultHapiContext;
+import ca.uhn.hl7v2.HapiContext;
+import ca.uhn.hl7v2.parser.PipeParser;
 import controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +27,12 @@ public class Main extends Application{
    public static String userName = "pmiw21g05";
    public static String password = "IL6CgkzEMcNY99TD";
    public static String url = "jdbc:mariadb://dbstudents01.imi.uni-luebeck.de:3306/pmiw21g05_v01";
+
+    /**
+     * the hapicontext and the parser are needed for the communication with the kis
+     */
+    public static HapiContext context = new DefaultHapiContext();
+    public static PipeParser p = context.getPipeParser();
 
 
     /**
