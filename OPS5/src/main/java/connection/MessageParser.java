@@ -1,6 +1,8 @@
 package connection;
 
 
+import ca.uhn.hl7v2.model.DataTypeException;
+import ca.uhn.hl7v2.model.v251.message.BAR_P05;
 import ca.uhn.hl7v2.model.v251.segment.PV1;
 import jooq.tables.pojos.Patient;
 import main.Main;
@@ -30,28 +32,25 @@ public class MessageParser {
             PV1 pv1 = adtMsg.getPV1();
 
             Patient patient = new Patient();
-            patient.setName(pid.getPid5_PatientName(0).getFamilyName().getName());
-            patient.setVorname(pid.getPid5_PatientName(0).getGivenName().getValue());
-            patient.setGeburtsdatum(LocalDateTime.parse(pid.getPid7_DateTimeOfBirth().toString()).toLocalDate());
+            patient.setName(pid.getPatientName(0).getFamilyName().getSurname().getValue());
+            patient.setVorname(pid.getPatientName(0).getGivenName().getValue());
+            patient.setGeburtsdatum(LocalDateTime.parse(pid.getDateTimeOfBirth().toString()).toLocalDate());
             //patient.setBlutgruppe();
-            patient.setGeschlecht(pid.getPid8_AdministrativeSex().getValue());
+            patient.setGeschlecht(pid.getAdministrativeSex().getValue());
             patient.setStorniert(false);
-            patient.setGeburtsort(pid.getPid23_BirthPlace().getValue());
-            patient.setStrasse(pid.getPid11_PatientAddress(0).getStreetAddress().toString());
-            patient.setPostleitzahl(pid.getPid11_PatientAddress(0).getXad5_ZipOrPostalCode().getValue());
-            patient.setTelefonnummer(pid.getPid13_PhoneNumberHome().toString());
+            patient.setGeburtsort(pid.getBirthPlace().getValue());
+            patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().toString());
+            patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
+            patient.setTelefonnummer(pid.getPhoneNumberHome().toString());
 
+            //patient.setErsteller();
+            //patient.setErstellZeit();
+            //patient.setBearbeiter();
+            //patient.setBearbeiterZeit();
 
-            String msgType = msh.getMessageType().toString();
-            String msgTrigger = msh.getMessageType().getTriggerEvent().getValue();
-            // Prints "ADT A01"
-            System.out.println(msgType + " " + msgTrigger);
+            //TODO erstellzeitpunk = aufnahmezeitpunkt oder Messagezeitpunkt?
+            return patient;
 
-            //PN patientName = adtMsg.getPID().getPatientName().toString();
-
-            // Prints "SMITH"
-            //String familyName = patientName.getFamilyName().getValue();
-            //System.out.println(familyName);
         } catch (EncodingNotSupportedException e) {
             e.printStackTrace();
             return null;
@@ -59,9 +58,18 @@ public class MessageParser {
             e.printStackTrace();
             return null;
         }
-        return null;
     }
 
-    public static void parseBar05(){}
+    public static String parseBar05() throws HL7Exception {
+        BAR_P05 bar05 = new BAR_P05();
+
+        //msh
+        MSH msh = bar05.getMSH();
+        msh.getDateTimeOfMessage().getTime().setValue(LocalDateTime.now().toString());
+        //TODO switch case from edit ?
+
+
+        return Main.p.encode(bar05);
+    }
  }
 
