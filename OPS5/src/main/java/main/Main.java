@@ -31,9 +31,9 @@ public class Main extends Application{
     /**
      * the hapicontext and the parser are needed for the communication with the kis
      */
-    public static HapiContext context = new DefaultHapiContext();
-    public static PipeParser p = context.getPipeParser();
-
+    public static HapiContext hapiContext = new DefaultHapiContext();
+    public static int port = 1011;
+    public static boolean tls = false;
 
     /**
      * this connection is used for the connection to the database

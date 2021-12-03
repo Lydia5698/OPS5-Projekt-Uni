@@ -1,17 +1,70 @@
 package connection;
 
-import java.util.Map;
-import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.app.*;
+import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
+import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
+import main.Main;
+
+import java.io.IOException;
+import java.util.Map;
 
 
 public class Server {
+
+    private HL7Service hapiServer;
+
+    public Server() throws InterruptedException{
+
+        //creating a new server which should listen to the incomming messages
+        hapiServer = Main.hapiContext.newServer(Main.port, Main.tls);
+
+        //handles and listens to adt01 messages
+        hapiServer.registerApplication("ADT", "A01", new ReceivingApplication<>() {
+            @Override
+            public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
+                String encodedMessage = MessageParser.pipeParser.encode(message);
+                try {
+                    return message.generateACK();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            public boolean canProcess(Message message) {
+                return true;
+            }
+        });
+        //the connection listener notifies if the connection gets lost or a new connection has built
+        hapiServer.registerConnectionListener(new ConnectionListener() {
+            @Override
+            public void connectionReceived(Connection connection) {
+                System.out.println("New connection received: " + connection.getRemoteAddress().toString());
+            }
+
+            @Override
+            public void connectionDiscarded(Connection connection) {
+                System.out.println("Lost connection from: " + connection.getRemoteAddress().toString());
+            }
+        });
+        //if a progress failes like the receiving or the process/responde of the message, the exception handler
+        //handles this problem
+        //TODO: show an alert or something if a progress failes
+        hapiServer.setExceptionHandler((s, map, s1, e) -> {
+            //s1 is the negative ackloglegement if the message cant be send
+            return s1;
+        });
+        //with this method the receiver starts to run
+        hapiServer.startAndWait();
+    }
+
+}
+
  /*   int port = 1011;
     boolean useTls = false;
     HapiContext context = new DefaultHapiContext();
@@ -48,4 +101,3 @@ public class Server {
     server.stopAndWait();
     */
 
-}

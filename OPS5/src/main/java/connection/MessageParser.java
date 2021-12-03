@@ -1,9 +1,9 @@
 package connection;
 
 
-import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.message.BAR_P05;
 import ca.uhn.hl7v2.model.v251.segment.PV1;
+import ca.uhn.hl7v2.parser.PipeParser;
 import jooq.tables.pojos.Patient;
 import main.Main;
 
@@ -21,9 +21,11 @@ import java.time.LocalDateTime;
 
 public class MessageParser {
 
+    public static PipeParser pipeParser = Main.hapiContext.getPipeParser();
+
     public static Patient parseA01(String a01Message){
         try {
-            Message hapiMsg = Main.p.parse(a01Message);
+            Message hapiMsg = pipeParser.parse(a01Message);
             ADT_A01 adtMsg = (ADT_A01)hapiMsg;
 
             MSH msh = adtMsg.getMSH();
@@ -69,7 +71,7 @@ public class MessageParser {
         //TODO switch case from edit ?
 
 
-        return Main.p.encode(bar05);
+        return pipeParser.encode(bar05);
     }
  }
 
