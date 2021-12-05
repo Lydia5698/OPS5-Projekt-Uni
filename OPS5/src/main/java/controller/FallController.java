@@ -1,5 +1,6 @@
 package controller;
 
+import ExternalFiles.Converter;
 import ExternalFiles.DateTimePicker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,7 +16,6 @@ import jooq.tables.pojos.FallTypSt;
 import jooq.tables.pojos.Patient;
 import jooq.tables.pojos.StationSt;
 import main.Main;
-import org.controlsfx.control.textfield.TextFields;
 import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
@@ -59,22 +59,7 @@ public class FallController {
      * can't be null for insert a new case!!
      */
     private void setPatient() {
-        Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
-            @Override
-            public ListCell<Patient> call(ListView<Patient> patientListView) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(Patient pat, boolean empty) {
-                        super.updateItem(pat, empty);
-                        if (pat == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            setText(pat.getName() + ", " + pat.getVorname());
-                        }
-                    }
-                };
-            }
-        };
+        Callback<ListView<Patient>, ListCell<Patient>> cellFactory = Converter.getPatient();
         patient.setButtonCell(cellFactory.call(null));
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
