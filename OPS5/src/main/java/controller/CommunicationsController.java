@@ -1,5 +1,9 @@
 package controller;
 import ExternalFiles.Converter;
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.llp.LLPException;
+import ca.uhn.hl7v2.model.Message;
+import connection.MessageParser;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -10,6 +14,8 @@ import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
 import main.Main;
+
+import java.io.IOException;
 
 public class CommunicationsController {
 	
@@ -87,10 +93,42 @@ public class CommunicationsController {
 
     }
 
+    /**
+     * when the user pushes the button the selected patient/operation will be sent to the kis
+     * @throws HL7Exception if the message cannot be sent to the kis
+     * @throws LLPException if the message cannot be sent to the kis
+     * @throws IOException if the message cannot be sent to the kis
+     */
     @FXML
-	public void send() {
+	public void send() throws HL7Exception, LLPException, IOException {
     	System.out.println("Sending something!");
-    	//Client.sendMessage()
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+
+        if(communicationsType.getValue().equals(null)){
+            alert.setHeaderText("Nichts ausgewählt!");
+            alert.setContentText("Es muss etwas ausgewählt werden, dass verschickt werden soll!");
+            alert.showAndWait();
+        }
+        else if(communicationsType.getValue().equals("Patient")){
+            if(communicationsObjectPatient.getValue() == null){
+                alert.setHeaderText("Kein Patient ausgewählt!");
+                alert.setContentText("Es muss ein Patient ausgewählt werden, der verschickt werden soll!");
+                alert.showAndWait();
+            } else{
+                Main.client.sendMessage(MessageParser.parseBar05Patient(communicationsObjectPatient.getValue()));
+            }
+        }
+        else{
+            if(communicationsObjectOperation.getValue() == null){
+                alert.setHeaderText("Keine Operation ausgewählt!");
+                alert.setContentText("Es muss eine Operation ausgewählt werden, die verschickt werden soll!");
+                alert.showAndWait();
+            } else{
+                Main.client.sendMessage(MessageParser.parseBar05Operation(communicationsObjectOperation.getValue()));
+            }
+        }
+
     }
     
 

@@ -1,8 +1,11 @@
 package main;
 
 import ca.uhn.hl7v2.DefaultHapiContext;
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.parser.PipeParser;
+import connection.Client;
+import connection.Server;
 import controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +38,26 @@ public class Main extends Application{
     public static int port = 1011;
     public static boolean tls = false;
 
+    public static Client client;
+
+    static {
+        try {
+            client = new Client();
+        } catch (HL7Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Server server;
+
+    static {
+        try {
+            server = new Server();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * this connection is used for the connection to the database
      */
@@ -57,8 +80,11 @@ public class Main extends Application{
     public static DSLContext dslContext = DSL.using(connection, SQLDialect.MARIADB);
 
     public static Configuration configuration = new DefaultConfiguration().set(connection).set(SQLDialect.MARIADB);
-   
-   public static void main(String[] args) {
+
+    public Main() throws HL7Exception, InterruptedException {
+    }
+
+    public static void main(String[] args) {
 			Application.launch(Main.class, args);
 	   }
    

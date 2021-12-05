@@ -7,6 +7,8 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
+import jooq.tables.daos.PatientDao;
+import jooq.tables.pojos.Patient;
 import main.Main;
 
 import java.io.IOException;
@@ -26,9 +28,16 @@ public class Server {
         hapiServer.registerApplication("ADT", "A01", new ReceivingApplication<>() {
             @Override
             public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
-                String encodedMessage = MessageParser.pipeParser.encode(message);
+                //String encodedMessage = MessageParser.pipeParser.encode(message);
+                //System.out.println(encodedMessage);
+
+                Patient patient = MessageParser.parseA01(message);
+                PatientDao patientDao = new PatientDao(Main.configuration);
+                patientDao.insert(patient);
+                //TODO valide Abfragen tätigen (not null und geburtstag,...)
                 try {
                     return message.generateACK();
+                    //TODO Ack muss gesendet werden
                 } catch (IOException e) {
                     e.printStackTrace();
                     return null;

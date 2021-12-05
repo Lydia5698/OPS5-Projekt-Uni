@@ -112,9 +112,20 @@ public class Converter {
         if(s == null){return null;}
         else if(s.equals("w")){return "weiblich";}
         else if(s.equals("m")){return "männlich";}
-        else{return "d";}
+        else{return "divers";}
     }
 
+    /**
+     * converts the sex into the iss standard for the hl7 message
+     * @param s String from the sex of our database logic
+     * @return the string of the sex for the iss standard
+     */
+    public static String IssSexConverter(String s){
+        if(s == null){return null;}
+        else if(s.equals("w")){return "F";}
+        else if(s.equals("m")){return "M";}
+        else{return "O";}
+    }
     /**
      * creates a callback from all patients which prints only the last and first name of each patient
      * @return the callback
