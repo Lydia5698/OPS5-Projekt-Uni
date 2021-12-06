@@ -2,7 +2,6 @@ package controller;
 import ExternalFiles.Converter;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.llp.LLPException;
-import ca.uhn.hl7v2.model.Message;
 import connection.MessageParser;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -80,7 +79,7 @@ public class CommunicationsController {
                             if (op == null || empty) {
                                 setGraphic(null);
                             } else {
-                                setText("OP-ID: " + op.getFallId() + ", " + "Fall-ID: " + op.getFallId() + "(" + Converter.fallIdConverter(op.getFallId()) + ")");
+                                setText("OP-ID: " + op.getFallId() + ", " + "Fall-ID: " + op.getFallId() + "(" + Converter.fallIdToPatientsNameConverter(op.getFallId()) + ")");
                             }
                         }
                     };

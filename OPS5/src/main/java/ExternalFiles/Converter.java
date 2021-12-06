@@ -43,13 +43,24 @@ public class Converter {
      * @param i id from the given case
      * @return the last name and first name from the patient
      */
-    public static String fallIdConverter(Integer i){
+    public static String fallIdToPatientsNameConverter(Integer i){
         FallDao fallDao = new FallDao(Main.configuration);
         Fall fall = fallDao.findById(i);
         Integer patId = fall.getPatId();
         PatientDao patientDao = new PatientDao(Main.configuration);
         Patient patient = patientDao.findById(patId);
         return patient.getName() + ", " + patient.getVorname();
+    }
+
+    /**
+     * fallIdToPatient
+     */
+    public static Patient fallIdToPatientConverter(Integer i){
+        Fall fall = new FallDao(Main.configuration).findById(i);
+        Integer patId = fall.getPatId();
+        PatientDao patientDao = new PatientDao(Main.configuration);
+        Patient patient = patientDao.findById(patId);
+        return patient;
     }
 
     /**

@@ -2,10 +2,11 @@ package connection;
 
 
 import ExternalFiles.Converter;
+import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.message.BAR_P05;
-import ca.uhn.hl7v2.model.v251.segment.PV1;
+import ca.uhn.hl7v2.model.v251.segment.*;
 import ca.uhn.hl7v2.parser.PipeParser;
-import javafx.scene.control.Alert;
+import jooq.tables.daos.FallDao;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
 import main.Main;
@@ -14,12 +15,10 @@ import ca.uhn.hl7v2.HL7Exception;
 
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.ADT_A01;
-import ca.uhn.hl7v2.model.v251.segment.EVN;
-import ca.uhn.hl7v2.model.v251.segment.MSH;
-import ca.uhn.hl7v2.model.v251.segment.PID;
-import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 
+import java.text.Format;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 public class MessageParser {
@@ -46,6 +45,7 @@ public class MessageParser {
         patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
         patient.setTelefonnummer(pid.getPhoneNumberHome().toString());
 
+
         //patient.setErsteller();
         //patient.setErstellZeit();
         //patient.setBearbeiter();
@@ -69,6 +69,11 @@ public class MessageParser {
         //msh
         MSH msh = bar05.getMSH();
         msh.getDateTimeOfMessage().getTime().setValue(LocalDateTime.now().toString());
+        msh.getSendingApplication().getNamespaceID().setValue("OPS");
+        msh.getReceivingApplication().getNamespaceID().setValue("KIS");
+        msh.getMessageType().getMsg1_MessageCode().setValue("BAR");
+        msh.getMessageType().getMsg2_TriggerEvent().setValue("P05");
+        msh.getMessageType().getMsg3_MessageStructure().setValue("BAR_P05");
 
         //pid
         PID pid = bar05.getPID();
@@ -91,8 +96,43 @@ public class MessageParser {
      * @param operation operation which should be casted into a message
      * @return the message of the new operation
      */
-    public static Message parseBar05Operation(Operation operation){
+    public static Message parseBar05Operation(Operation operation) throws DataTypeException {
         BAR_P05 bar05 = new BAR_P05();
+
+        //msh
+        MSH msh = bar05.getMSH();
+        msh.getDateTimeOfMessage().getTime().setValue(LocalDateTime.now().toString());
+        msh.getSendingApplication().getNamespaceID().setValue("OPS");
+        msh.getReceivingApplication().getNamespaceID().setValue("KIS");
+
+        //pid
+        PID pid = bar05.getPID();
+        pid.getPatientID().getCx1_IDNumber().setValue(Converter.fallIdToPatientConverter(operation.getFallId()).getPatId().toString());//TODO wie wollen wir id umsetzen?
+        pid.getPatientName(0).getFamilyName().getSurname().setValue(Converter.fallIdToPatientConverter(operation.getFallId()).getName());
+        pid.getPatientName(0).getGivenName().setValue(Converter.fallIdToPatientConverter(operation.getFallId()).getVorname());
+        pid.getDateTimeOfBirth().getTime().setValue(Converter.fallIdToPatientConverter(operation.getFallId()).getGeburtsdatum().toString());
+        //TODO Blutgruppe
+        pid.getAdministrativeSex().setValue(Converter.IssSexConverter(Converter.fallIdToPatientConverter(operation.getFallId()).getGeschlecht()));
+        pid.getPatientAddress(0).getStreetAddress().getStreetName().setValue(Converter.fallIdToPatientConverter(operation.getFallId()).getStrasse());
+        pid.getPatientAddress(0).getZipOrPostalCode().setValue(Converter.fallIdToPatientConverter(operation.getFallId()).getPostleitzahl());
+        pid.getPhoneNumberHome(0).getTelephoneNumber().setValue(Converter.fallIdToPatientConverter(operation.getFallId()).getTelefonnummer());
+        pid.getBirthPlace().setValue(Converter.fallIdToPatientConverter(operation.getFallId()).getGeburtsort());
+
+        //pv1
+        PV1 pv1 = bar05.getVISIT().getPV1();
+        pv1.getSetIDPV1().setValue(operation.getFallId().toString());
+        //TODO wie wollen wir aufnahmeart
+        pv1.getAdmissionType().setValue(Converter.fallTypConverter(new FallDao(Main.configuration).findById(operation.getFallId()).getFallTyp()));
+        pv1.getAdmitDateTime().getTime().setValue(new FallDao(Main.configuration).findById(operation.getFallId()).getAufnahmedatum().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+
+        //dg1
+        DG1 dg1 = bar05.getVISIT().getDG1();
+
+
+       //pr1
+       PR1 pr1 = bar05.getVISIT().getPROCEDURE().getPR1();
+
+
 
         return bar05;
     }
