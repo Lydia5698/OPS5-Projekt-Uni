@@ -154,7 +154,7 @@ public class AdmissionController {
 				alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
 				alert.showAndWait();
 			}
-		}
+		} // TODO: 06.12.21 else if verhindert das speichern
 		else { //TODO: Op-Beginn muss vor dem Ende sein!
 
 			Operation operation = new Operation(
@@ -190,7 +190,7 @@ public class AdmissionController {
 	/**
 	 * Edits an existing Operation
 	 */
-	public void editOperation(){
+	public void editOperation(){ // TODO: 06.12.21 zeit sachen überprüfen also schnitt nahtzeit etc.
 
 		Operation operation = new Operation(
 				opId, //opId -> the operation to be edited

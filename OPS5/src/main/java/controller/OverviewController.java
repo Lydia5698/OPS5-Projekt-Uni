@@ -219,7 +219,9 @@ public class OverviewController {
             if (event.getClickCount() > 1) {
                 opId = onEditOperation();
                 createAndShowOperationWindow();
+
             }
+            opListOperation.setItems(operationView(onEditCase()));
         });
 
     }
@@ -442,10 +444,19 @@ public class OverviewController {
      */
     @FXML
     void storniereOP() {
-        opListOperation.getSelectionModel().getSelectedItem().setStorniert(true); // TODO: 25.11.21 stornierte Ops nicht anzeigen
-        Operation operation = opListOperation.getSelectionModel().getSelectedItem();
-        OperationDao operationDao = new OperationDao(Main.configuration);
-        operationDao.update(operation);
+        if(opListOperation.getSelectionModel().getSelectedItem() != null){
+            opListOperation.getSelectionModel().getSelectedItem().setStorniert(true); // TODO: 25.11.21 stornierte Ops nicht anzeigen
+            Operation operation = opListOperation.getSelectionModel().getSelectedItem();
+            OperationDao operationDao = new OperationDao(Main.configuration);
+            operationDao.update(operation);
+            opListOperation.setItems(operationView(onEditCase()));
+        }
+        else{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Fehlende Operation");
+            alert.setContentText("Bitte wählen Sie eine Operation zum stornieren aus");
+            alert.show();
+        }
     }
 
     /**
