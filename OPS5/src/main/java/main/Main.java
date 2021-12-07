@@ -31,32 +31,13 @@ public class Main extends Application{
    public static String password = "IL6CgkzEMcNY99TD";
    public static String url = "jdbc:mariadb://dbstudents01.imi.uni-luebeck.de:3306/pmiw21g05_v01";
 
+
     /**
      * the hapicontext and the parser are needed for the communication with the kis
      */
     public static HapiContext hapiContext = new DefaultHapiContext();
-    public static int port = 1011;
+    public static int port = 4085;
     public static boolean tls = false;
-
-    public static Client client;
-
-    static {
-        try {
-            client = new Client();
-        } catch (HL7Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static Server server;
-
-    static {
-        try {
-            server = new Server();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * this connection is used for the connection to the database

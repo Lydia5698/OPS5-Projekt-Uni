@@ -52,16 +52,6 @@ public class Converter {
         return patient.getName() + ", " + patient.getVorname();
     }
 
-    /**
-     * fallIdToPatient
-     */
-    public static Patient fallIdToPatientConverter(Integer i){
-        Fall fall = new FallDao(Main.configuration).findById(i);
-        Integer patId = fall.getPatId();
-        PatientDao patientDao = new PatientDao(Main.configuration);
-        Patient patient = patientDao.findById(patId);
-        return patient;
-    }
 
     /**
      * converts the mersonals id into its name

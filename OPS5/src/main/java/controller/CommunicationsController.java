@@ -2,16 +2,14 @@ package controller;
 import ExternalFiles.Converter;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.llp.LLPException;
+import connection.Client;
 import connection.MessageParser;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import connection.Server;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 import jooq.tables.daos.OperationDao;
-import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Operation;
-import jooq.tables.pojos.Patient;
 import main.Main;
 
 import java.io.IOException;
@@ -23,52 +21,37 @@ public class CommunicationsController {
     @FXML
     private TextField communicationsPort;
     @FXML
-    private ComboBox<String> communicationsType;
-    @FXML
-    private ComboBox<Patient> communicationsObjectPatient;
-    @FXML
-    private ComboBox<Operation> communicationsObjectOperation;
+    private ComboBox<Operation> communicationsObject;
     @FXML
     private TableView<?> ts;
+    @FXML
+    private TableColumn<?, String> hl7Message;
+    @FXML
+    private TableColumn<?, String> dateOfMessage;
+    @FXML
+    private TableColumn<?, String> ackMessage;
+
+    private Server server;
     
 	@FXML
-	public void initialize() {
-	    setCommunicationsTypeBox();
-        //the communicationobject depends on the type which is chosen
-        communicationsType.setOnAction(new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent e){
-                if(communicationsType.getValue() != null){setCommunicationsObjectBox(communicationsType.getValue());}
-            }
-        });
+	public void initialize() throws InterruptedException {
+        startServer();
+        setCommunicationsObjectBox();
 
-    	System.out.println("Initialize Communications-Tab!");        
+    	System.out.println("Initialize Communications-Tab!");
+
     }
 
-    /**
-     * This method sets the communication types which are able (for now it is patient and operation)
-     */
-    private void setCommunicationsTypeBox(){
-	    communicationsType.getItems().setAll("Patient", "Operation");
+    private void startServer() throws InterruptedException {
+	    server = new Server();
     }
 
     /**
      * This method sets all Objects which can be sended to the kis depending on the type
      * if the patients are choosen the patient combobox is visible and the operation combobox is set to invisible
      * and the same for operation
-     * @param s string of the type which is chosen (patient or operation)
      */
-    private void setCommunicationsObjectBox(String s){
-	    if(s.equals("Patient")){
-	        communicationsObjectPatient.setVisible(true);
-	        communicationsObjectOperation.setVisible(false);
-            Callback<ListView<Patient>, ListCell<Patient>> cellFactory = Converter.getPatient();
-            communicationsObjectPatient.setButtonCell(cellFactory.call(null));
-            communicationsObjectPatient.setCellFactory(cellFactory);
-            communicationsObjectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
-        }
-	    else{
-	        communicationsObjectOperation.setVisible(true);
-	        communicationsObjectPatient.setVisible(false);
+    private void setCommunicationsObjectBox(){
             Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
                 @Override
                 public ListCell<Operation> call(ListView<Operation> patientListView) {
@@ -85,11 +68,9 @@ public class CommunicationsController {
                     };
                 }
             };
-            communicationsObjectOperation.setButtonCell(cellFactory.call(null));
-            communicationsObjectOperation.setCellFactory(cellFactory);
-            communicationsObjectOperation.getItems().setAll(new OperationDao(Main.configuration).findAll());
-        }
-
+            communicationsObject.setButtonCell(cellFactory.call(null));
+            communicationsObject.setCellFactory(cellFactory);
+            communicationsObject.getItems().setAll(new OperationDao(Main.configuration).findAll());
     }
 
     /**
@@ -104,32 +85,28 @@ public class CommunicationsController {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
 
-        if(communicationsType.getValue().equals(null)){
-            alert.setHeaderText("Nichts ausgewählt!");
-            alert.setContentText("Es muss etwas ausgewählt werden, dass verschickt werden soll!");
-            alert.showAndWait();
-        }
-        else if(communicationsType.getValue().equals("Patient")){
-            if(communicationsObjectPatient.getValue() == null){
-                alert.setHeaderText("Kein Patient ausgewählt!");
-                alert.setContentText("Es muss ein Patient ausgewählt werden, der verschickt werden soll!");
-                alert.showAndWait();
-            } else{
-                Main.client.sendMessage(MessageParser.parseBar05Patient(communicationsObjectPatient.getValue()));
-            }
-        }
-        else{
-            if(communicationsObjectOperation.getValue() == null){
-                alert.setHeaderText("Keine Operation ausgewählt!");
-                alert.setContentText("Es muss eine Operation ausgewählt werden, die verschickt werden soll!");
-                alert.showAndWait();
-            } else{
-                Main.client.sendMessage(MessageParser.parseBar05Operation(communicationsObjectOperation.getValue()));
-            }
-        }
 
+        if(communicationsObject.getValue() == null){
+            alert.setHeaderText("Keine Operation ausgewählt!");
+            alert.setContentText("Es muss eine Operation ausgewählt werden, die verschickt werden soll!");
+            alert.showAndWait();
+        } else{
+            Client client = new Client();
+            System.out.println(MessageParser.parseBar05(communicationsObject.getValue()).printStructure());
+            client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
+        }
     }
-    
 
 }
-
+/**
+else if(communicationsType.getValue().equals("Patient")){
+        if(communicationsObjectPatient.getValue() == null){
+        alert.setHeaderText("Kein Patient ausgewählt!");
+        alert.setContentText("Es muss ein Patient ausgewählt werden, der verschickt werden soll!");
+        alert.showAndWait();
+        } else{
+        Client client = new Client();
+        client.sendMessage(MessageParser.parseBar05Patient(communicationsObjectPatient.getValue()));
+        }
+        }
+ */

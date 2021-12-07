@@ -7,6 +7,7 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
+import javafx.scene.control.Alert;
 import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Patient;
 import main.Main;
@@ -28,12 +29,18 @@ public class Server {
         hapiServer.registerApplication("ADT", "A01", new ReceivingApplication<>() {
             @Override
             public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
-                //String encodedMessage = MessageParser.pipeParser.encode(message);
-                //System.out.println(encodedMessage);
+                String encodedMessage = MessageParser.pipeParser.encode(message);
+                System.out.println(encodedMessage);
 
-                Patient patient = MessageParser.parseA01(message);
-                PatientDao patientDao = new PatientDao(Main.configuration);
-                patientDao.insert(patient);
+                //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Es wurde etwas geschickt");
+                alert.setHeaderText("Das Kis hat einen neuen Patienten geschickt");
+                alert.setContentText(encodedMessage);
+
+                //Patient patient = MessageParser.parseA01(message);
+                //PatientDao patientDao = new PatientDao(Main.configuration);
+                //patientDao.insert(patient);
                 //TODO valide Abfragen tätigen (not null und geburtstag,...)
                 try {
                     return message.generateACK();
@@ -43,12 +50,43 @@ public class Server {
                     return null;
                 }
             }
+             @Override
+            public boolean canProcess(Message message) {
+                return true;
+            }
+        });
 
+        //handles and listens to adt01 messages
+        hapiServer.registerApplication("BAR", "P05", new ReceivingApplication<>() {
+            @Override
+            public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
+                String encodedMessage = MessageParser.pipeParser.encode(message);
+                System.out.println(encodedMessage);
+
+                //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Es wurde etwas geschickt");
+                alert.setHeaderText("Das Kis hat einen neuen Patienten geschickt");
+                alert.setContentText(encodedMessage);
+
+                //Patient patient = MessageParser.parseA01(message);
+                //PatientDao patientDao = new PatientDao(Main.configuration);
+                //patientDao.insert(patient);
+                //TODO valide Abfragen tätigen (not null und geburtstag,...)
+                try {
+                    return message.generateACK();
+                    //TODO Ack muss gesendet werden
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
             @Override
             public boolean canProcess(Message message) {
                 return true;
             }
         });
+
         //the connection listener notifies if the connection gets lost or a new connection has built
         hapiServer.registerConnectionListener(new ConnectionListener() {
             @Override
