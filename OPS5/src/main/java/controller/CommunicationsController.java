@@ -9,8 +9,6 @@ import connection.Client;
 import connection.MessageParser;
 import connection.Server;
 import javafx.beans.binding.Bindings;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -28,6 +26,7 @@ public class CommunicationsController {
 
 
     private static CommunicationsController communicationsController;
+
     @FXML
     private TextField communicationsIpAddress;
     @FXML
@@ -61,10 +60,18 @@ public class CommunicationsController {
 
     }
 
+    /**
+     * This method starts the server so he listens to incomint ADT01 and BARP05(test) messages
+     * @throws InterruptedException it is thrown if the server is interrupted
+     */
     private void startServer() throws InterruptedException {
 	    server = new Server();
     }
 
+    /**
+     * This method returns the instance of the CommunicationController
+     * @return the communicationcontroller
+     */
     public static CommunicationsController getInstance(){
 	    return communicationsController;
     }
@@ -96,6 +103,11 @@ public class CommunicationsController {
             communicationsObject.getItems().setAll(new OperationDao(Main.configuration).findAll());
     }
 
+    /**
+     * This method inserts the received message into the tableview as hl7 string
+     * @param message the incomming message
+     * @throws HL7Exception if the message can not be encoded
+     */
     public void insertReceivedMessage(Message message) throws HL7Exception {
         ts.getItems().add(new TableViewMessage(message.encode(), LocalDate.now(), "ja"));
     }
@@ -117,14 +129,18 @@ public class CommunicationsController {
             alert.setHeaderText("Keine Operation ausgewählt!");
             alert.setContentText("Es muss eine Operation ausgewählt werden, die verschickt werden soll!");
             alert.showAndWait();
-        } else{
+        }
+        else{
             Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
-            System.out.println(MessageParser.parseBar05(communicationsObject.getValue()).printStructure());
+
             Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
             String stringFromMessage = MessageParser.messageToString(sendMessage);
+
             ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDate.now(), "nein"));
+
             Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
 
+            //if in ack was sended back, the value of gueltig changes to true
             if(responseMessage instanceof ACK){
                 ACK ack = (ACK) responseMessage;
                 if(ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")){

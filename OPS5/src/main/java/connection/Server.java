@@ -2,17 +2,11 @@ package connection;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.*;
-import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
-import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
-import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
 import controller.CommunicationsController;
-import controller.MainController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
-import jooq.tables.daos.PatientDao;
-import jooq.tables.pojos.Patient;
 import main.Main;
 
 import java.io.IOException;
@@ -33,14 +27,14 @@ public class Server {
             @Override
             public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
                 String encodedMessage = MessageParser.pipeParser.encode(message);
-                System.out.println(encodedMessage);
+                //System.out.println(encodedMessage);
                 CommunicationsController.getInstance().insertReceivedMessage(message);
 
                 Platform.runLater(()->{
                     //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Es wurde etwas geschickt");
-                    alert.setHeaderText("Das Kis hat einen neuen Patienten geschickt");
+                    alert.setHeaderText("Das KIS hat einen neuen Patienten geschickt");
                     alert.setContentText(encodedMessage);
                     alert.showAndWait();
                 });
@@ -52,7 +46,6 @@ public class Server {
                 //TODO valide Abfragen tätigen (not null und geburtstag,...)
                 try {
                     return message.generateACK();
-                    //TODO Ack muss gesendet werden
                 } catch (IOException e) {
                     e.printStackTrace();
                     return null;
@@ -69,13 +62,13 @@ public class Server {
             @Override
             public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
                 String encodedMessage = MessageParser.pipeParser.encode(message);
-                System.out.println(encodedMessage);
+                //System.out.println(encodedMessage);
 
                 Platform.runLater(()->{
                 //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Es wurde etwas geschickt");
-                alert.setHeaderText("Das Kis hat einen neuen Patienten geschickt");
+                alert.setHeaderText("Testnachricht von dem OPS");
                 alert.setContentText(encodedMessage);
                 alert.showAndWait();
                 });
@@ -86,7 +79,6 @@ public class Server {
                 //TODO valide Abfragen tätigen (not null und geburtstag,...)
                 try {
                     return message.generateACK();
-                    //TODO Ack muss gesendet werden
                 } catch (IOException e) {
                     e.printStackTrace();
                     return null;

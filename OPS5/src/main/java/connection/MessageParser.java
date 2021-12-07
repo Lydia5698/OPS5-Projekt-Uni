@@ -2,7 +2,6 @@ package connection;
 
 
 import ExternalFiles.Converter;
-import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.message.BAR_P05;
 import ca.uhn.hl7v2.model.v251.segment.*;
 import ca.uhn.hl7v2.parser.PipeParser;
@@ -21,7 +20,6 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.ADT_A01;
 
 import java.io.IOException;
-import java.text.Format;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -69,11 +67,9 @@ public class MessageParser {
         //TODO cast string to localdatetime
         //fall.setAufnahmedatum(pv1.getAdmitDateTime().getTime().getValue().);
 
-
-
-
         return fall;
     }
+
     /**
      * This method parses an new operation into a message
      * @param operation operation which should be casted into a message
@@ -89,9 +85,9 @@ public class MessageParser {
 
         //msh
         MSH msh = bar05.getMSH();
-        //msh.getDateTimeOfMessage().getTime().setValue(LocalDateTime.now().toString());
-        msh.getSendingApplication().getNamespaceID().setValue("OPS");
-        msh.getReceivingApplication().getNamespaceID().setValue("KIS");
+        msh.getDateTimeOfMessage().getTime().setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+        msh.getSendingApplication().getNamespaceID().setValue("OPS5");
+        msh.getReceivingApplication().getNamespaceID().setValue("KIS2");
         msh.getSequenceNumber().setValue("123");
 
         EVN evn = bar05.getEVN();
@@ -136,6 +132,12 @@ public class MessageParser {
        return bar05;
     }
 
+    /**
+     * This method converts a message to a string so it can be displayed in the tableview in the communicationcontroller
+     * @param message the incomming/outgoing message
+     * @return the string of the hl7 messagr
+     * @throws HL7Exception is thrown if the message can not be encoded
+     */
     public static String messageToString(Message message) throws HL7Exception {
         return pipeParser.encode(message);
     }
