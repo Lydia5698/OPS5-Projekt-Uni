@@ -31,7 +31,7 @@ public class MessageParser {
     public static PipeParser pipeParser = Main.hapiContext.getPipeParser();
 
     //TODO patient und fall muss erstellt werden
-    public static Patient parseA01(Message a01Message){
+    public static Patient parseA01Patient(Message a01Message){
         ADT_A01 adtMsg = (ADT_A01) a01Message;
 
         MSH msh = adtMsg.getMSH();
@@ -40,6 +40,7 @@ public class MessageParser {
         PV1 pv1 = adtMsg.getPV1();
 
         Patient patient = new Patient();
+
         patient.setName(pid.getPatientName(0).getFamilyName().getSurname().getValue());
         patient.setVorname(pid.getPatientName(0).getGivenName().getValue());
         patient.setGeburtsdatum(LocalDateTime.parse(pid.getDateTimeOfBirth().toString()).toLocalDate());
@@ -50,18 +51,29 @@ public class MessageParser {
         patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().toString());
         patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
         patient.setTelefonnummer(pid.getPhoneNumberHome().toString());
-
-
-        //patient.setErsteller();
-        //patient.setErstellZeit();
-        //patient.setBearbeiter();
-        //patient.setBearbeiterZeit();
-
-        //TODO wird der Fall direkt mitgesendet?
         return patient;
-
     }
 
+    public static Fall parseA01Case(Message a01message){
+        ADT_A01 adtMsg = (ADT_A01) a01message;
+
+        MSH msh = adtMsg.getMSH();
+        EVN evn = adtMsg.getEVN();
+        PID pid = adtMsg.getPID();
+        PV1 pv1 = adtMsg.getPV1();
+
+        Fall fall = new Fall();
+
+        fall.setFallId(Integer.getInteger(pv1.getSetIDPV1().getValue()));
+        fall.setFallTyp(pv1.getPatientClass().getValue().equals("Inpatient") ? 1 : 2);
+        //TODO cast string to localdatetime
+        //fall.setAufnahmedatum(pv1.getAdmitDateTime().getTime().getValue().);
+
+
+
+
+        return fall;
+    }
     /**
      * This method parses an new operation into a message
      * @param operation operation which should be casted into a message
@@ -74,8 +86,6 @@ public class MessageParser {
         Fall fall = new FallDao(Main.configuration).findById(operation.getFallId());
         Patient patient = new PatientDao(Main.configuration).findById(fall.getPatId());
         MedPersonal medPersonal = new MedPersonalDao(Main.configuration).findById(fall.getErsteller());
-
-
 
         //msh
         MSH msh = bar05.getMSH();
@@ -117,11 +127,11 @@ public class MessageParser {
 
         //dg1
         DG1 dg1 = bar05.getVISIT().getDG1();
-
+        //TODO interate over all diagnosis
 
        //pr1
        PR1 pr1 = bar05.getVISIT().getPROCEDURE().getPR1();
-
+        //TODO iterate over all procedures
 
        return bar05;
     }

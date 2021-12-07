@@ -1,10 +1,12 @@
 package controller;
 import ExternalFiles.Converter;
+import ExternalFiles.TableViewMessage;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.llp.LLPException;
 import connection.Client;
 import connection.MessageParser;
 import connection.Server;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -13,6 +15,9 @@ import jooq.tables.pojos.Operation;
 import main.Main;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.time.format.DateTimeFormatter;
 
 public class CommunicationsController {
 	
@@ -23,20 +28,26 @@ public class CommunicationsController {
     @FXML
     private ComboBox<Operation> communicationsObject;
     @FXML
-    private TableView<?> ts;
+    private TableView<TableViewMessage> ts;
     @FXML
-    private TableColumn<?, String> hl7Message;
+    private TableColumn<TableViewMessage, String> hl7Message;
     @FXML
-    private TableColumn<?, String> dateOfMessage;
+    private TableColumn<TableViewMessage, String> dateOfMessage;
     @FXML
-    private TableColumn<?, String> ackMessage;
+    private TableColumn<TableViewMessage, String> ackMessage;
 
     private Server server;
     
 	@FXML
-	public void initialize() throws InterruptedException {
+	public void initialize() throws InterruptedException, UnknownHostException {
         startServer();
         setCommunicationsObjectBox();
+        hl7Message.setCellValueFactory(param -> param.getValue().hl7MessageProperty());
+        dateOfMessage.setCellValueFactory(param -> Bindings.createStringBinding(() -> param.getValue().getDateOfMessage().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), param.getValue().dateOfMessageProperty()));
+        ackMessage.setCellValueFactory(param -> param.getValue().ackMessageProperty());
+
+        communicationsIpAddress.setText(InetAddress.getLocalHost().getHostAddress());
+        communicationsPort.setText(String.valueOf(Main.port));
 
     	System.out.println("Initialize Communications-Tab!");
 
@@ -91,7 +102,7 @@ public class CommunicationsController {
             alert.setContentText("Es muss eine Operation ausgewählt werden, die verschickt werden soll!");
             alert.showAndWait();
         } else{
-            Client client = new Client();
+            Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
             System.out.println(MessageParser.parseBar05(communicationsObject.getValue()).printStructure());
             client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
         }

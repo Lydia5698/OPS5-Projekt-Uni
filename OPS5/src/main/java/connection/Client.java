@@ -22,8 +22,8 @@ public class Client {
 
     Initiator initiator;
 
-    public Client() throws HL7Exception {
-            Connection connection = Main.hapiContext.newClient("localhost", Main.port, Main.tls);
+    public Client(String ipAdress, int port) throws HL7Exception {
+            Connection connection = Main.hapiContext.newClient(ipAdress, port, Main.tls);
 
             initiator = connection.getInitiator();
         }

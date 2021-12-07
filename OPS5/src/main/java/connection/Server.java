@@ -7,6 +7,7 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Patient;
@@ -32,11 +33,15 @@ public class Server {
                 String encodedMessage = MessageParser.pipeParser.encode(message);
                 System.out.println(encodedMessage);
 
-                //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Es wurde etwas geschickt");
-                alert.setHeaderText("Das Kis hat einen neuen Patienten geschickt");
-                alert.setContentText(encodedMessage);
+                Platform.runLater(()->{
+                    //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Es wurde etwas geschickt");
+                    alert.setHeaderText("Das Kis hat einen neuen Patienten geschickt");
+                    alert.setContentText(encodedMessage);
+                    alert.showAndWait();
+                });
+
 
                 //Patient patient = MessageParser.parseA01(message);
                 //PatientDao patientDao = new PatientDao(Main.configuration);
@@ -56,18 +61,21 @@ public class Server {
             }
         });
 
-        //handles and listens to adt01 messages
+        //handles and listens to barp05 messages
         hapiServer.registerApplication("BAR", "P05", new ReceivingApplication<>() {
             @Override
             public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
                 String encodedMessage = MessageParser.pipeParser.encode(message);
                 System.out.println(encodedMessage);
 
+                Platform.runLater(()->{
                 //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Es wurde etwas geschickt");
                 alert.setHeaderText("Das Kis hat einen neuen Patienten geschickt");
                 alert.setContentText(encodedMessage);
+                alert.showAndWait();
+                });
 
                 //Patient patient = MessageParser.parseA01(message);
                 //PatientDao patientDao = new PatientDao(Main.configuration);
