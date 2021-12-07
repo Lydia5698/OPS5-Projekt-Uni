@@ -3,10 +3,14 @@ import ExternalFiles.Converter;
 import ExternalFiles.TableViewMessage;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.llp.LLPException;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v251.message.ACK;
 import connection.Client;
 import connection.MessageParser;
 import connection.Server;
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -17,10 +21,13 @@ import main.Main;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class CommunicationsController {
-	
+
+
+    private static CommunicationsController communicationsController;
     @FXML
     private TextField communicationsIpAddress;
     @FXML
@@ -40,7 +47,8 @@ public class CommunicationsController {
     
 	@FXML
 	public void initialize() throws InterruptedException, UnknownHostException {
-        startServer();
+        communicationsController = this;
+	    startServer();
         setCommunicationsObjectBox();
         hl7Message.setCellValueFactory(param -> param.getValue().hl7MessageProperty());
         dateOfMessage.setCellValueFactory(param -> Bindings.createStringBinding(() -> param.getValue().getDateOfMessage().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), param.getValue().dateOfMessageProperty()));
@@ -55,6 +63,10 @@ public class CommunicationsController {
 
     private void startServer() throws InterruptedException {
 	    server = new Server();
+    }
+
+    public static CommunicationsController getInstance(){
+	    return communicationsController;
     }
 
     /**
@@ -84,6 +96,10 @@ public class CommunicationsController {
             communicationsObject.getItems().setAll(new OperationDao(Main.configuration).findAll());
     }
 
+    public void insertReceivedMessage(Message message) throws HL7Exception {
+        ts.getItems().add(new TableViewMessage(message.encode(), LocalDate.now(), "ja"));
+    }
+
     /**
      * when the user pushes the button the selected patient/operation will be sent to the kis
      * @throws HL7Exception if the message cannot be sent to the kis
@@ -104,7 +120,21 @@ public class CommunicationsController {
         } else{
             Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
             System.out.println(MessageParser.parseBar05(communicationsObject.getValue()).printStructure());
-            client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
+            Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
+            String stringFromMessage = MessageParser.messageToString(sendMessage);
+            ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDate.now(), "nein"));
+            Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
+
+            if(responseMessage instanceof ACK){
+                ACK ack = (ACK) responseMessage;
+                if(ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")){
+                    ts.getItems().stream()
+                            .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
+                            .forEach(tM -> tM.setAckMessage("ja"));
+                }
+            }
+
+
         }
     }
 

@@ -28,8 +28,9 @@ public class Client {
             initiator = connection.getInitiator();
         }
 
-        public void sendMessage(Message message) throws HL7Exception, LLPException, IOException {
+        public Message sendMessage(Message message) throws HL7Exception, LLPException, IOException {
             Message response = initiator.sendAndReceive(message);
+            return response;
         }
 
     //TODO how to send a lot of messages

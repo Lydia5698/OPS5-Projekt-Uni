@@ -1,6 +1,8 @@
 package ExternalFiles;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.time.LocalDate;
@@ -50,5 +52,11 @@ public class TableViewMessage {
     }
 
 
+    public TableViewMessage(String hl7Message, LocalDate date, String ack){
+        this.hl7Message = new SimpleStringProperty(hl7Message);
+        this.dateOfMessage = new SimpleObjectProperty<>(date);
+        this.ackMessage = new SimpleStringProperty(ack);
+
+    }
 }
 

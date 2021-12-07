@@ -135,6 +135,10 @@ public class MessageParser {
 
        return bar05;
     }
+
+    public static String messageToString(Message message) throws HL7Exception {
+        return pipeParser.encode(message);
+    }
  }
 
     /**

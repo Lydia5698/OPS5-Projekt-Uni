@@ -7,6 +7,8 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
+import controller.CommunicationsController;
+import controller.MainController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import jooq.tables.daos.PatientDao;
@@ -32,6 +34,7 @@ public class Server {
             public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
                 String encodedMessage = MessageParser.pipeParser.encode(message);
                 System.out.println(encodedMessage);
+                CommunicationsController.getInstance().insertReceivedMessage(message);
 
                 Platform.runLater(()->{
                     //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
