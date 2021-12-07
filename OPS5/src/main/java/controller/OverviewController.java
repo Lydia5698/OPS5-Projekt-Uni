@@ -34,7 +34,7 @@ import jooq.tables.pojos.*;
 import main.Main;
 
 
-
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -204,9 +204,6 @@ public class OverviewController {
             }
         });
 
-        // TODO: 26.11.21 stornierte Ops rausfiltern
-        // TODO: 02.12.21 op tabelle nach einfügen aktualisieren 
-        
         // When a Case gets selected the corresponding Operations show
         opListCase.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
@@ -219,9 +216,9 @@ public class OverviewController {
             if (event.getClickCount() > 1) {
                 opId = onEditOperation();
                 createAndShowOperationWindow();
+                opListOperation.setItems(operationView(onEditCase()));
 
             }
-            opListOperation.setItems(operationView(onEditCase()));
         });
 
     }
@@ -434,6 +431,11 @@ public class OverviewController {
     public static ObservableList<Operation> operationView(Integer id){
         OperationDao operationDao = new OperationDao(Main.configuration);
         List<Operation> operation = operationDao.fetchByFallId(id);
+        for (int i = 0; i < operation.size(); i++){
+            if(operation.get(i).getStorniert()){
+                operation.remove(i); // TODO: 07.12.21 anpassen 
+            }
+        }
         return FXCollections.observableArrayList(operation);
 
     }

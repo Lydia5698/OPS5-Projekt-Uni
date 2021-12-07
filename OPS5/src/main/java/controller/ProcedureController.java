@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jooq.tables.daos.*;
@@ -223,8 +224,16 @@ public class ProcedureController {
 	 * Gets triggered when a Procedure in the TableView gets selected
 	 */
 	@FXML
-	void mouseEntered() {
-		flagEditProzedure = true;
+	void mouseEntered(MouseEvent event) {
+
+		if(event.getClickCount() > 0){ // TODO: 07.12.21 werte in comboboxen auf ausgewählte Proz setzten
+			Prozedur prozedur = procedureTable.getSelectionModel().getSelectedItem();
+			OpsCodeSt opsCodeSt = new OpsCodeStDao(Main.configuration).fetchOneByOpsCode(prozedur.getOpsCode());
+			//procedureOpsCode.setValue(opsCodeSt.getOpsCode());
+			System.out.println(prozedur);
+			System.out.println(opsCodeSt.getOpsCode());
+		}
+
 	}
 
 	/**
@@ -275,5 +284,7 @@ public class ProcedureController {
 		procedureOpsCode.setButtonCell(cellFactory.call(null));
 		procedureOpsCode.setCellFactory(cellFactory);
 		procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
+		procedureOpsCode.setValue(new OpsCodeStDao(Main.configuration).fetchOneByOpsCode("1-100"));
+
 	}
 }

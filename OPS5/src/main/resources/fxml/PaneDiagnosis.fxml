@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.text.Text?>
+<?import ExternalFiles.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<?import ExternalFiles.DateTimePicker?>
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DiagnosisController">
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DiagnosisController">
 	<children>
       <Button fx:id="btnDiagnose" layoutX="400.0" layoutY="472.0" mnemonicParsing="false" onAction="#createNewDiagnosis" text="Neue Diagnose" />
 		<Button layoutX="316.0" layoutY="472.0" mnemonicParsing="false" onAction="#createDiagnosis" text="Speichern" />
@@ -54,7 +46,7 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Der verhasste Freitext" GridPane.rowIndex="4" />
             <TextField fx:id="diagnosisFreetext" prefHeight="119.0" prefWidth="400.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Text layoutX="10.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datum" wrappingWidth="41.33447265625" GridPane.rowIndex="2" />
-            <DateTimePicker fx:id="dateDiagnosis" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <DateTimePicker fx:id="dateDiagnosis" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
 	</children>
