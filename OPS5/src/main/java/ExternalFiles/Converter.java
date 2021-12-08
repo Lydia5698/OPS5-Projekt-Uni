@@ -1,13 +1,18 @@
 package ExternalFiles;
 
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
+import jooq.tables.daos.FallDao;
 import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.daos.PatientDao;
+import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.MedPersonal;
 import jooq.tables.pojos.Patient;
 import main.Main;
 
 /**
- * class that has static methods for convert diffrent values
+ * class that has static methods for convert different values
  */
 public class Converter {
 
@@ -32,6 +37,21 @@ public class Converter {
         Patient patient = patientDao.findById(i);
         return patient.getName() + ", " + patient.getVorname();
     }
+
+    /**
+     * This method converts a given fall id to the name of the patient of this case
+     * @param i id from the given case
+     * @return the last name and first name from the patient
+     */
+    public static String fallIdToPatientsNameConverter(Integer i){
+        FallDao fallDao = new FallDao(Main.configuration);
+        Fall fall = fallDao.findById(i);
+        Integer patId = fall.getPatId();
+        PatientDao patientDao = new PatientDao(Main.configuration);
+        Patient patient = patientDao.findById(patId);
+        return patient.getName() + ", " + patient.getVorname();
+    }
+
 
     /**
      * converts the mersonals id into its name
@@ -93,6 +113,41 @@ public class Converter {
         if(s == null){return null;}
         else if(s.equals("w")){return "weiblich";}
         else if(s.equals("m")){return "männlich";}
-        else{return "d";}
+        else{return "divers";}
+    }
+
+    /**
+     * converts the sex into the iss standard for the hl7 message
+     * @param s String from the sex of our database logic
+     * @return the string of the sex for the iss standard
+     */
+    public static String IssSexConverter(String s){
+        if(s == null){return null;}
+        else if(s.equals("w")){return "F";}
+        else if(s.equals("m")){return "M";}
+        else{return "O";}
+    }
+    /**
+     * creates a callback from all patients which prints only the last and first name of each patient
+     * @return the callback
+     */
+    public static Callback<ListView<Patient>, ListCell<Patient>> getPatient() {
+        Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<Patient> call(ListView<Patient> patientListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Patient pat, boolean empty) {
+                        super.updateItem(pat, empty);
+                        if (pat == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(pat.getName() + ", " + pat.getVorname());
+                        }
+                    }
+                };
+            }
+        };
+        return cellFactory;
     }
 }

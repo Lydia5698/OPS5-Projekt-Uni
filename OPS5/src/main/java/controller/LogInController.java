@@ -16,7 +16,7 @@ public class LogInController {
 
     @FXML
     public void initialize() {
-        MainController.createEmployeeComboBox(mitarbeiter,0);
+        MainController.createEmployeeComboBox(mitarbeiter,1);
     }
 
     public void loginNewEmployee(ActionEvent actionEvent) {
