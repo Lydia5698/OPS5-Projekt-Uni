@@ -82,7 +82,7 @@ public class MainController {
 	 * show all employees in a combobox by their persid and their name
 	 */
 	private void setEmployeeId(){
-		createEmployeeComboBox(employeeId,0);
+		createEmployeeComboBox(employeeId,1);
 	}
 
 	/**

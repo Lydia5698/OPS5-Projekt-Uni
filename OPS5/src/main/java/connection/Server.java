@@ -2,11 +2,13 @@ package connection;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.*;
-import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
-import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
-import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
+import controller.CommunicationsController;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import jooq.tables.pojos.Fall;
+import jooq.tables.pojos.Patient;
 import main.Main;
 
 import java.io.IOException;
@@ -27,6 +29,26 @@ public class Server {
             @Override
             public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
                 String encodedMessage = MessageParser.pipeParser.encode(message);
+                //System.out.println(encodedMessage);
+                CommunicationsController.getInstance().insertReceivedMessage(message);
+
+                Platform.runLater(()->{
+                    //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Es wurde etwas geschickt");
+                    alert.setHeaderText("Das KIS hat einen neuen Patienten geschickt");
+                    alert.setContentText(encodedMessage);
+                    alert.showAndWait();
+                });
+
+
+                Patient patient = MessageParser.parseA01Patient(message);
+                CommunicationsController.insertNewPatient(patient);
+                if(CommunicationsController.getInstance().canInsert(patient)){
+                    Fall fall = MessageParser.parseA01Case(message);
+                    CommunicationsController.insertNewCase(fall);
+                    System.out.println("Patient und Fall eingefügt");
+                }
                 try {
                     return message.generateACK();
                 } catch (IOException e) {
@@ -34,12 +56,45 @@ public class Server {
                     return null;
                 }
             }
+             @Override
+            public boolean canProcess(Message message) {
+                return true;
+            }
+        });
 
+        //handles and listens to barp05 messages
+        hapiServer.registerApplication("BAR", "P05", new ReceivingApplication<>() {
+            @Override
+            public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
+                String encodedMessage = MessageParser.pipeParser.encode(message);
+                //System.out.println(encodedMessage);
+
+                Platform.runLater(()->{
+                //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Es wurde etwas geschickt");
+                alert.setHeaderText("Testnachricht von dem OPS");
+                alert.setContentText(encodedMessage);
+                alert.showAndWait();
+                });
+
+                //Patient patient = MessageParser.parseA01(message);
+                //PatientDao patientDao = new PatientDao(Main.configuration);
+                //patientDao.insert(patient);
+                //TODO valide Abfragen tätigen (not null und geburtstag,...)
+                try {
+                    return message.generateACK();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
             @Override
             public boolean canProcess(Message message) {
                 return true;
             }
         });
+
         //the connection listener notifies if the connection gets lost or a new connection has built
         hapiServer.registerConnectionListener(new ConnectionListener() {
             @Override

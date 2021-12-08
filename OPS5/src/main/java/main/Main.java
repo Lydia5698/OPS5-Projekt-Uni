@@ -1,8 +1,11 @@
 package main;
 
 import ca.uhn.hl7v2.DefaultHapiContext;
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.parser.PipeParser;
+import connection.Client;
+import connection.Server;
 import controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -28,11 +31,12 @@ public class Main extends Application{
    public static String password = "IL6CgkzEMcNY99TD";
    public static String url = "jdbc:mariadb://dbstudents01.imi.uni-luebeck.de:3306/pmiw21g05_v01";
 
+
     /**
      * the hapicontext and the parser are needed for the communication with the kis
      */
     public static HapiContext hapiContext = new DefaultHapiContext();
-    public static int port = 1011;
+    public static int port = 53420;
     public static boolean tls = false;
 
     /**
@@ -57,8 +61,11 @@ public class Main extends Application{
     public static DSLContext dslContext = DSL.using(connection, SQLDialect.MARIADB);
 
     public static Configuration configuration = new DefaultConfiguration().set(connection).set(SQLDialect.MARIADB);
-   
-   public static void main(String[] args) {
+
+    public Main() throws HL7Exception, InterruptedException {
+    }
+
+    public static void main(String[] args) {
 			Application.launch(Main.class, args);
 	   }
    

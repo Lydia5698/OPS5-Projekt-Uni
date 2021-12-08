@@ -43,7 +43,7 @@ public class Converter {
      * @param i id from the given case
      * @return the last name and first name from the patient
      */
-    public static String fallIdConverter(Integer i){
+    public static String fallIdToPatientsNameConverter(Integer i){
         FallDao fallDao = new FallDao(Main.configuration);
         Fall fall = fallDao.findById(i);
         Integer patId = fall.getPatId();
@@ -51,6 +51,7 @@ public class Converter {
         Patient patient = patientDao.findById(patId);
         return patient.getName() + ", " + patient.getVorname();
     }
+
 
     /**
      * converts the mersonals id into its name
@@ -112,9 +113,20 @@ public class Converter {
         if(s == null){return null;}
         else if(s.equals("w")){return "weiblich";}
         else if(s.equals("m")){return "männlich";}
-        else{return "d";}
+        else{return "divers";}
     }
 
+    /**
+     * converts the sex into the iss standard for the hl7 message
+     * @param s String from the sex of our database logic
+     * @return the string of the sex for the iss standard
+     */
+    public static String IssSexConverter(String s){
+        if(s == null){return null;}
+        else if(s.equals("w")){return "F";}
+        else if(s.equals("m")){return "M";}
+        else{return "O";}
+    }
     /**
      * creates a callback from all patients which prints only the last and first name of each patient
      * @return the callback
