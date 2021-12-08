@@ -16,6 +16,7 @@ import main.Main;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This Controller displays the Procedure. You can create a new one or edit an existent
@@ -83,15 +84,14 @@ public class ProcedureController {
 	 * 	@param event the event of pushing the Speichern Button
 	 */
 	@FXML
-	public void createProcedure(ActionEvent event) {
+	public void editProcedure(ActionEvent event) {
 		flagEditProzedure = true;
     	System.out.println("Create procedure!");
-		if(noMissingStatement()){
-			insertNewProcedure();
-			Node source = (Node) event.getSource();
-			Stage thisStage = (Stage) source.getScene().getWindow();
-			thisStage.close();
-		}
+    	insertNewProcedure();
+    	Node source = (Node) event.getSource();
+    	Stage thisStage = (Stage) source.getScene().getWindow();
+    	thisStage.close();
+
 
 	}
 
@@ -226,12 +226,12 @@ public class ProcedureController {
 	@FXML
 	void mouseEntered(MouseEvent event) {
 
-		if(event.getClickCount() > 0){ // TODO: 07.12.21 werte in comboboxen auf ausgewählte Proz setzten
+		if(event.getClickCount() > 0){
 			Prozedur prozedur = procedureTable.getSelectionModel().getSelectedItem();
 			OpsCodeSt opsCodeSt = new OpsCodeStDao(Main.configuration).fetchOneByOpsCode(prozedur.getOpsCode());
-			//procedureOpsCode.setValue(opsCodeSt.getOpsCode());
-			System.out.println(prozedur);
-			System.out.println(opsCodeSt.getOpsCode());
+			Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(prozedur.getOpId());
+			procedureOpsCode.setValue(opsCodeSt);
+			procedureOpID.setValue(operation);
 		}
 
 	}
