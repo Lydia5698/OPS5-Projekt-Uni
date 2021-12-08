@@ -11,15 +11,21 @@ import connection.Server;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import javafx.util.Callback;
+import jooq.tables.daos.FallDao;
 import jooq.tables.daos.OperationDao;
+import jooq.tables.daos.PatientDao;
+import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.Operation;
+import jooq.tables.pojos.Patient;
 import main.Main;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CommunicationsController {
@@ -151,6 +157,78 @@ public class CommunicationsController {
             }
 
 
+        }
+    }
+
+    /**
+     * This method checks if the sent patient can be inserted into our database
+     * @param patient the sent patient
+     * @return true if he can be inserted and false if not
+     */
+    public boolean canInsert(Patient patient){
+        //checking for values which can not be null (in this case it is the patients first and lastname)
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        if (patient.getVorname().equals("") || patient.getName().equals("") || (patient.getGeburtsdatum() != null && patient.getGeburtsdatum().isAfter(LocalDate.now()))) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    /**
+     * This method inserts if its possible the new Patient into our database
+     * @param patient the sent patient
+     */
+    public static void insertNewPatient(Patient patient){
+        PatientDao patientDao = new PatientDao(Main.configuration);
+        //checking for values which can not be null (in this case it is the patients first and lastname)
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        if (getInstance().canInsert(patient) == false) {
+            alert.setHeaderText("Patient kann nicht eingefügt werden!");
+            alert.setContentText("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden!");
+            alert.showAndWait();
+        }
+        else {
+            patientDao.insert(patient);
+            System.out.println("Creating sended patient!");
+        }
+    }
+
+    /**
+     * This method checks if the sent case can be inserted in our database and if yes , the case will be inserted
+     * @param fall the sent case
+     * @param patid the patientid of the sent patient
+     */
+    public static void insertNewCase(Fall fall, Integer patid){
+        FallDao fallDao = new FallDao(Main.configuration);
+        fall.setPatId(patid);
+        //checking for values which can not be null (in this case it is only the patient)
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Fehlender Eintrag!");
+
+        //checking for invalid entrys concerning the dates
+        //Entlassungsdatum ist vor dem Aufnahmedatum
+        if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
+            alert.setHeaderText("Falscher Eintrag!");
+            alert.setContentText("Das gesendete Entlassungsdatum liegt vor dem Aufnahmedatum!");
+            alert.showAndWait();
+        }
+        //Entlassungsdatum ist vor dem Aufnahmedatum
+        else if(fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
+            alert.setHeaderText("Falscher Eintrag!");
+            alert.setContentText("Das gesendete Entlassungsdatum liegt vor dem Aufnahmedatum!");
+            alert.showAndWait();
+        }
+        else {
+            //if the aufnahmedatum is null set it to the current date and time
+            if (fall.getAufnahmedatum() == null) {
+                fall.setAufnahmedatum(LocalDateTime.now());
+            }
+            fallDao.insert(fall);
+            System.out.println("Creating sended case!");
         }
     }
 

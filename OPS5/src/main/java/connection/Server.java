@@ -7,6 +7,8 @@ import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import controller.CommunicationsController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import jooq.tables.pojos.Fall;
+import jooq.tables.pojos.Patient;
 import main.Main;
 
 import java.io.IOException;
@@ -40,10 +42,13 @@ public class Server {
                 });
 
 
-                //Patient patient = MessageParser.parseA01(message);
-                //PatientDao patientDao = new PatientDao(Main.configuration);
-                //patientDao.insert(patient);
-                //TODO valide Abfragen tätigen (not null und geburtstag,...)
+                Patient patient = MessageParser.parseA01Patient(message);
+                Integer patid = patient.getPatId();
+                //CommunicationsController.insertNewPatient(patient);
+                if(CommunicationsController.getInstance().canInsert(patient)){
+                    Fall fall = MessageParser.parseA01Case(message);
+                    //CommunicationsController.insertNewCase(fall, patid);
+                }
                 try {
                     return message.generateACK();
                 } catch (IOException e) {

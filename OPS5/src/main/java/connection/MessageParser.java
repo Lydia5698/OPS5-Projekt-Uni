@@ -5,13 +5,11 @@ import ExternalFiles.Converter;
 import ca.uhn.hl7v2.model.v251.message.BAR_P05;
 import ca.uhn.hl7v2.model.v251.segment.*;
 import ca.uhn.hl7v2.parser.PipeParser;
+import jooq.tables.daos.DiagnoseDao;
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.daos.PatientDao;
-import jooq.tables.pojos.Fall;
-import jooq.tables.pojos.MedPersonal;
-import jooq.tables.pojos.Operation;
-import jooq.tables.pojos.Patient;
+import jooq.tables.pojos.*;
 import main.Main;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -32,13 +30,10 @@ public class MessageParser {
     public static Patient parseA01Patient(Message a01Message){
         ADT_A01 adtMsg = (ADT_A01) a01Message;
 
-        MSH msh = adtMsg.getMSH();
-        EVN evn = adtMsg.getEVN();
         PID pid = adtMsg.getPID();
-        PV1 pv1 = adtMsg.getPV1();
 
         Patient patient = new Patient();
-
+        //neuer patient wird zugefügt, deshalb keine id, durch autoincrement
         patient.setName(pid.getPatientName(0).getFamilyName().getSurname().getValue());
         patient.setVorname(pid.getPatientName(0).getGivenName().getValue());
         patient.setGeburtsdatum(LocalDateTime.parse(pid.getDateTimeOfBirth().toString()).toLocalDate());
@@ -49,7 +44,9 @@ public class MessageParser {
         patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().toString());
         patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
         patient.setTelefonnummer(pid.getPhoneNumberHome().toString());
+        //erstellzeit und ersteller!
         return patient;
+
     }
 
     public static Fall parseA01Case(Message a01message){
@@ -61,11 +58,15 @@ public class MessageParser {
         PV1 pv1 = adtMsg.getPV1();
 
         Fall fall = new Fall();
-
-        fall.setFallId(Integer.getInteger(pv1.getSetIDPV1().getValue()));
+        //fallid nicht setzen, durchAutoincrement
+        //patid wird in dem server gesetzt von dem patienten der in dern hl7 mitgesendet wurde
         fall.setFallTyp(pv1.getPatientClass().getValue().equals("Inpatient") ? 1 : 2);
-        //TODO cast string to localdatetime
-        //fall.setAufnahmedatum(pv1.getAdmitDateTime().getTime().getValue().);
+        fall.setAufnahmedatum(LocalDateTime.parse(pv1.getAdmitDateTime().getTime().getValue()));
+        fall.setEntlassungsdatum(LocalDateTime.parse(pv1.getDischargeDateTime(0).getTime().getValue()));
+        fall.setStationSt(pv1.getAssignedPatientLocation().getPl1_PointOfCare().getValue());
+        fall.setStorniert(false);
+        fall.setErsteller(pv1.getAdmittingDoctor(0).getIDNumber().getValue());
+        //TODO fall.setErstellZeit();
 
         return fall;
     }
@@ -118,15 +119,17 @@ public class MessageParser {
         pv1.getAdmittingDoctor(0).getFamilyName().getSurname().setValue(medPersonal.getName());
         pv1.getAdmittingDoctor(0).getGivenName().setValue(medPersonal.getVorname());
         pv1.getVisitNumber().getCx1_IDNumber().setValue(fall.getFallId().toString());
-        pv1.getDischargeDateTime(0).getTime().setValue(fall.getAufnahmedatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+        pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
         pv1.getAssignedPatientLocation().getPointOfCare().setValue(fall.getStationSt());
+
+        //Diagnose diagnose = new DiagnoseDao(Main.configuration).findById()
 
         //dg1
         DG1 dg1 = bar05.getVISIT().getDG1();
-        //TODO interate over all diagnosis
+        //dg1.getSetIDDG1().setValue();
 
        //pr1
-       PR1 pr1 = bar05.getVISIT().getPROCEDURE().getPR1();
+       //PR1 pr1 = bar05.getVISIT().getPROCEDURE().getPR1();
         //TODO iterate over all procedures
 
        return bar05;
