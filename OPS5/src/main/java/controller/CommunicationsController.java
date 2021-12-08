@@ -8,6 +8,7 @@ import ca.uhn.hl7v2.model.v251.message.ACK;
 import connection.Client;
 import connection.MessageParser;
 import connection.Server;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -98,7 +99,7 @@ public class CommunicationsController {
                             if (op == null || empty) {
                                 setGraphic(null);
                             } else {
-                                setText("OP-ID: " + op.getFallId() + ", " + "Fall-ID: " + op.getFallId() + "(" + Converter.fallIdToPatientsNameConverter(op.getFallId()) + ")");
+                                setText("OP-ID: " + op.getOpId() + ", " + "Fall-ID: " + op.getFallId() + "(" + Converter.fallIdToPatientsNameConverter(op.getFallId()) + ")");
                             }
                         }
                     };
@@ -167,13 +168,11 @@ public class CommunicationsController {
      */
     public boolean canInsert(Patient patient){
         //checking for values which can not be null (in this case it is the patients first and lastname)
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        if (patient.getVorname().equals("") || patient.getName().equals("") || (patient.getGeburtsdatum() != null && patient.getGeburtsdatum().isAfter(LocalDate.now()))) {
-            return false;
-        }else{
-            return true;
-        }
+            if (patient.getVorname().equals("") || patient.getName().equals("") || (patient.getGeburtsdatum() != null && patient.getGeburtsdatum().isAfter(LocalDate.now()))) {
+                return false;
+            }else{
+                return true;
+            }
     }
 
     /**
@@ -183,17 +182,21 @@ public class CommunicationsController {
     public static void insertNewPatient(Patient patient){
         PatientDao patientDao = new PatientDao(Main.configuration);
         //checking for values which can not be null (in this case it is the patients first and lastname)
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        if (getInstance().canInsert(patient) == false) {
-            alert.setHeaderText("Patient kann nicht eingefügt werden!");
-            alert.setContentText("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden!");
-            alert.showAndWait();
-        }
-        else {
-            patientDao.insert(patient);
-            System.out.println("Creating sended patient!");
-        }
+        Platform.runLater(()->{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            if (getInstance().canInsert(patient) == false) {
+                alert.setHeaderText("Patient kann nicht eingefügt werden!");
+                alert.setContentText("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden!");
+                alert.showAndWait();
+            }
+            else {
+                System.out.println(patient.getTelefonnummer());
+                patientDao.insert(patient);
+                System.out.println("Creating sent patient!");
+            }
+        });
+
     }
 
     /**
@@ -201,35 +204,37 @@ public class CommunicationsController {
      * @param fall the sent case
      * @param patid the patientid of the sent patient
      */
-    public static void insertNewCase(Fall fall, Integer patid){
+    public static void insertNewCase(Fall fall){
         FallDao fallDao = new FallDao(Main.configuration);
-        fall.setPatId(patid);
         //checking for values which can not be null (in this case it is only the patient)
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Fehlender Eintrag!");
+        Platform.runLater(()->{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Fehlender Eintrag!");
 
-        //checking for invalid entrys concerning the dates
-        //Entlassungsdatum ist vor dem Aufnahmedatum
-        if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
-            alert.setHeaderText("Falscher Eintrag!");
-            alert.setContentText("Das gesendete Entlassungsdatum liegt vor dem Aufnahmedatum!");
-            alert.showAndWait();
-        }
-        //Entlassungsdatum ist vor dem Aufnahmedatum
-        else if(fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
-            alert.setHeaderText("Falscher Eintrag!");
-            alert.setContentText("Das gesendete Entlassungsdatum liegt vor dem Aufnahmedatum!");
-            alert.showAndWait();
-        }
-        else {
-            //if the aufnahmedatum is null set it to the current date and time
-            if (fall.getAufnahmedatum() == null) {
-                fall.setAufnahmedatum(LocalDateTime.now());
+            //checking for invalid entrys concerning the dates
+            //Entlassungsdatum ist vor dem Aufnahmedatum
+            if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
+                alert.setHeaderText("Falscher Eintrag!");
+                alert.setContentText("Das gesendete Entlassungsdatum liegt vor dem Aufnahmedatum!");
+                alert.showAndWait();
             }
-            fallDao.insert(fall);
-            System.out.println("Creating sended case!");
-        }
+            //Entlassungsdatum ist vor dem Aufnahmedatum
+            else if(fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
+                alert.setHeaderText("Falscher Eintrag!");
+                alert.setContentText("Das gesendete Entlassungsdatum liegt vor dem Aufnahmedatum!");
+                alert.showAndWait();
+            }
+            else {
+                //if the aufnahmedatum is null set it to the current date and time
+                if (fall.getAufnahmedatum() == null) {
+                    fall.setAufnahmedatum(LocalDateTime.now());
+                }
+                fallDao.insert(fall);
+                System.out.println("Creating sended case!");
+            }
+        });
+
     }
 
 }

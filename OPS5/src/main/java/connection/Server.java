@@ -43,11 +43,11 @@ public class Server {
 
 
                 Patient patient = MessageParser.parseA01Patient(message);
-                Integer patid = patient.getPatId();
-                //CommunicationsController.insertNewPatient(patient);
+                CommunicationsController.insertNewPatient(patient);
                 if(CommunicationsController.getInstance().canInsert(patient)){
                     Fall fall = MessageParser.parseA01Case(message);
-                    //CommunicationsController.insertNewCase(fall, patid);
+                    CommunicationsController.insertNewCase(fall);
+                    System.out.println("Patient und Fall eingefügt");
                 }
                 try {
                     return message.generateACK();

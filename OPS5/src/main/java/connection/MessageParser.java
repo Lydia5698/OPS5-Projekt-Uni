@@ -18,37 +18,50 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.ADT_A01;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 
 public class MessageParser {
 
     public static PipeParser pipeParser = Main.hapiContext.getPipeParser();
 
-    //TODO patient und fall muss erstellt werden
+    /**
+     * This message parses a message (adt01) into a patient
+     * @param a01Message the sent message
+     * @return the created patient
+     */
     public static Patient parseA01Patient(Message a01Message){
         ADT_A01 adtMsg = (ADT_A01) a01Message;
 
         PID pid = adtMsg.getPID();
+        EVN evn = adtMsg.getEVN();
 
         Patient patient = new Patient();
         //neuer patient wird zugefügt, deshalb keine id, durch autoincrement
         patient.setName(pid.getPatientName(0).getFamilyName().getSurname().getValue());
         patient.setVorname(pid.getPatientName(0).getGivenName().getValue());
-        patient.setGeburtsdatum(LocalDateTime.parse(pid.getDateTimeOfBirth().toString()).toLocalDate());
-        //patient.setBlutgruppe();
+        System.out.println(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
+        patient.setGeburtsdatum(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
         patient.setGeschlecht(pid.getAdministrativeSex().getValue());
         patient.setStorniert(false);
         patient.setGeburtsort(pid.getBirthPlace().getValue());
         patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().toString());
         patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
-        patient.setTelefonnummer(pid.getPhoneNumberHome().toString());
-        //erstellzeit und ersteller!
+        patient.setTelefonnummer(pid.getPhoneNumberHome(0).getTelephoneNumber().getValue());
+        patient.setErsteller("00000000");
+        patient.setErstellZeit(LocalDateTime.now());
         return patient;
 
     }
 
+    /**
+     * This method creates a case out of a given message
+     * @param a01message sent message
+     * @return the created case
+     */
     public static Fall parseA01Case(Message a01message){
         ADT_A01 adtMsg = (ADT_A01) a01message;
 
@@ -61,13 +74,13 @@ public class MessageParser {
         //fallid nicht setzen, durchAutoincrement
         //patid wird in dem server gesetzt von dem patienten der in dern hl7 mitgesendet wurde
         fall.setFallTyp(pv1.getPatientClass().getValue().equals("Inpatient") ? 1 : 2);
-        fall.setAufnahmedatum(LocalDateTime.parse(pv1.getAdmitDateTime().getTime().getValue()));
-        fall.setEntlassungsdatum(LocalDateTime.parse(pv1.getDischargeDateTime(0).getTime().getValue()));
+        fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
+        fall.setAufnahmedatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getAdmitDateTime().getTime().getValue())));
+        if(pv1.getDischargeDateTime(0).getTime().getValue() != null){fall.setEntlassungsdatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getDischargeDateTime(0).getTime().getValue())));}
         fall.setStationSt(pv1.getAssignedPatientLocation().getPl1_PointOfCare().getValue());
         fall.setStorniert(false);
         fall.setErsteller(pv1.getAdmittingDoctor(0).getIDNumber().getValue());
-        //TODO fall.setErstellZeit();
-
+        fall.setErstellZeit(LocalDateTime.now());
         return fall;
     }
 
@@ -98,7 +111,7 @@ public class MessageParser {
         //pid
         PID pid = bar05.getPID();
         assert patient != null;
-        pid.getPatientID().getCx1_IDNumber().setValue(patient.getPatId().toString());//TODO wie wollen wir id umsetzen?
+        pid.getPatientID().getCx1_IDNumber().setValue(patient.getPatId().toString());
         pid.getPatientName(0).getFamilyName().getSurname().setValue(patient.getName());
         pid.getPatientName(0).getGivenName().setValue(patient.getVorname());
         pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
@@ -122,10 +135,15 @@ public class MessageParser {
         pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
         pv1.getAssignedPatientLocation().getPointOfCare().setValue(fall.getStationSt());
 
-        //Diagnose diagnose = new DiagnoseDao(Main.configuration).findById()
+        List<Diagnose> diagnose = new DiagnoseDao(Main.configuration).fetchByOpId(operation.getOpId());
+
+        //for(int i = 0; i < diagnose.size(); i++){
+        //    DG1 dg1 = bar05.getVISIT().getDG1(i);
+        //
+        //}
 
         //dg1
-        DG1 dg1 = bar05.getVISIT().getDG1();
+        //DG1 dg1 = bar05.getVISIT().getDG1();
         //dg1.getSetIDDG1().setValue();
 
        //pr1
