@@ -4,11 +4,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ListCell;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import main.Main;
@@ -142,7 +144,7 @@ public class RoleController{
      * It checks that every attribute is selected and created a new role that gets inserted into the database.
      */
     @FXML
-    void createRole() {
+    void createRole(ActionEvent event) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText("Fehlende Einträge!");
@@ -175,6 +177,9 @@ public class RoleController{
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
         }
+        Node source = (Node) event.getSource();
+        Stage thisStage = (Stage) source.getScene().getWindow();
+        thisStage.close();
         System.out.println("Creating role!");
     }
 

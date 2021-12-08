@@ -36,6 +36,8 @@ import main.Main;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 /**
@@ -187,6 +189,8 @@ public class OverviewController {
 
     private static Integer opId;
 
+    private static Boolean storiniertShown =  false;
+
     /**
      * This Methode initializes the TableViews for the Patients and their corresponding Cases and Operations
      */
@@ -207,8 +211,8 @@ public class OverviewController {
         // When a Case gets selected the corresponding Operations show
         opListCase.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 0) {
-                int CaseId = onEditCase();
-                opListOperation.setItems(operationView(CaseId));
+                int caseId = onEditCase();
+                opListOperation.setItems(operationView(caseId));
             }
         });
         // When a Operation gets double clicked you can edit this Operation
@@ -431,12 +435,13 @@ public class OverviewController {
     public static ObservableList<Operation> operationView(Integer id){
         OperationDao operationDao = new OperationDao(Main.configuration);
         List<Operation> operation = operationDao.fetchByFallId(id);
-        for (int i = 0; i < operation.size(); i++){
-            if(operation.get(i).getStorniert()){
-                operation.remove(i); // TODO: 07.12.21 anpassen 
-            }
+        Predicate<Operation> byStorniert = operation1 -> !operation1.getStorniert();
+        if(getStoriniertShown()){
+            byStorniert = Operation::getStorniert;
         }
-        return FXCollections.observableArrayList(operation);
+        var result = operation.stream().filter(byStorniert)
+                .collect(Collectors.toList());
+        return FXCollections.observableArrayList(result);
 
     }
 
@@ -447,7 +452,7 @@ public class OverviewController {
     @FXML
     void storniereOP() {
         if(opListOperation.getSelectionModel().getSelectedItem() != null){
-            opListOperation.getSelectionModel().getSelectedItem().setStorniert(true); // TODO: 25.11.21 stornierte Ops nicht anzeigen
+            opListOperation.getSelectionModel().getSelectedItem().setStorniert(!opListOperation.getSelectionModel().getSelectedItem().getStorniert());
             Operation operation = opListOperation.getSelectionModel().getSelectedItem();
             OperationDao operationDao = new OperationDao(Main.configuration);
             operationDao.update(operation);
@@ -466,19 +471,27 @@ public class OverviewController {
      */
     @FXML
     void showStornierteOp() {
+        int caseId = onEditCase();
         if(stornierteOperation.isSelected()) {
-            OperationDao operationDao = new OperationDao(Main.configuration);
-            List<Operation> operation = operationDao.fetchByStorniert(true);
-            opListOperation.setItems(FXCollections.observableArrayList(operation));
+            setStoriniertShown(true);
+            opListOperation.setItems(FXCollections.observableArrayList(operationView(caseId)));
         }
         else{
-            int CaseId = onEditCase();
-            opListOperation.setItems(operationView(CaseId));
+            setStoriniertShown(false);
+            opListOperation.setItems(operationView(caseId));
         }
     }
 
     public static Integer getOpId() {
         return opId;
+    }
+
+    public static Boolean getStoriniertShown() {
+        return storiniertShown;
+    }
+
+    public void setStoriniertShown(Boolean storiniertShown) {
+        OverviewController.storiniertShown = storiniertShown;
     }
 
 
