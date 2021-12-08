@@ -3,7 +3,6 @@ import java.io.IOException;
 
 import ExternalFiles.Converter;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,14 +26,7 @@ import main.Main;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import javafx.util.Callback;
-import jooq.Keys;
-import jooq.tables.daos.*;
-import jooq.tables.pojos.*;
-import main.Main;
 
-
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -187,9 +179,14 @@ public class OverviewController {
     @FXML
     private CheckBox stornierteOperation;
 
+    @FXML
+    private Button btnRole;
+
     private static Integer opId;
 
     private static Boolean storiniertShown =  false;
+
+    private Parent root;
 
     /**
      * This Methode initializes the TableViews for the Patients and their corresponding Cases and Operations
@@ -198,6 +195,7 @@ public class OverviewController {
 	public void initialize() {
         System.out.println("Initialize OPlist-Tab!");
 
+        btnRole.setVisible(false);
         initializeColumns();
         opListPatients.setItems(patientView());
         // When a Patient gets selected the corresponding Cases show
@@ -205,6 +203,7 @@ public class OverviewController {
             if (event.getClickCount() > 0) {
                 int patientId = onEditPatient();
                 opListCase.setItems(fallView(patientId));
+                btnRole.setVisible(false);
             }
         });
 
@@ -213,15 +212,20 @@ public class OverviewController {
             if (event.getClickCount() > 0) {
                 int caseId = onEditCase();
                 opListOperation.setItems(operationView(caseId));
+                btnRole.setVisible(false);
             }
         });
-        // When a Operation gets double clicked you can edit this Operation
+        // When an Operation gets double clicked you can edit this Operation
         opListOperation.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() > 1) {
                 opId = onEditOperation();
                 createAndShowOperationWindow();
                 opListOperation.setItems(operationView(onEditCase()));
 
+            }
+            // when an operation gets clicked the button for changing the roles is shown
+            if (event.getClickCount() > 0){
+                btnRole.setVisible(true);
             }
         });
 
@@ -473,12 +477,28 @@ public class OverviewController {
     void showStornierteOp() {
         int caseId = onEditCase();
         if(stornierteOperation.isSelected()) {
-            setStoriniertShown(true);
+            setStorniertShown(true);
             opListOperation.setItems(FXCollections.observableArrayList(operationView(caseId)));
         }
         else{
-            setStoriniertShown(false);
+            setStorniertShown(false);
             opListOperation.setItems(operationView(caseId));
+        }
+    }
+
+    @FXML
+    void showRoles(){
+        System.out.println("Show and edit Role Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRoleOverview.fxml"));
+            root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Rolle");
+            stage.setScene(new Scene(root));
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -490,7 +510,7 @@ public class OverviewController {
         return storiniertShown;
     }
 
-    public void setStoriniertShown(Boolean storiniertShown) {
+    public void setStorniertShown(Boolean storiniertShown) {
         OverviewController.storiniertShown = storiniertShown;
     }
 
