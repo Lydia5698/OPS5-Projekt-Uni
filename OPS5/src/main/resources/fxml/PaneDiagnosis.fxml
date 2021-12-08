@@ -8,8 +8,8 @@
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DiagnosisController">
 	<children>
       <Button fx:id="btnDiagnose" layoutX="400.0" layoutY="472.0" mnemonicParsing="false" onAction="#createNewDiagnosis" text="Neue Diagnose" />
-		<Button layoutX="316.0" layoutY="472.0" mnemonicParsing="false" onAction="#createDiagnosis" text="Speichern" />
-      <TableView fx:id="diagnosisTable" layoutX="29.0" layoutY="21.0" onMouseEntered="#diagnosisClicked" prefHeight="167.0" prefWidth="763.0">
+		<Button layoutX="316.0" layoutY="472.0" mnemonicParsing="false" onAction="#editDiagnosis" text="Speichern" />
+      <TableView fx:id="diagnosisTable" layoutX="29.0" layoutY="21.0" onMouseClicked="#diagnosisClicked" prefHeight="167.0" prefWidth="763.0">
          <columns>
             <TableColumn fx:id="diagIDCol" prefWidth="75.0" text="Diagnose-ID" />
             <TableColumn fx:id="opIDCol" prefWidth="45.0" text="OP-ID" />

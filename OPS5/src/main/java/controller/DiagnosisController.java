@@ -95,15 +95,24 @@ public class DiagnosisController {
 	 * @param event the event of pushing the Speichern Button
 	 */
 	@FXML
-	public void createDiagnosis(ActionEvent event){
+	public void editDiagnosis(ActionEvent event){
 		System.out.println("Create diagnosis!");
 		flagEditDiagnose = true;
-		if(noMissingStatement()){
+		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlender Diagnose-Code");
+			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
+			alert.show();
+
+		}
+		else{
 			insertNewDiagnose();
 			Node source = (Node) event.getSource();
 			Stage thisStage = (Stage) source.getScene().getWindow();
 			thisStage.close();
 		}
+
+
 	}
 
 
@@ -287,8 +296,17 @@ public class DiagnosisController {
 	 * Gets triggered when a Diagnosis in the TableView gets selected
 	 */
 	@FXML
-	void diagnosisClicked() {
+	void diagnosisClicked(MouseEvent event) {
 		flagEditDiagnose = true;
+		if(event.getClickCount() > 0){
+			Diagnose diagnose = diagnosisTable.getSelectionModel().getSelectedItem();
+			Icd10CodeSt icd10CodeSt = new Icd10CodeStDao(Main.configuration).fetchOneByIcd10Code(diagnose.getIcd10Code());
+			Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(diagnose.getOpId());
+			DiagnosetypSt diagnosetypSt = new DiagnosetypStDao(Main.configuration).fetchOneByDiagnosetyp(diagnose.getDiagnosetyp());
+			diagnosisIcdCode.setValue(icd10CodeSt);
+			diagnosisOpId.setValue(operation);
+			diagnosisType.setValue(diagnosetypSt);
+		}
 	}
 
 	/**
