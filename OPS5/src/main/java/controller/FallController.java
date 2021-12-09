@@ -156,21 +156,16 @@ public class FallController {
             }
             //checking for invalid entrys concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
-            else if(fall.getEntlassungsdatum() != null){
-                if(fall.getAufnahmedatum() == null){
-                    if(fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
+            else if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
                         alert.setHeaderText("Falscher Eintrag!");
                         alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
                         alert.showAndWait();
-                    }
-                }//Entlassungsdatum ist vor dem Aufnahmedatum
-                else {
-                    if (fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())) {
-                        alert.setHeaderText("Falscher Eintrag!");
-                        alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
-                        alert.showAndWait();
-                    }
-                }
+            }
+            //Entlassungsdatum ist vor dem Aufnahmedatum
+            else if (fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
+                alert.setHeaderText("Falscher Eintrag!");
+                alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
+                alert.showAndWait();
             }
             else {
                 //if the aufnahmedatum is null set it to the current date and time
