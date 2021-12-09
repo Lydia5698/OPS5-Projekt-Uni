@@ -463,7 +463,7 @@ public class OverviewController {
             opListOperation.setItems(operationView(onEditCase()));
         }
         else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fehlende Operation");
             alert.setContentText("Bitte wählen Sie eine Operation zum stornieren aus");
             alert.show();

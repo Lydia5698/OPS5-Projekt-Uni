@@ -205,7 +205,7 @@ public class ProcedureController {
 	 */
 	public boolean noMissingStatement(){
 		if(procedureOpID.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlende OP-ID");
 			alert.setContentText("Bitte wählen Sie eine Operations-ID aus");
 			alert.show();
@@ -213,7 +213,7 @@ public class ProcedureController {
 		}
 
 		if(procedureOpsCode.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender OPS-Code");
 			alert.setContentText("Bitte wählen Sie einen OPS-Code aus");
 			alert.show();
@@ -221,7 +221,7 @@ public class ProcedureController {
 		}
 
 		if(procedureTable.getSelectionModel().isEmpty() && flagEditProzedure){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlende Prozedur");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
 			alert.show();

@@ -323,7 +323,7 @@ public class DiagnosisController {
 	public boolean noMissingStatement(){
 
 		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender Diagnose-Code ");
 			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
 			alert.show();
@@ -331,7 +331,7 @@ public class DiagnosisController {
 		}
 
 		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
 			alert.show();
@@ -339,7 +339,7 @@ public class DiagnosisController {
 		}
 
 		if(diagnosisType.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender Diagnosetyp");
 			alert.setContentText("Bitte wählen Sie einen Diagnosetyp aus");
 			alert.show();
@@ -348,7 +348,7 @@ public class DiagnosisController {
 
 
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlende Diagnose");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
 			alert.show();
