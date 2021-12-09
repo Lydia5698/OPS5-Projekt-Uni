@@ -179,6 +179,11 @@ public class FallController {
                 }
                 fallDao.insert(fall);
                 System.out.println("Creating case!");
+
+                Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                confirm.setContentText("Der Fall wurde in die Datenbank eingefügt.");
+                confirm.showAndWait();
+
                 //close the window
                 Stage stage = (Stage) speicherbutton.getScene().getWindow();
                 stage.close();

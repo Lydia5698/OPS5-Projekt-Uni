@@ -52,6 +52,12 @@ public class Server {
                     Fall fall = MessageParser.parseA01Case(message);
                     CommunicationsController.insertNewCase(fall);
                     System.out.println("Patient und Fall eingefügt");
+
+                    Platform.runLater(()-> {
+                        Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                        confirm.setContentText("Der Patient und der Fall wurden in die Datenbank eingefügt.");
+                        confirm.showAndWait();
+                    });
                 }
                 try {
                     return message.generateACK();

@@ -112,6 +112,11 @@ public class PatientController{
             else {
                 patientDao.insert(patient);
                 System.out.println("Creating patient!");
+
+                Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                confirm.setContentText("Der Patient wurde in die Datenbank eingefügt.");
+                confirm.showAndWait();
+
                 //close the window
                 Stage stage = (Stage) speichern.getScene().getWindow();
                 stage.close();
