@@ -39,7 +39,7 @@
 				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Schnittzeit" GridPane.rowIndex="6" />
 				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nahtzeit" GridPane.rowIndex="7" />
 				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bauchtücher vor der OP" GridPane.rowIndex="8" />
-				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bauchtücher vor der OP" GridPane.rowIndex="9" />
+				<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bauchtücher nach der OP" GridPane.rowIndex="9" />
 				<ComboBox fx:id="opCaseId" prefWidth="300.0" GridPane.columnIndex="1" />
 				<DateTimePicker fx:id="opDateBegin" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 				<DateTimePicker fx:id="opDateEnd" GridPane.columnIndex="1" GridPane.rowIndex="2" />
