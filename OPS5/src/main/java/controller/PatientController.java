@@ -104,7 +104,7 @@ public class PatientController{
                 alert.showAndWait();
             }
             //invalid birthdate
-            else if(patientBirthdate != null && patientBirthdate.getValue().isAfter(LocalDate.now())){
+            else if(patientBirthdate.getValue() != null && patientBirthdate.getValue().isAfter(LocalDate.now())){
                     alert.setHeaderText("Falscher Eintrag!");
                     alert.setContentText("Das gewählte Geburtsdatum liegt in der Zukunft!");
                     alert.showAndWait();
