@@ -86,11 +86,21 @@ public class ProcedureController {
 	@FXML
 	public void editProcedure(ActionEvent event) {
 		flagEditProzedure = true;
-    	System.out.println("Create procedure!");
-    	insertNewProcedure();
-    	Node source = (Node) event.getSource();
-    	Stage thisStage = (Stage) source.getScene().getWindow();
-    	thisStage.close();
+		if(procedureTable.getSelectionModel().isEmpty() && flagEditProzedure){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlende Prozedur");
+			alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
+			alert.show();
+
+		}
+		else {
+			System.out.println("Create procedure!");
+			insertNewProcedure();
+			Node source = (Node) event.getSource();
+			Stage thisStage = (Stage) source.getScene().getWindow();
+			thisStage.close();
+		}
+
 
 
 	}

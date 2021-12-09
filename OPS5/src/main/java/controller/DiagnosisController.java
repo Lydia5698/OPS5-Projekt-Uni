@@ -98,13 +98,20 @@ public class DiagnosisController {
 	public void editDiagnosis(ActionEvent event){
 		System.out.println("Create diagnosis!");
 		flagEditDiagnose = true;
-		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
+		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Fehlende Diagnose");
+			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
+			alert.show();
+		}
+		else if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
 			Alert alert = new Alert(Alert.AlertType.INFORMATION);
 			alert.setTitle("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
 			alert.show();
 
 		}
+
 		else{
 			insertNewDiagnose();
 			Node source = (Node) event.getSource();
