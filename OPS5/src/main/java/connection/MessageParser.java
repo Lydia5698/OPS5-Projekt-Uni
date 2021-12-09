@@ -68,7 +68,8 @@ public class MessageParser {
         //fallid nicht setzen, durchAutoincrement
         //patid wird in dem server gesetzt von dem patienten der in dern hl7 mitgesendet wurde
         fall.setFallTyp(pv1.getPatientClass().getValue().equals("Inpatient") ? 1 : 2);
-        fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
+        fall.setPatId(26);
+        //fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
         fall.setAufnahmedatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getAdmitDateTime().getTime().getValue())));
         if(pv1.getDischargeDateTime(0).getTime().getValue() != null){fall.setEntlassungsdatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getDischargeDateTime(0).getTime().getValue())));}
         fall.setStationSt(pv1.getAssignedPatientLocation().getPl1_PointOfCare().getValue());
