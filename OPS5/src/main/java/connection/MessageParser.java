@@ -44,7 +44,7 @@ public class MessageParser {
         patient.setVorname(pid.getPatientName(0).getGivenName().getValue());
         System.out.println(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
         patient.setGeburtsdatum(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
-        patient.setGeschlecht(pid.getAdministrativeSex().getValue());
+        patient.setGeschlecht(Converter.SexFromISSToOurConverter(pid.getAdministrativeSex().getValue()));
         patient.setStorniert(false);
         patient.setGeburtsort(pid.getBirthPlace().getValue());
         patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().toString());

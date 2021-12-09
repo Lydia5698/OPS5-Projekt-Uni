@@ -127,6 +127,20 @@ public class Converter {
         else if(s.equals("m")){return "M";}
         else{return "O";}
     }
+
+    /**
+     * Converts the iss standard of the sec into our logic
+     * @param s the iss sex of the sent person
+     * @return the string of the sex in our logic
+     */
+    public static String SexFromISSToOurConverter(String s){
+        if(s == null){return null;}
+        else if(s.equals("F")){return "w";}
+        else if(s.equals("M")){return "m";}
+        else{return "d";}
+    }
+
+
     /**
      * creates a callback from all patients which prints only the last and first name of each patient
      * @return the callback
