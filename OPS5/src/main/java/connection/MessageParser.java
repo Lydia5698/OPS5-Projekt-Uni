@@ -44,7 +44,7 @@ public class MessageParser {
         patient.setGeschlecht(Converter.SexFromISSToOurConverter(pid.getAdministrativeSex().getValue()));
         patient.setStorniert(false);
         patient.setGeburtsort(pid.getBirthPlace().getValue());
-        patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().toString());
+        patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().getStreetName().getValue() + " " + pid.getPatientAddress(0).getStreetAddress().getDwellingNumber().getValue());
         patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
         patient.setTelefonnummer(pid.getPhoneNumberHome(0).getTelephoneNumber().getValue());
         patient.setErsteller("00000000");
