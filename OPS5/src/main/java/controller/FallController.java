@@ -154,7 +154,7 @@ public class FallController {
                 alert.setContentText("Es wurde kein Patient ausgewählt!");
                 alert.showAndWait();
             }
-            //checking for invalid entrys concerning the dates
+            //checking for invalid entries concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
             else if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
                         alert.setHeaderText("Falscher Eintrag!");
@@ -162,7 +162,7 @@ public class FallController {
                         alert.showAndWait();
             }
             //Entlassungsdatum ist vor dem Aufnahmedatum
-            else if (fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
+            else if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
                 alert.setHeaderText("Falscher Eintrag!");
                 alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
                 alert.showAndWait();
