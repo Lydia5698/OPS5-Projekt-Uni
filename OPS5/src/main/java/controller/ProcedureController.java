@@ -294,7 +294,6 @@ public class ProcedureController {
 		procedureOpsCode.setButtonCell(cellFactory.call(null));
 		procedureOpsCode.setCellFactory(cellFactory);
 		procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
-		procedureOpsCode.setValue(new OpsCodeStDao(Main.configuration).fetchOneByOpsCode("1-100"));
 
 	}
 }
