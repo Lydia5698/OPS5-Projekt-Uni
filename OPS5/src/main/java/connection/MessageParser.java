@@ -37,7 +37,6 @@ public class MessageParser {
         ADT_A01 adtMsg = (ADT_A01) a01Message;
 
         PID pid = adtMsg.getPID();
-        EVN evn = adtMsg.getEVN();
 
         Patient patient = new Patient();
         //neuer patient wird zugefügt, deshalb keine id, durch autoincrement
@@ -52,7 +51,7 @@ public class MessageParser {
         patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
         patient.setTelefonnummer(pid.getPhoneNumberHome(0).getTelephoneNumber().getValue());
         patient.setErsteller("00000000");
-        patient.setErstellZeit(LocalDateTime.now());
+        patient.setErstellZeit(LocalDateTime.now()); //TODO hier evt noch umändern
         return patient;
 
     }
@@ -65,8 +64,6 @@ public class MessageParser {
     public static Fall parseA01Case(Message a01message){
         ADT_A01 adtMsg = (ADT_A01) a01message;
 
-        MSH msh = adtMsg.getMSH();
-        EVN evn = adtMsg.getEVN();
         PID pid = adtMsg.getPID();
         PV1 pv1 = adtMsg.getPV1();
 
@@ -132,7 +129,7 @@ public class MessageParser {
         pv1.getAdmittingDoctor(0).getFamilyName().getSurname().setValue(medPersonal.getName());
         pv1.getAdmittingDoctor(0).getGivenName().setValue(medPersonal.getVorname());
         pv1.getVisitNumber().getCx1_IDNumber().setValue(fall.getFallId().toString());
-        pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+        if(fall.getEntlassungsdatum() != null){pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));}
         pv1.getAssignedPatientLocation().getPointOfCare().setValue(fall.getStationSt());
 
         List<Diagnose> diagnose = new DiagnoseDao(Main.configuration).fetchByOpId(operation.getOpId());
