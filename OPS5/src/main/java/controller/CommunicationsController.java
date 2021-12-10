@@ -57,7 +57,7 @@ public class CommunicationsController {
 	    startServer();
         setCommunicationsObjectBox();
         hl7Message.setCellValueFactory(param -> param.getValue().hl7MessageProperty());
-        dateOfMessage.setCellValueFactory(param -> Bindings.createStringBinding(() -> param.getValue().getDateOfMessage().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), param.getValue().dateOfMessageProperty()));
+        dateOfMessage.setCellValueFactory(param -> Bindings.createStringBinding(() -> param.getValue().getDateOfMessage().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")), param.getValue().dateOfMessageProperty()));
         ackMessage.setCellValueFactory(param -> param.getValue().ackMessageProperty());
 
         communicationsIpAddress.setText(InetAddress.getLocalHost().getHostAddress());
@@ -116,7 +116,7 @@ public class CommunicationsController {
      * @throws HL7Exception if the message can not be encoded
      */
     public void insertReceivedMessage(Message message) throws HL7Exception {
-        ts.getItems().add(new TableViewMessage(message.encode(), LocalDate.now(), "ja"));
+        ts.getItems().add(new TableViewMessage(message.encode(), LocalDateTime.now(), "ja"));
     }
 
     /**
@@ -143,7 +143,7 @@ public class CommunicationsController {
             Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
             String stringFromMessage = MessageParser.messageToString(sendMessage);
 
-            ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDate.now(), "nein"));
+            ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
 
             Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
 
@@ -202,7 +202,6 @@ public class CommunicationsController {
     /**
      * This method checks if the sent case can be inserted in our database and if yes , the case will be inserted
      * @param fall the sent case
-     * @param patid the patientid of the sent patient
      */
     public static void insertNewCase(Fall fall){
         FallDao fallDao = new FallDao(Main.configuration);
@@ -231,7 +230,7 @@ public class CommunicationsController {
                     fall.setAufnahmedatum(LocalDateTime.now());
                 }
                 fallDao.insert(fall);
-                System.out.println("Creating sended case!");
+                System.out.println("Creating sent case!");
             }
         });
 

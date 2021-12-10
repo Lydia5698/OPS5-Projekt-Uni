@@ -6,11 +6,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TableViewMessage {
 
     private StringProperty hl7Message;
-    private ObjectProperty<LocalDate> dateOfMessage;
+    private ObjectProperty<LocalDateTime> dateOfMessage;
     private StringProperty ackMessage;
 
     /**
@@ -19,7 +20,7 @@ public class TableViewMessage {
      * @param date the date of the messagreceiving
      * @param ack "ja" if the message gots an ack and else "nein"
      */
-    public TableViewMessage(String hl7Message, LocalDate date, String ack){
+    public TableViewMessage(String hl7Message, LocalDateTime date, String ack){
         this.hl7Message = new SimpleStringProperty(hl7Message);
         this.dateOfMessage = new SimpleObjectProperty<>(date);
         this.ackMessage = new SimpleStringProperty(ack);
@@ -38,15 +39,15 @@ public class TableViewMessage {
         this.hl7Message.set(hl7Message);
     }
 
-    public LocalDate getDateOfMessage() {
+    public LocalDateTime getDateOfMessage() {
         return dateOfMessage.get();
     }
 
-    public ObjectProperty<LocalDate> dateOfMessageProperty() {
+    public ObjectProperty<LocalDateTime> dateOfMessageProperty() {
         return dateOfMessage;
     }
 
-    public void setDateOfMessage(LocalDate dateOfMessage) {
+    public void setDateOfMessage(LocalDateTime dateOfMessage) {
         this.dateOfMessage.set(dateOfMessage);
     }
 
