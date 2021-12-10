@@ -7,11 +7,14 @@ import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import controller.CommunicationsController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import jooq.tables.daos.DiagnoseDao;
+import jooq.tables.pojos.Diagnose;
 import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.Patient;
 import main.Main;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -58,6 +61,17 @@ public class Server {
                         confirm.setContentText("Der Patient und der Fall wurden in die Datenbank eingefügt.");
                         confirm.showAndWait();
                     });
+                if(MessageParser.a01WithDignosis(message)){
+                    List<Diagnose> diagnoseList = MessageParser.parseA01Diagnose(message);
+                    for(int i = 0; i < diagnoseList.size(); i++){
+                        new DiagnoseDao(Main.configuration).insert(diagnoseList.get(i));
+                    }
+                    Platform.runLater(()-> {
+                        Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                        confirm.setContentText("Die gesendeten Diagnosen wurden dem gesendeten Fall zugeordnet.");
+                        confirm.showAndWait();
+                    });
+                }
                 }
                 try {
                     return message.generateACK();

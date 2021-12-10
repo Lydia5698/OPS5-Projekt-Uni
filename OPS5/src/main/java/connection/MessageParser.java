@@ -68,7 +68,7 @@ public class MessageParser {
         //fallid nicht setzen, durchAutoincrement
         //patid wird in dem server gesetzt von dem patienten der in dern hl7 mitgesendet wurde
         fall.setFallTyp(pv1.getPatientClass().getValue().equals("Inpatient") ? 1 : 2);
-        fall.setPatId(26);
+        fall.setPatId(26); //TODO noch hardgecodet , anpassen an besprechung mit partnergruppe
         //fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
         fall.setAufnahmedatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getAdmitDateTime().getTime().getValue())));
         if(pv1.getDischargeDateTime(0).getTime().getValue() != null){fall.setEntlassungsdatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getDischargeDateTime(0).getTime().getValue())));}
@@ -77,6 +77,58 @@ public class MessageParser {
         fall.setErsteller(pv1.getAdmittingDoctor(0).getIDNumber().getValue());
         fall.setErstellZeit(LocalDateTime.now());
         return fall;
+    }
+
+    /**
+     * In case that the KIS sends also diagnoses we have to create an empty operation to the new case and add the diagnosis to them
+     * @param a01message the incoming message from kis
+     * @return null if there is no diagnosis field
+     * @throws HL7Exception thrown if the dgq
+     */
+    public static List<Diagnose> parseA01Diagnose(Message a01message) throws HL7Exception {
+        ADT_A01 adtMsg = (ADT_A01) a01message;
+        List<Diagnose> diagnoses = null;
+        if(adtMsg.getDG1All().size() == 0){
+            return null;
+        }
+        else{
+            PV1 pv1 = adtMsg.getPV1();
+
+            Operation operation = new Operation();
+            operation.setErsteller("00000000");
+            operation.setStorniert(false);
+            operation.setErstellZeit(LocalDateTime.now());
+            operation.setFallId(Integer.parseInt(pv1.getSetIDPV1().getValue()));
+            operation.setBauchtuecherPrae(0);
+            operation.setBauchtuecherPost(0);
+
+            new OperationDao(Main.configuration).insert(operation);
+
+            List<DG1> dg1List = adtMsg.getDG1All();
+            for (DG1 dg1 : dg1List) {
+                Diagnose diagnose = new Diagnose();
+                diagnose.setErsteller("00000000");
+                diagnose.setErstellZeit(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(dg1.getDiagnosisDateTime().getTime().getValue())));
+                diagnose.setDiagnosetyp(1);
+                diagnose.setIcd10Code(dg1.getDiagnosisCodeDG1().getCe1_Identifier().getValue());
+                diagnose.setKlartextDiagnose(dg1.getDiagnosisDescription().getValue());
+                //TODO ersteller kis oder medpersonal
+                //TODO erstellzeit now oder aus der Nachricht
+                diagnoses.add(diagnose);
+            }
+        }
+        return diagnoses;
+    }
+
+    /**
+     * Checks if an adt01 message contains diagnosis
+     * @param message the sent message
+     * @return ture, if the message contains a diagnosis
+     * @throws HL7Exception
+     */
+    public static boolean a01WithDignosis(Message message) throws HL7Exception {
+        ADT_A01 adt_a01 = (ADT_A01) message;
+        return adt_a01.getDG1All().size() > 0;
     }
 
     /**
