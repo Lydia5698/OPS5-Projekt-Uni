@@ -52,27 +52,40 @@ public class CommunicationsController {
     private Server server;
     
 	@FXML
-	public void initialize() throws InterruptedException, UnknownHostException {
+	public void initialize(){
         communicationsController = this;
-	    startServer();
-        setCommunicationsObjectBox();
-        hl7Message.setCellValueFactory(param -> param.getValue().hl7MessageProperty());
-        dateOfMessage.setCellValueFactory(param -> Bindings.createStringBinding(() -> param.getValue().getDateOfMessage().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")), param.getValue().dateOfMessageProperty()));
-        ackMessage.setCellValueFactory(param -> param.getValue().ackMessageProperty());
+        try {
+            startServer();
+            setCommunicationsObjectBox();
+            hl7Message.setCellValueFactory(param -> param.getValue().hl7MessageProperty());
+            dateOfMessage.setCellValueFactory(param -> Bindings.createStringBinding(() -> param.getValue().getDateOfMessage().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")), param.getValue().dateOfMessageProperty()));
+            ackMessage.setCellValueFactory(param -> param.getValue().ackMessageProperty());
 
-        communicationsIpAddress.setText(InetAddress.getLocalHost().getHostAddress());
-        communicationsPort.setText(String.valueOf(Main.port));
-
-    	System.out.println("Initialize Communications-Tab!");
-
+            communicationsIpAddress.setText(InetAddress.getLocalHost().getHostAddress());
+            communicationsPort.setText(String.valueOf(Main.port));
+            System.out.println("Initialize Communications-Tab!");
+        } catch (UnknownHostException e) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setContentText("Die Adresse kann nicht zu einer IP Adresse gecastet werden.");
+                alert.showAndWait();
+            });
+        }
     }
 
     /**
-     * This method starts the server so he listens to incomint ADT01 and BARP05(test) messages
-     * @throws InterruptedException it is thrown if the server is interrupted
+     * This method starts the server so he listens to incoming ADT01 and BARP05(test) messages
      */
-    private void startServer() throws InterruptedException {
-	    server = new Server();
+    private void startServer(){
+	    try{
+            server = new Server();
+        } catch(InterruptedException e){
+            Platform.runLater(()->{
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setContentText("Der Server wurde unterbrochen und hört nicht mehr auf einkommende Nachrichten.");
+                alert.showAndWait();
+            });
+        }
     }
 
     /**
@@ -113,20 +126,25 @@ public class CommunicationsController {
     /**
      * This method inserts the received message into the tableview as hl7 string
      * @param message the incomming message
-     * @throws HL7Exception if the message can not be encoded
      */
-    public void insertReceivedMessage(Message message) throws HL7Exception {
-        ts.getItems().add(new TableViewMessage(message.encode(), LocalDateTime.now(), "ja"));
+    public void insertReceivedMessage(Message message){
+        try{
+            ts.getItems().add(new TableViewMessage(message.encode(), LocalDateTime.now(), "ja"));
+        } catch(HL7Exception e){
+            Platform.runLater(()->{
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setContentText("Die Nachricht kann nicht in einen String umgewandelt werden.");
+                alert.showAndWait();
+            });
+        }
+
     }
 
     /**
      * when the user pushes the button the selected patient/operation will be sent to the kis
-     * @throws HL7Exception if the message cannot be sent to the kis
-     * @throws LLPException if the message cannot be sent to the kis
-     * @throws IOException if the message cannot be sent to the kis
      */
     @FXML
-	public void send() throws HL7Exception, LLPException, IOException {
+	public void send(){
     	System.out.println("Sending something!");
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -156,8 +174,6 @@ public class CommunicationsController {
                             .forEach(tM -> tM.setAckMessage("ja"));
                 }
             }
-
-
         }
     }
 
@@ -185,7 +201,7 @@ public class CommunicationsController {
         Platform.runLater(()->{
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            if (getInstance().canInsert(patient) == false) {
+            if (!getInstance().canInsert(patient)) {
                 alert.setHeaderText("Patient kann nicht eingefügt werden!");
                 alert.setContentText("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden!");
                 alert.showAndWait();
@@ -237,15 +253,3 @@ public class CommunicationsController {
     }
 
 }
-/**
-else if(communicationsType.getValue().equals("Patient")){
-        if(communicationsObjectPatient.getValue() == null){
-        alert.setHeaderText("Kein Patient ausgewählt!");
-        alert.setContentText("Es muss ein Patient ausgewählt werden, der verschickt werden soll!");
-        alert.showAndWait();
-        } else{
-        Client client = new Client();
-        client.sendMessage(MessageParser.parseBar05Patient(communicationsObjectPatient.getValue()));
-        }
-        }
- */

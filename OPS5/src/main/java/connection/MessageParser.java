@@ -5,6 +5,8 @@ import ExternalFiles.Converter;
 import ca.uhn.hl7v2.model.v251.message.BAR_P05;
 import ca.uhn.hl7v2.model.v251.segment.*;
 import ca.uhn.hl7v2.parser.PipeParser;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
@@ -14,7 +16,6 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.ADT_A01;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -85,40 +86,54 @@ public class MessageParser {
      * @return null if there is no diagnosis field
      * @throws HL7Exception thrown if the dgq
      */
-    public static List<Diagnose> parseA01Diagnose(Message a01message) throws HL7Exception {
+    public static List<Diagnose> parseA01Diagnose(Message a01message){
         ADT_A01 adtMsg = (ADT_A01) a01message;
         List<Diagnose> diagnoses = null;
-        if(adtMsg.getDG1All().size() == 0){
-            return null;
-        }
-        else{
-            PV1 pv1 = adtMsg.getPV1();
 
-            Operation operation = new Operation();
-            operation.setErsteller("00000000");
-            operation.setStorniert(false);
-            operation.setErstellZeit(LocalDateTime.now());
-            operation.setFallId(Integer.parseInt(pv1.getSetIDPV1().getValue()));
-            operation.setBauchtuecherPrae(0);
-            operation.setBauchtuecherPost(0);
-
-            new OperationDao(Main.configuration).insert(operation);
-
-            List<DG1> dg1List = adtMsg.getDG1All();
-            for (DG1 dg1 : dg1List) {
-                Diagnose diagnose = new Diagnose();
-                diagnose.setErsteller("00000000");
-                diagnose.setErstellZeit(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(dg1.getDiagnosisDateTime().getTime().getValue())));
-                diagnose.setDiagnosetyp(1);
-                diagnose.setIcd10Code(dg1.getDiagnosisCodeDG1().getCe1_Identifier().getValue());
-                diagnose.setKlartextDiagnose(dg1.getDiagnosisDescription().getValue());
-                //TODO ersteller kis oder medpersonal
-                //TODO erstellzeit now oder aus der Nachricht
-                diagnoses.add(diagnose);
+        try{
+            if(adtMsg.getDG1All().size() == 0){
+                return null;
             }
+            else{
+                PV1 pv1 = adtMsg.getPV1();
+
+                Operation operation = new Operation();
+                operation.setErsteller("00000000");
+                operation.setStorniert(false);
+                operation.setErstellZeit(LocalDateTime.now());
+                operation.setFallId(Integer.parseInt(pv1.getSetIDPV1().getValue()));
+                operation.setBauchtuecherPrae(0);
+                operation.setBauchtuecherPost(0);
+
+                new OperationDao(Main.configuration).insert(operation);
+
+
+                List<DG1> dg1List = adtMsg.getDG1All();
+                for (DG1 dg1 : dg1List) {
+                    Diagnose diagnose = new Diagnose();
+                    diagnose.setErsteller("00000000");
+                    diagnose.setErstellZeit(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(dg1.getDiagnosisDateTime().getTime().getValue())));
+                    diagnose.setDiagnosetyp(1);
+                    diagnose.setIcd10Code(dg1.getDiagnosisCodeDG1().getCe1_Identifier().getValue());
+                    diagnose.setKlartextDiagnose(dg1.getDiagnosisDescription().getValue());
+                    //TODO ersteller kis oder medpersonal
+                    //TODO erstellzeit now oder aus der Nachricht
+                    diagnoses.add(diagnose);
+                    return diagnoses;
+                }
+             }
+        } catch(HL7Exception e){
+                Platform.runLater(()->{
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setContentText("Die Nachricht kann nicht umgewandelt werden");
+                    alert.showAndWait();
+                });
+                return null;
         }
-        return diagnoses;
+
+        return null;
     }
+
 
     /**
      * Checks if an adt01 message contains diagnosis
@@ -126,9 +141,14 @@ public class MessageParser {
      * @return ture, if the message contains a diagnosis
      * @throws HL7Exception
      */
-    public static boolean a01WithDignosis(Message message) throws HL7Exception {
+    public static boolean a01WithDignosis(Message message){
         ADT_A01 adt_a01 = (ADT_A01) message;
-        return adt_a01.getDG1All().size() > 0;
+        try{
+            return adt_a01.getDG1All().size() > 0;
+        } catch(HL7Exception e){
+            return false;
+        }
+
     }
 
     /**
@@ -136,9 +156,17 @@ public class MessageParser {
      * @param operation operation which should be casted into a message
      * @return the message of the new operation
      */
-    public static Message parseBar05(Operation operation) throws HL7Exception, IOException {
+    public static Message parseBar05(Operation operation){
         BAR_P05 bar05 = new BAR_P05();
-        bar05.initQuickstart("BAR","P05", "P");
+        try{bar05.initQuickstart("BAR","P05", "P");}
+        catch(Exception e){
+            Platform.runLater(()->{
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Es kann keine Nachricht erstellt werden.");
+                alert.showAndWait();
+            });
+        }
+
 
         Fall fall = new FallDao(Main.configuration).findById(operation.getFallId());
         Patient patient = new PatientDao(Main.configuration).findById(fall.getPatId());
@@ -146,63 +174,75 @@ public class MessageParser {
 
         //msh
         MSH msh = bar05.getMSH();
-        msh.getDateTimeOfMessage().getTime().setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-        msh.getSendingApplication().getNamespaceID().setValue("OPS5");
-        msh.getReceivingApplication().getNamespaceID().setValue("KIS2");
-        msh.getSequenceNumber().setValue("123");
+        try {
+            msh.getDateTimeOfMessage().getTime().setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+            msh.getSendingApplication().getNamespaceID().setValue("OPS5");
+            msh.getReceivingApplication().getNamespaceID().setValue("KIS2");
+            msh.getSequenceNumber().setValue("123");
 
-        EVN evn = bar05.getEVN();
-        evn.getEventTypeCode().setValue("P05");
-        evn.getRecordedDateTime().getTime().setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+            EVN evn = bar05.getEVN();
+            evn.getEventTypeCode().setValue("P05");
+            evn.getRecordedDateTime().getTime().setValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
 
-        //pid
-        PID pid = bar05.getPID();
-        assert patient != null;
-        pid.getPatientID().getCx1_IDNumber().setValue(patient.getPatId().toString());
-        pid.getPatientName(0).getFamilyName().getSurname().setValue(patient.getName());
-        pid.getPatientName(0).getGivenName().setValue(patient.getVorname());
-        pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-        //TODO Blutgruppe
-        pid.getAdministrativeSex().setValue(Converter.IssSexConverter(patient.getGeschlecht()));
-        pid.getPatientAddress(0).getStreetAddress().getStreetName().setValue(patient.getStrasse());
-        pid.getPatientAddress(0).getZipOrPostalCode().setValue(patient.getPostleitzahl());
-        pid.getPhoneNumberHome(0).getTelephoneNumber().setValue(patient.getTelefonnummer());
-        pid.getBirthPlace().setValue(patient.getGeburtsort());
+            //pid
+            PID pid = bar05.getPID();
+            assert patient != null;
+            pid.getPatientID().getCx1_IDNumber().setValue(patient.getPatId().toString());
+            pid.getPatientName(0).getFamilyName().getSurname().setValue(patient.getName());
+            pid.getPatientName(0).getGivenName().setValue(patient.getVorname());
+            pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            //TODO Blutgruppe
+            pid.getAdministrativeSex().setValue(Converter.IssSexConverter(patient.getGeschlecht()));
+            pid.getPatientAddress(0).getStreetAddress().getStreetName().setValue(patient.getStrasse());
+            pid.getPatientAddress(0).getZipOrPostalCode().setValue(patient.getPostleitzahl());
+            pid.getPhoneNumberHome(0).getTelephoneNumber().setValue(patient.getTelefonnummer());
+            pid.getBirthPlace().setValue(patient.getGeburtsort());
 
-        //pv1
-        PV1 pv1 = bar05.getVISIT().getPV1();
-        pv1.getSetIDPV1().setValue(operation.getFallId().toString());
-        if(fall.getFallTyp() != null){pv1.getPatientClass().setValue(Converter.fallTypConverter(fall.getFallTyp()).equals("stationär") ? "Inpatient" : "Outpatient");}
-        pv1.getAdmitDateTime().getTime().setValue(fall.getAufnahmedatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-        assert medPersonal != null;
-        pv1.getAdmittingDoctor(0).getIDNumber().setValue(medPersonal.getPersId());
-        pv1.getAdmittingDoctor(0).getFamilyName().getSurname().setValue(medPersonal.getName());
-        pv1.getAdmittingDoctor(0).getGivenName().setValue(medPersonal.getVorname());
-        pv1.getVisitNumber().getCx1_IDNumber().setValue(fall.getFallId().toString());
-        if(fall.getEntlassungsdatum() != null){pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));}
-        pv1.getAssignedPatientLocation().getPointOfCare().setValue(fall.getStationSt());
+            //pv1
+            PV1 pv1 = bar05.getVISIT().getPV1();
+            pv1.getSetIDPV1().setValue(operation.getFallId().toString());
+            if (fall.getFallTyp() != null) {
+                pv1.getPatientClass().setValue(Converter.fallTypConverter(fall.getFallTyp()).equals("stationär") ? "Inpatient" : "Outpatient");
+            }
+            pv1.getAdmitDateTime().getTime().setValue(fall.getAufnahmedatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+            assert medPersonal != null;
+            pv1.getAdmittingDoctor(0).getIDNumber().setValue(medPersonal.getPersId());
+            pv1.getAdmittingDoctor(0).getFamilyName().getSurname().setValue(medPersonal.getName());
+            pv1.getAdmittingDoctor(0).getGivenName().setValue(medPersonal.getVorname());
+            pv1.getVisitNumber().getCx1_IDNumber().setValue(fall.getFallId().toString());
+            if (fall.getEntlassungsdatum() != null) {
+                pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+            }
+            pv1.getAssignedPatientLocation().getPointOfCare().setValue(fall.getStationSt());
 
 
-        //DG1 fields
-        List<Diagnose> diagnose = new DiagnoseDao(Main.configuration).fetchByOpId(operation.getOpId());
-        for(int i = 0; i < diagnose.size(); i++){
-            DG1 dg1 = bar05.getVISIT().getDG1(i);
-            dg1.getSetIDDG1().setValue(diagnose.get(i).getDiagnoseId().toString());
-            dg1.getDiagnosisCodeDG1().getCe1_Identifier().setValue(diagnose.get(i).getIcd10Code());
-            dg1.getDiagnosisDescription().setValue(diagnose.get(i).getKlartextDiagnose());
-            dg1.getDiagnosisDateTime().getTime().setValue(diagnose.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-            dg1.getDiagnosingClinician(0).getIDNumber().setValue(diagnose.get(i).getErsteller());
-        }
+            //DG1 fields
+            List<Diagnose> diagnose = new DiagnoseDao(Main.configuration).fetchByOpId(operation.getOpId());
+            for (int i = 0; i < diagnose.size(); i++) {
+                DG1 dg1 = bar05.getVISIT().getDG1(i);
+                dg1.getSetIDDG1().setValue(diagnose.get(i).getDiagnoseId().toString());
+                dg1.getDiagnosisCodeDG1().getCe1_Identifier().setValue(diagnose.get(i).getIcd10Code());
+                dg1.getDiagnosisDescription().setValue(diagnose.get(i).getKlartextDiagnose());
+                dg1.getDiagnosisDateTime().getTime().setValue(diagnose.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+                dg1.getDiagnosingClinician(0).getIDNumber().setValue(diagnose.get(i).getErsteller());
+            }
 
-        //PR1 fields
-       List<Prozedur> prozedurs = new ProzedurDao(Main.configuration).fetchByOpId(operation.getOpId());
-        for(int i = 0; i < prozedurs.size(); i++){
-            PR1 pr1 = bar05.getVISIT(0).getPROCEDURE().getPR1();
-            pr1.getSetIDPR1().setValue(prozedurs.get(i).getProzId().toString());
-            pr1.getProcedureCode().getIdentifier().setValue(prozedurs.get(i).getOpsCode());
-            pr1.getProcedureDescription().setValue(prozedurs.get(i).getAnmerkung());
-            pr1.getProcedureDateTime().getTime().setValue(prozedurs.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-            pr1.getSurgeon(0).getIDNumber().setValue(prozedurs.get(i).getErsteller());
+            //PR1 fields
+            List<Prozedur> prozedurs = new ProzedurDao(Main.configuration).fetchByOpId(operation.getOpId());
+            for (int i = 0; i < prozedurs.size(); i++) {
+                PR1 pr1 = bar05.getVISIT(0).getPROCEDURE().getPR1();
+                pr1.getSetIDPR1().setValue(prozedurs.get(i).getProzId().toString());
+                pr1.getProcedureCode().getIdentifier().setValue(prozedurs.get(i).getOpsCode());
+                pr1.getProcedureDescription().setValue(prozedurs.get(i).getAnmerkung());
+                pr1.getProcedureDateTime().getTime().setValue(prozedurs.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+                pr1.getSurgeon(0).getIDNumber().setValue(prozedurs.get(i).getErsteller());
+            }
+        } catch(HL7Exception e){
+            Platform.runLater(()->{
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Es kann keine Nachricht aus den eingegebenen Daten geparsed werden.");
+                alert.showAndWait();
+            });
         }
        return bar05;
     }
@@ -213,41 +253,16 @@ public class MessageParser {
      * @return the string of the hl7 messagr
      * @throws HL7Exception is thrown if the message can not be encoded
      */
-    public static String messageToString(Message message) throws HL7Exception {
-        return pipeParser.encode(message);
+    public static String messageToString(Message message) {
+        try {
+            return pipeParser.encode(message);
+        } catch (HL7Exception e) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Die Nachricht kann nicht geparsed werden.");
+                alert.showAndWait();
+            });
+        }
+        return null;
     }
  }
-
-    /**
-     * this method parses a patient into a message
-     * @param patient patient which should be casted into a message
-     * @return message of the new patient
-     * @throws HL7Exception cause we try to set values
-
-    public static Message parseBar05Patient(Patient patient) throws HL7Exception {
-        BAR_P05 bar05 = new BAR_P05();
-
-        //msh
-        MSH msh = bar05.getMSH();
-        msh.getDateTimeOfMessage().getTime().setValue(LocalDateTime.now().toString());
-        msh.getSendingApplication().getNamespaceID().setValue("OPS");
-        msh.getReceivingApplication().getNamespaceID().setValue("KIS");
-        msh.getMessageType().getMsg1_MessageCode().setValue("BAR");
-        msh.getMessageType().getMsg2_TriggerEvent().setValue("P05");
-        msh.getMessageType().getMsg3_MessageStructure().setValue("BAR_P05");
-
-        //pid
-        PID pid = bar05.getPID();
-        pid.getPatientID().getCx1_IDNumber().setValue(patient.getPatId().toString());//TODO wie wollen wir id umsetzen?
-        pid.getPatientName(0).getFamilyName().getSurname().setValue(patient.getName());
-        pid.getPatientName(0).getGivenName().setValue(patient.getVorname());
-        pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().toString());
-        //TODO Blutgruppe
-        pid.getAdministrativeSex().setValue(Converter.IssSexConverter(patient.getGeschlecht()));
-        pid.getPatientAddress(0).getStreetAddress().getStreetName().setValue(patient.getStrasse());
-        pid.getPatientAddress(0).getZipOrPostalCode().setValue(patient.getPostleitzahl());
-        pid.getPhoneNumberHome(0).getTelephoneNumber().setValue(patient.getTelefonnummer());
-        pid.getBirthPlace().setValue(patient.getGeburtsort());
-
-        return bar05;
-    }*/
