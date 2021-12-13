@@ -302,7 +302,17 @@ public class AdmissionController {
 		Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
 		Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
 		Patient patient = new PatientDao(Main.configuration).fetchOneByPatId(fall.getPatId());
-		selectPatient.setValue(patient);
+		Patient patient1 = new Patient(patient){
+			@Override
+			public String toString(){
+				StringBuilder sb = new StringBuilder("");
+				sb.append(patient.getName()).append(", ");
+				sb.append(patient.getVorname()).append(", PatID: ");
+				sb.append(patient.getPatId());
+				return sb.toString();
+			}
+		};
+		selectPatient.setValue(patient1);
 	}
 
 

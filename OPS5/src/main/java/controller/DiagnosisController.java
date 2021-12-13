@@ -73,7 +73,6 @@ public class DiagnosisController {
 
 
 	boolean flagEditDiagnose = false;
-	private static Integer opID;
 
 	/**
 	 * This Methode initialize the TableView for the existing Diagnosis and shows the Op-IDs, ICD-10 codes and
@@ -85,7 +84,6 @@ public class DiagnosisController {
 		System.out.println("Initialize Diagnosis-Tab!");
 
 		initializeColumns();
-		diagnosisTable.setItems(diagnoseView());
 		setDiagnosisOpId();
 		setDiagnosisIcdCode();
 		setDiagnosisDiagnoseTyp();
@@ -146,17 +144,19 @@ public class DiagnosisController {
 	 * Collects all Diagnosis from the Database and saves them in a observable Array List from Type Diagnose pojo
 	 * @return all Diagnosis
 	 */
-	public static ObservableList<Diagnose> diagnoseView(){
+	public void diagnoseView(Integer opID){
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
-		List<Diagnose> diagnose = diagnoseDao.findAll(); // TODO: 12.12.21 auch von Fall zu Diagnose? Wie?
-		OperationDao operationDao = new OperationDao(Main.configuration);
-		//Operation operation = operationDao.fetchOneByOpId(diagnose)
+		List<Diagnose> diagnose = diagnoseDao.findAll();
+		if(opID == 0){
+			diagnosisTable.setItems(FXCollections.observableArrayList(diagnose));
+		}
+		else {
+			Predicate<Diagnose> byOpID = diagnose1 -> diagnose1.getOpId().equals(opID);
+			var result = diagnose.stream().filter(byOpID)
+					.collect(Collectors.toList());
+			diagnosisTable.setItems(FXCollections.observableArrayList(result));
+		}
 
-		Predicate<Diagnose> byOpID = diagnose1 -> diagnose1.getOpId().equals(opID);
-		var result = diagnose.stream().filter(byOpID)
-				.collect(Collectors.toList());
-
-		return FXCollections.observableArrayList(result);
 	}
 
 	/**
@@ -370,13 +370,4 @@ public class DiagnosisController {
 		return true;
 
 	}
-
-	public Integer getOpID() {
-		return opID;
-	}
-
-	public static void setOpID(Integer opID) {
-		DiagnosisController.opID = opID;
-	}
-
 }

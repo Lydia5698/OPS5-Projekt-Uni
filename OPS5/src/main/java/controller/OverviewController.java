@@ -347,7 +347,8 @@ public class OverviewController {
                Stage stage = new Stage();
                stage.setTitle("Diagnosen");
                stage.setScene(new Scene(root));
-               DiagnosisController.setOpID(onEditOperation());
+               DiagnosisController controller = fxmlLoader.getController();
+               controller.diagnoseView(onEditOperation());
                stage.show();
        	}catch (IOException e) {
        		e.printStackTrace();
@@ -390,6 +391,8 @@ public class OverviewController {
                Stage stage = new Stage();
                stage.setTitle("Prozeduren");
                stage.setScene(new Scene(root));
+               ProcedureController controller = fxmlLoader.getController();
+               controller.prozedurView(onEditOperation());
                stage.show();
        	}catch (IOException e) {
        		e.printStackTrace();

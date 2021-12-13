@@ -293,7 +293,16 @@ public class OPController{
     public void initializeDefaultComboboxen(int opID){
         Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
         Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
-        opCaseId.setValue(fall);
+        Fall fall1 = new Fall(fall){
+            @Override
+            public String toString(){
+                StringBuilder sb = new StringBuilder("Fall-ID: ");
+                sb.append(fall.getFallId()).append(", Aufnahmedatum: ");
+                sb.append(fall.getAufnahmedatum());
+                return sb.toString();
+            }
+        };
+        opCaseId.setValue(fall1);
 	}
     
 
