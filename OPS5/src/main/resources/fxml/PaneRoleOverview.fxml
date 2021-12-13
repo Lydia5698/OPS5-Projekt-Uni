@@ -11,9 +11,9 @@
 		<Button layoutX="316.0" layoutY="472.0" mnemonicParsing="false" onAction="#createRole" text="Speichern" />
       <TableView fx:id="roleTable" layoutX="29.0" layoutY="21.0" onMouseEntered="#roleClicked" prefHeight="167.0" prefWidth="763.0">
          <columns>
-            <TableColumn fx:id="role" prefWidth="75.0" text="Rolle" />
-            <TableColumn fx:id="user" prefWidth="75.0" text="Personal" />
-            <TableColumn fx:id="op" prefWidth="75.0" text="Operation" />
+            <TableColumn fx:id="roleCol" prefWidth="75.0" text="Rolle" />
+            <TableColumn fx:id="userCol" prefWidth="75.0" text="Personal" />
+            <TableColumn fx:id="opCol" prefWidth="75.0" text="OP" />
             <TableColumn fx:id="erstellerCol" minWidth="0.0" prefWidth="150.0" text="Ersteller" />
             <TableColumn fx:id="erstellzeitCol" prefWidth="140.0" text="Erstellzeit" />
             <TableColumn fx:id="bearbeiterCol" prefWidth="150.0" text="Bearbeiter" />
@@ -34,7 +34,12 @@
             <RowConstraints maxHeight="135.0" minHeight="10.0" prefHeight="135.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-
+            <ComboBox fx:id="mitarbeiter" GridPane.columnIndex="1" />
+            <ComboBox fx:id="role" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <ComboBox fx:id="op" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Mitarbeiter" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Rolle" GridPane.rowIndex="2" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP" GridPane.rowIndex="1" />
          </children>
       </GridPane>
 	</children>

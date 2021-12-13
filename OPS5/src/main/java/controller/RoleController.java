@@ -176,10 +176,10 @@ public class RoleController{
             Alert confirm = new Alert(AlertType.INFORMATION);
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
+            Node source = (Node) event.getSource();
+            Stage thisStage = (Stage) source.getScene().getWindow();
+            thisStage.close();
         }
-        Node source = (Node) event.getSource();
-        Stage thisStage = (Stage) source.getScene().getWindow();
-        thisStage.close();
         System.out.println("Creating role!");
     }
 
