@@ -17,6 +17,8 @@ import main.Main;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * This Controller displays the Diagnosis. You can create a new one or edit an existent
@@ -71,6 +73,7 @@ public class DiagnosisController {
 
 
 	boolean flagEditDiagnose = false;
+	private static Integer opID;
 
 	/**
 	 * This Methode initialize the TableView for the existing Diagnosis and shows the Op-IDs, ICD-10 codes and
@@ -144,9 +147,16 @@ public class DiagnosisController {
 	 * @return all Diagnosis
 	 */
 	public static ObservableList<Diagnose> diagnoseView(){
-		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
-		List<Diagnose> diagnose = diagnoseDao.findAll();
-		return FXCollections.observableArrayList(diagnose);
+		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
+		List<Diagnose> diagnose = diagnoseDao.findAll(); // TODO: 12.12.21 auch von Fall zu Diagnose? Wie?
+		OperationDao operationDao = new OperationDao(Main.configuration);
+		//Operation operation = operationDao.fetchOneByOpId(diagnose)
+
+		Predicate<Diagnose> byOpID = diagnose1 -> diagnose1.getOpId().equals(opID);
+		var result = diagnose.stream().filter(byOpID)
+				.collect(Collectors.toList());
+
+		return FXCollections.observableArrayList(result);
 	}
 
 	/**
@@ -206,6 +216,9 @@ public class DiagnosisController {
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.insert(diagnose);
 		}
+		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+		confirm.showAndWait();
 
 	}
 
@@ -225,7 +238,7 @@ public class DiagnosisController {
 	}
 
 	/**
-	 * Gets all the Operation IDs and  saves them in the diagnosisOpId Combobox
+	 * Gets all the Operation IDs and saves them in the diagnosisOpId Combobox
 	 */
 	private void setDiagnosisOpId(){
 		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
@@ -357,4 +370,13 @@ public class DiagnosisController {
 		return true;
 
 	}
+
+	public Integer getOpID() {
+		return opID;
+	}
+
+	public static void setOpID(Integer opID) {
+		DiagnosisController.opID = opID;
+	}
+
 }

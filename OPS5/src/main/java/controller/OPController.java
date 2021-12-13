@@ -5,14 +5,8 @@ import javafx.util.Callback;
 
 import java.time.LocalDateTime;
 
-import jooq.tables.daos.FallDao;
-import jooq.tables.pojos.Fall;
-import jooq.tables.daos.OpTypStDao;
-import jooq.tables.pojos.OpTypSt;
-import jooq.tables.daos.OpSaalStDao;
-import jooq.tables.pojos.OpSaalSt;
-import jooq.tables.daos.NarkoseStDao;
-import jooq.tables.pojos.NarkoseSt;
+import jooq.tables.daos.*;
+import jooq.tables.pojos.*;
 import main.Main;
 
 import ExternalFiles.DateTimePicker;
@@ -270,7 +264,6 @@ public class OPController{
      */
     @FXML
 	public void initialize() {
-
         setOpTyp();
         setOpSaal();
         setNarkose();
@@ -296,6 +289,12 @@ public class OPController{
         towelsBefore.decrement(towelsBefore.getValue());
         towelsAfter.decrement(towelsAfter.getValue());
     }
+
+    public void initializeDefaultComboboxen(int opID){
+        Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
+        Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
+        opCaseId.setValue(fall);
+	}
     
 
 }

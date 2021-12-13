@@ -226,10 +226,11 @@ public class Fall implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Fall (");
+        StringBuilder sb = new StringBuilder("FallID: "); //"Fall ("
 
         sb.append(fallId);
-        sb.append(", ").append(aufnahmedatum);
+        sb.append(", Aufnahme: ").append(aufnahmedatum);
+        /*
         sb.append(", ").append(entlassungsdatum);
         sb.append(", ").append(erstellZeit);
         sb.append(", ").append(bearbeiterZeit);
@@ -240,7 +241,7 @@ public class Fall implements Serializable {
         sb.append(", ").append(bearbeiter);
         sb.append(", ").append(fallTyp);
 
-        sb.append(")");
+        sb.append(")");*/
         return sb.toString();
     }
 }

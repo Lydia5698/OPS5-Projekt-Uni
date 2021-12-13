@@ -188,6 +188,8 @@ public class OverviewController {
 
     private Parent root;
 
+    private AdmissionController admissionController;
+
     /**
      * This Methode initializes the TableViews for the Patients and their corresponding Cases and Operations
      */
@@ -345,6 +347,7 @@ public class OverviewController {
                Stage stage = new Stage();
                stage.setTitle("Diagnosen");
                stage.setScene(new Scene(root));
+               DiagnosisController.setOpID(onEditOperation());
                stage.show();
        	}catch (IOException e) {
        		e.printStackTrace();
@@ -365,6 +368,8 @@ public class OverviewController {
             Stage stage = new Stage();
             stage.setTitle("Operation Bearbeiten");
             stage.setScene(new Scene(root));
+            AdmissionController controller = (AdmissionController) fxmlLoader.getController();
+            controller.initializeComboboxen(onEditOperation());
             stage.show();
         }catch (IOException e) {
             e.printStackTrace();

@@ -299,11 +299,12 @@ public class Patient implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Patient (");
+        StringBuilder sb = new StringBuilder(); //"Patient ("
 
-        sb.append(patId);
         sb.append(", ").append(name);
         sb.append(", ").append(vorname);
+        sb.append(patId);
+        /*
         sb.append(", ").append(geburtsdatum);
         sb.append(", ").append(blutgruppe);
         sb.append(", ").append(geschlecht);
@@ -317,7 +318,7 @@ public class Patient implements Serializable {
         sb.append(", ").append(postleitzahl);
         sb.append(", ").append(telefonnummer);
 
-        sb.append(")");
+        sb.append(")");*/
         return sb.toString();
     }
 }

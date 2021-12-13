@@ -192,7 +192,6 @@ public class AdmissionController {
 	public void editOperation(){
 
 		if(falseSatement()) {
-
 			Operation operation = new Operation(
 					opId, //opId -> the operation to be edited
 					opController.getOpDateBegin(), //beginn
@@ -296,6 +295,14 @@ public class AdmissionController {
 		Node source = (Node) event.getSource();
 		Stage thisStage = (Stage) source.getScene().getWindow();
 		thisStage.close();
+	}
+
+	public void initializeComboboxen(int opID){
+		opController.initializeDefaultComboboxen(opID);
+		Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
+		Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
+		Patient patient = new PatientDao(Main.configuration).fetchOneByPatId(fall.getPatId());
+		selectPatient.setValue(patient);
 	}
 
 

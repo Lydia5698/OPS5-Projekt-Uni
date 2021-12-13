@@ -181,6 +181,9 @@ public class ProcedureController {
 			ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
 			prozedurDao.insert(prozedur);
 		}
+		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+		confirm.showAndWait();
 
     }
 

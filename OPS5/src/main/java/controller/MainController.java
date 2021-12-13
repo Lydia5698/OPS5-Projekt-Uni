@@ -12,10 +12,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import jooq.tables.daos.MedPersonalDao;
+import jooq.tables.pojos.Diagnose;
 import jooq.tables.pojos.MedPersonal;
 import main.Main;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class MainController {
 
@@ -142,7 +146,11 @@ public class MainController {
 		};
 		employee.setButtonCell(cellFactory.call(null));
 		employee.setCellFactory(cellFactory);
-		employee.getItems().setAll(new MedPersonalDao(Main.configuration).findAll());
+		List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
+		Predicate<MedPersonal> byPersonalID = medPersonal -> !medPersonal.getPersId().equals("00000000"); //KIS
+		var result = medPersonalList.stream().filter(byPersonalID)
+				.collect(Collectors.toList());
+		employee.getItems().setAll(result);
 		employee.getSelectionModel().select(i);
 	}
 
