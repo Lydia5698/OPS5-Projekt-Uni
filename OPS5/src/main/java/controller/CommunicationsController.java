@@ -2,7 +2,6 @@ package controller;
 import ExternalFiles.Converter;
 import ExternalFiles.TableViewMessage;
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.ACK;
 import connection.Client;
@@ -12,7 +11,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.OperationDao;
@@ -22,7 +20,6 @@ import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
 import main.Main;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDate;
@@ -77,15 +74,7 @@ public class CommunicationsController {
      * This method starts the server so he listens to incoming ADT01 and BARP05(test) messages
      */
     private void startServer(){
-	    try{
-            server = new Server();
-        } catch(InterruptedException e){
-            Platform.runLater(()->{
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setContentText("Der Server wurde unterbrochen und hört nicht mehr auf einkommende Nachrichten.");
-                alert.showAndWait();
-            });
-        }
+        server = new Server();
     }
 
     /**
@@ -182,13 +171,9 @@ public class CommunicationsController {
      * @param patient the sent patient
      * @return true if he can be inserted and false if not
      */
-    public boolean canInsert(Patient patient){
+    public boolean canInsertPatient(Patient patient){
         //checking for values which can not be null (in this case it is the patients first and lastname)
-            if (patient.getVorname().equals("") || patient.getName().equals("") || (patient.getGeburtsdatum() != null && patient.getGeburtsdatum().isAfter(LocalDate.now()))) {
-                return false;
-            }else{
-                return true;
-            }
+        return !patient.getVorname().equals("") && !patient.getName().equals("") && (patient.getGeburtsdatum() == null || !patient.getGeburtsdatum().isAfter(LocalDate.now()));
     }
 
     /**
@@ -201,7 +186,7 @@ public class CommunicationsController {
         Platform.runLater(()->{
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            if (!getInstance().canInsert(patient)) {
+            if (!getInstance().canInsertPatient(patient)) {
                 alert.setHeaderText("Patient kann nicht eingefügt werden!");
                 alert.setContentText("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden!");
                 alert.showAndWait();
@@ -213,6 +198,21 @@ public class CommunicationsController {
             }
         });
 
+    }
+
+    /**
+     * Checks if a case can be inserted (has no invalid entries
+     * @param fall the case
+     * @return true or false
+     */
+    public boolean canInsertCase(Fall fall){
+        if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
+            return false;
+            }
+        if(fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -229,15 +229,8 @@ public class CommunicationsController {
 
             //checking for invalid entrys concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
-            if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
-                alert.setHeaderText("Falscher Eintrag!");
-                alert.setContentText("Das gesendete Entlassungsdatum liegt vor dem Aufnahmedatum!");
-                alert.showAndWait();
-            }
-            //Entlassungsdatum ist vor dem Aufnahmedatum
-            else if(fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
-                alert.setHeaderText("Falscher Eintrag!");
-                alert.setContentText("Das gesendete Entlassungsdatum liegt vor dem Aufnahmedatum!");
+            if(!getInstance().canInsertCase(fall)){
+                alert.setContentText("Der Fall hat invalide Eingaben und kann nicht eingefügt werden");
                 alert.showAndWait();
             }
             else {

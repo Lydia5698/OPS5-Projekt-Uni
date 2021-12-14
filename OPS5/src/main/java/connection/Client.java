@@ -22,7 +22,6 @@ public class Client {
      * Creates a client with a given ipadress and a given port (given from the communicationcontroller
      * @param ipAdress given ipadress (default is the localhost)
      * @param port the port
-     * @throws HL7Exception it is thrown if the connection can not be built
      */
     public Client(String ipAdress, int port){
         try{
@@ -43,9 +42,6 @@ public class Client {
      * this method sends a given message to the given ipadress
      * @param message the message which should be send
      * @return the response message (Ack from the receiving part)
-     * @throws HL7Exception thrown if the message can not be send
-     * @throws LLPException thrown if the message can not be send
-     * @throws IOException thrown if the message can not be send
      */
     public Message sendMessage(Message message){
         try{

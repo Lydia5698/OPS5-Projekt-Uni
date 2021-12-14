@@ -24,9 +24,8 @@ public class Server {
 
     /**
      * Constructs a new server which listens to ADT01 and BARP05 messages while the application runs
-     * @throws InterruptedException
      */
-    public Server() throws InterruptedException{
+    public Server(){
 
         //creating a new server which should listen to the incomming messages
         hapiServer = Main.hapiContext.newServer(Main.port, Main.tls);
@@ -34,7 +33,7 @@ public class Server {
         //handles and listens to adt01 messages
         hapiServer.registerApplication("ADT", "A01", new ReceivingApplication<>() {
             @Override
-            public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
+            public Message processMessage(Message message, Map<String, Object> map){
                 try{
                     String encodedMessage = MessageParser.pipeParser.encode(message);
                     //System.out.println(encodedMessage);
@@ -57,35 +56,40 @@ public class Server {
                 }
                 Patient patient = MessageParser.parseA01Patient(message);
                 CommunicationsController.insertNewPatient(patient);
-                if(CommunicationsController.getInstance().canInsert(patient)){
+                if(CommunicationsController.getInstance().canInsertPatient(patient)){
                     Fall fall = MessageParser.parseA01Case(message);
-                    CommunicationsController.insertNewCase(fall);
-                    System.out.println("Patient und Fall eingefügt");
-
-                    Platform.runLater(()-> {
-                        Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-                        confirm.setContentText("Der Patient und der Fall wurden in die Datenbank eingefügt.");
-                        confirm.showAndWait();
-                    });
-                    if(MessageParser.a01WithDignosis(message)){
-                        List<Diagnose> diagnoseList = MessageParser.parseA01Diagnose(message);
-                        assert diagnoseList != null;
-                        for (Diagnose diagnose : diagnoseList) {
-                            new DiagnoseDao(Main.configuration).insert(diagnose);
-                        }
+                    if(CommunicationsController.getInstance().canInsertCase(fall)){
+                        CommunicationsController.insertNewCase(fall);
+                        System.out.println("Patient und Fall eingefügt");
                         Platform.runLater(()-> {
                             Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-                            confirm.setContentText("Die gesendeten Diagnosen wurden dem gesendeten Fall zugeordnet.");
+                            confirm.setContentText("Der Patient und der Fall wurden in die Datenbank eingefügt.");
                             confirm.showAndWait();
                         });
+                        if(MessageParser.a01WithDignosis(message)){
+                            List<Diagnose> diagnoseList = MessageParser.parseA01Diagnose(message);
+                            assert diagnoseList != null;
+                            for (Diagnose diagnose : diagnoseList) {
+                                new DiagnoseDao(Main.configuration).insert(diagnose);
+                            }
+                            Platform.runLater(()-> {
+                                Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                                confirm.setContentText("Die gesendeten Diagnosen wurden dem gesendeten Fall zugeordnet.");
+                                confirm.showAndWait();
+                            });
+                        }
                     }
                 }
                 try {
                     return message.generateACK();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
+                } catch (IOException | HL7Exception e) {
+                    Platform.runLater(()->{
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setContentText("Es kann keine ACK-Nachricht erstellt werden!");
+                        alert.showAndWait();
+                    });
                 }
+                return null;
             }
              @Override
             public boolean canProcess(Message message) {
@@ -96,29 +100,35 @@ public class Server {
         //handles and listens to barp05 messages
         hapiServer.registerApplication("BAR", "P05", new ReceivingApplication<>() {
             @Override
-            public Message processMessage(Message message, Map<String, Object> map) throws HL7Exception {
-                String encodedMessage = MessageParser.pipeParser.encode(message);
-                //System.out.println(encodedMessage);
+            public Message processMessage(Message message, Map<String, Object> map){
+                try{                String encodedMessage = MessageParser.pipeParser.encode(message);
+                    //System.out.println(encodedMessage);
 
-                Platform.runLater(()->{
-                //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Es wurde etwas geschickt");
-                alert.setHeaderText("Testnachricht von dem OPS");
-                alert.setContentText(encodedMessage);
-                alert.showAndWait();
-                });
-
-                //Patient patient = MessageParser.parseA01(message);
-                //PatientDao patientDao = new PatientDao(Main.configuration);
-                //patientDao.insert(patient);
-                //TODO valide Abfragen tätigen (not null und geburtstag,...)
+                    Platform.runLater(()->{
+                        //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Es wurde etwas geschickt");
+                        alert.setHeaderText("Testnachricht von dem OPS");
+                        alert.setContentText(encodedMessage);
+                        alert.showAndWait();
+                    });
+                }catch(HL7Exception e){
+                    Platform.runLater(()->{
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setContentText("Die NAchricht kann nicht gelesen werden!");
+                        alert.showAndWait();
+                    });
+                }
                 try {
                     return message.generateACK();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
+                } catch (IOException | HL7Exception e) {
+                    Platform.runLater(()->{
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setContentText("Es kann keine ACK-Nachricht erstellt werden!");
+                        alert.showAndWait();
+                    });
                 }
+                return null;
             }
             @Override
             public boolean canProcess(Message message) {
@@ -140,11 +150,15 @@ public class Server {
         });
         //if a progress failes like the receiving or the process/responde of the message, the exception handler
         //handles this problem
-        //TODO: show an alert or something if a progress failes
         hapiServer.setExceptionHandler((s, map, s1, e) -> {
-            //s1 is the negative ackloglegement if the message cant be send
-            return s1;
+            Platform.runLater(()->{
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Es ist ein Fehler beim Versenden aufgetreten.");
+                alert.showAndWait();
+            });
+            return null;
         });
+
         //with this method the receiver starts to run
         try{
             hapiServer.startAndWait();
