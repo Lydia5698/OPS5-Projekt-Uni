@@ -104,7 +104,7 @@ public class PatientController{
                 alert.showAndWait();
             }
             //invalid birthdate
-            else if(patientBirthdate != null && patientBirthdate.getValue().isAfter(LocalDate.now())){
+            else if(patientBirthdate.getValue() != null && patientBirthdate.getValue().isAfter(LocalDate.now())){
                     alert.setHeaderText("Falscher Eintrag!");
                     alert.setContentText("Das gewählte Geburtsdatum liegt in der Zukunft!");
                     alert.showAndWait();
@@ -112,6 +112,11 @@ public class PatientController{
             else {
                 patientDao.insert(patient);
                 System.out.println("Creating patient!");
+
+                Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                confirm.setContentText("Der Patient wurde in die Datenbank eingefügt.");
+                confirm.showAndWait();
+
                 //close the window
                 Stage stage = (Stage) speichern.getScene().getWindow();
                 stage.close();

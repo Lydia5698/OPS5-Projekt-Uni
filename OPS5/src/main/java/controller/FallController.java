@@ -154,23 +154,18 @@ public class FallController {
                 alert.setContentText("Es wurde kein Patient ausgewählt!");
                 alert.showAndWait();
             }
-            //checking for invalid entrys concerning the dates
+            //checking for invalid entries concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
-            else if(fall.getEntlassungsdatum() != null){
-                if(fall.getAufnahmedatum() == null){
-                    if(fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
+            else if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
                         alert.setHeaderText("Falscher Eintrag!");
                         alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
                         alert.showAndWait();
-                    }
-                }//Entlassungsdatum ist vor dem Aufnahmedatum
-                else {
-                    if (fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())) {
-                        alert.setHeaderText("Falscher Eintrag!");
-                        alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
-                        alert.showAndWait();
-                    }
-                }
+            }
+            //Entlassungsdatum ist vor dem Aufnahmedatum
+            else if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
+                alert.setHeaderText("Falscher Eintrag!");
+                alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
+                alert.showAndWait();
             }
             else {
                 //if the aufnahmedatum is null set it to the current date and time
@@ -179,6 +174,11 @@ public class FallController {
                 }
                 fallDao.insert(fall);
                 System.out.println("Creating case!");
+
+                Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                confirm.setContentText("Der Fall wurde in die Datenbank eingefügt.");
+                confirm.showAndWait();
+
                 //close the window
                 Stage stage = (Stage) speicherbutton.getScene().getWindow();
                 stage.close();

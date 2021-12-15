@@ -5,10 +5,7 @@ import ExternalFiles.Converter;
 import ca.uhn.hl7v2.model.v251.message.BAR_P05;
 import ca.uhn.hl7v2.model.v251.segment.*;
 import ca.uhn.hl7v2.parser.PipeParser;
-import jooq.tables.daos.DiagnoseDao;
-import jooq.tables.daos.FallDao;
-import jooq.tables.daos.MedPersonalDao;
-import jooq.tables.daos.PatientDao;
+import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
 
@@ -47,7 +44,7 @@ public class MessageParser {
         patient.setGeschlecht(Converter.SexFromISSToOurConverter(pid.getAdministrativeSex().getValue()));
         patient.setStorniert(false);
         patient.setGeburtsort(pid.getBirthPlace().getValue());
-        patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().toString());
+        patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().getStreetName().getValue() + " " + pid.getPatientAddress(0).getStreetAddress().getDwellingNumber().getValue());
         patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
         patient.setTelefonnummer(pid.getPhoneNumberHome(0).getTelephoneNumber().getValue());
         patient.setErsteller("00000000");
@@ -71,7 +68,8 @@ public class MessageParser {
         //fallid nicht setzen, durchAutoincrement
         //patid wird in dem server gesetzt von dem patienten der in dern hl7 mitgesendet wurde
         fall.setFallTyp(pv1.getPatientClass().getValue().equals("Inpatient") ? 1 : 2);
-        fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
+        fall.setPatId(26);
+        //fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
         fall.setAufnahmedatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getAdmitDateTime().getTime().getValue())));
         if(pv1.getDischargeDateTime(0).getTime().getValue() != null){fall.setEntlassungsdatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getDischargeDateTime(0).getTime().getValue())));}
         fall.setStationSt(pv1.getAssignedPatientLocation().getPl1_PointOfCare().getValue());
@@ -132,21 +130,28 @@ public class MessageParser {
         if(fall.getEntlassungsdatum() != null){pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));}
         pv1.getAssignedPatientLocation().getPointOfCare().setValue(fall.getStationSt());
 
+
+        //DG1 fields
         List<Diagnose> diagnose = new DiagnoseDao(Main.configuration).fetchByOpId(operation.getOpId());
+        for(int i = 0; i < diagnose.size(); i++){
+            DG1 dg1 = bar05.getVISIT().getDG1(i);
+            dg1.getSetIDDG1().setValue(diagnose.get(i).getDiagnoseId().toString());
+            dg1.getDiagnosisCodeDG1().getCe1_Identifier().setValue(diagnose.get(i).getIcd10Code());
+            dg1.getDiagnosisDescription().setValue(diagnose.get(i).getKlartextDiagnose());
+            dg1.getDiagnosisDateTime().getTime().setValue(diagnose.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+            dg1.getDiagnosingClinician(0).getIDNumber().setValue(diagnose.get(i).getErsteller());
+        }
 
-        //for(int i = 0; i < diagnose.size(); i++){
-        //    DG1 dg1 = bar05.getVISIT().getDG1(i);
-        //
-        //}
-
-        //dg1
-        //DG1 dg1 = bar05.getVISIT().getDG1();
-        //dg1.getSetIDDG1().setValue();
-
-       //pr1
-       //PR1 pr1 = bar05.getVISIT().getPROCEDURE().getPR1();
-        //TODO iterate over all procedures
-
+        //PR1 fields
+       List<Prozedur> prozedurs = new ProzedurDao(Main.configuration).fetchByOpId(operation.getOpId());
+        for(int i = 0; i < prozedurs.size(); i++){
+            PR1 pr1 = bar05.getVISIT(0).getPROCEDURE().getPR1();
+            pr1.getSetIDPR1().setValue(prozedurs.get(i).getProzId().toString());
+            pr1.getProcedureCode().getIdentifier().setValue(prozedurs.get(i).getOpsCode());
+            pr1.getProcedureDescription().setValue(prozedurs.get(i).getAnmerkung());
+            pr1.getProcedureDateTime().getTime().setValue(prozedurs.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+            pr1.getSurgeon(0).getIDNumber().setValue(prozedurs.get(i).getErsteller());
+        }
        return bar05;
     }
 

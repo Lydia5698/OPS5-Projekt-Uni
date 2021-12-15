@@ -36,7 +36,7 @@ public class Main extends Application{
      * the hapicontext and the parser are needed for the communication with the kis
      */
     public static HapiContext hapiContext = new DefaultHapiContext();
-    public static int port = 53420;
+    public static int port = 59484;
     public static boolean tls = false;
 
     /**
