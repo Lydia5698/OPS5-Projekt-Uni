@@ -364,5 +364,54 @@ public class DiagnosisController {
 		return true;
 
 	}
+	@FXML
+	public void showInfo() {
+		Icd10CodeSt code = diagnosisIcdCode.getValue();
+		if(code==null) {
+			System.out.println("Kein ICD Code ausgewählt");
+			return;
+		}
+		try {
+			JSONObject result = getJsonForCode(code.getIcd10Code());
+			if(!wasFound(result)) {
+				System.out.println("Info not found for "+code.getIcd10Code());
+				String alternativ = code.getIcd10Code().substring(0,3);
+				System.out.println("Trying short Code: "+alternativ);
+				result =getJsonForCode(alternativ);
+				if (!wasFound(result)) {
+					System.out.println("Alternativ not found");
+					return;
+				}
+			}
+			// result contains valid data
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private JSONObject getJsonForCode(String code) throws Exception {
+		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
+		System.out.println("Calling "+url.toString());
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestProperty("accept", "application/json");
+		InputStream responseStream = connection.getInputStream();
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = (JSONObject)jsonParser.parse(
+				new InputStreamReader(responseStream, "UTF-8"));
+		System.out.println(jsonObject);
+		return jsonObject;
+	}
+
+	private boolean wasFound(JSONObject json) {
+		JSONArray array = (JSONArray) json.get("parameter");
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject item = (JSONObject) array.get(i);
+			if(item.get("name").equals("result") && (Boolean) item.get("valueBoolean")) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
