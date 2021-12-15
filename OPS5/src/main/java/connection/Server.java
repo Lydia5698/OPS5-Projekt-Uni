@@ -55,15 +55,20 @@ public class Server {
                     });
                 }
                 Patient patient = MessageParser.parseA01Patient(message);
-                CommunicationsController.insertNewPatient(patient);
+                //only insert the patient if it is a new patient
+                if(CommunicationsController.getInstance().isNewPatient(patient)){
+                    CommunicationsController.insertNewPatient(patient);
+                }
                 if(CommunicationsController.getInstance().canInsertPatient(patient)){
                     Fall fall = MessageParser.parseA01Case(message);
                     if(CommunicationsController.getInstance().canInsertCase(fall)){
+                        //wir gehen davon aus, dass es sich immer um einen neuen Fall handelt, sonst wäre es keine Neuaufnahme
+                        //gewesen
                         CommunicationsController.insertNewCase(fall);
                         System.out.println("Patient und Fall eingefügt");
                         Platform.runLater(()-> {
                             Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-                            confirm.setContentText("Der Patient und der Fall wurden in die Datenbank eingefügt.");
+                            confirm.setContentText("Die Datenbank wurde synchronisiert.");
                             confirm.showAndWait();
                         });
                         if(MessageParser.a01WithDignosis(message)){
@@ -115,7 +120,7 @@ public class Server {
                 }catch(HL7Exception e){
                     Platform.runLater(()->{
                         Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setContentText("Die NAchricht kann nicht gelesen werden!");
+                        alert.setContentText("Die Nachricht kann nicht gelesen werden!");
                         alert.showAndWait();
                     });
                 }

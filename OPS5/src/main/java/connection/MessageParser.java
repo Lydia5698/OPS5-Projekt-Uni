@@ -19,6 +19,7 @@ import ca.uhn.hl7v2.model.v251.message.ADT_A01;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,10 +38,9 @@ public class MessageParser {
         PID pid = adtMsg.getPID();
 
         Patient patient = new Patient();
-        //neuer patient wird zugefügt, deshalb keine id, durch autoincrement
+        patient.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
         patient.setName(pid.getPatientName(0).getFamilyName().getSurname().getValue());
         patient.setVorname(pid.getPatientName(0).getGivenName().getValue());
-        System.out.println(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
         patient.setGeburtsdatum(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
         patient.setGeschlecht(Converter.SexFromISSToOurConverter(pid.getAdministrativeSex().getValue()));
         patient.setStorniert(false);
@@ -66,11 +66,9 @@ public class MessageParser {
         PV1 pv1 = adtMsg.getPV1();
 
         Fall fall = new Fall();
-        //fallid nicht setzen, durchAutoincrement
-        //patid wird in dem server gesetzt von dem patienten der in dern hl7 mitgesendet wurde
+        fall.setFallId(Integer.parseInt(pv1.getSetIDPV1().getValue()));
+        fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
         fall.setFallTyp(pv1.getPatientClass().getValue().equals("Inpatient") ? 1 : 2);
-        fall.setPatId(26); //TODO noch hardgecodet , anpassen an besprechung mit partnergruppe
-        //fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
         fall.setAufnahmedatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getAdmitDateTime().getTime().getValue())));
         if(pv1.getDischargeDateTime(0).getTime().getValue() != null){fall.setEntlassungsdatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getDischargeDateTime(0).getTime().getValue())));}
         fall.setStationSt(pv1.getAssignedPatientLocation().getPl1_PointOfCare().getValue());
@@ -84,12 +82,10 @@ public class MessageParser {
      * In case that the KIS sends also diagnoses we have to create an empty operation to the new case and add the diagnosis to them
      * @param a01message the incoming message from kis
      * @return null if there is no diagnosis field
-     * @throws HL7Exception thrown if the dgq
      */
     public static List<Diagnose> parseA01Diagnose(Message a01message){
         ADT_A01 adtMsg = (ADT_A01) a01message;
-        List<Diagnose> diagnoses = null;
-
+        List<Diagnose> diagnoses = new ArrayList<>();
         try{
             if(adtMsg.getDG1All().size() == 0){
                 return null;
@@ -116,6 +112,7 @@ public class MessageParser {
                     diagnose.setDiagnosetyp(1);
                     diagnose.setIcd10Code(dg1.getDiagnosisCodeDG1().getCe1_Identifier().getValue());
                     diagnose.setKlartextDiagnose(dg1.getDiagnosisDescription().getValue());
+                    diagnose.setStorniert(false);
                     //TODO ersteller kis oder medpersonal
                     //TODO erstellzeit now oder aus der Nachricht
                     diagnoses.add(diagnose);
@@ -130,7 +127,6 @@ public class MessageParser {
                 });
                 return null;
         }
-
         return null;
     }
 
@@ -139,7 +135,6 @@ public class MessageParser {
      * Checks if an adt01 message contains diagnosis
      * @param message the sent message
      * @return ture, if the message contains a diagnosis
-     * @throws HL7Exception
      */
     public static boolean a01WithDignosis(Message message){
         ADT_A01 adt_a01 = (ADT_A01) message;
@@ -167,7 +162,6 @@ public class MessageParser {
             });
         }
 
-
         Fall fall = new FallDao(Main.configuration).findById(operation.getFallId());
         Patient patient = new PatientDao(Main.configuration).findById(fall.getPatId());
         MedPersonal medPersonal = new MedPersonalDao(Main.configuration).findById(fall.getErsteller());
@@ -191,7 +185,6 @@ public class MessageParser {
             pid.getPatientName(0).getFamilyName().getSurname().setValue(patient.getName());
             pid.getPatientName(0).getGivenName().setValue(patient.getVorname());
             pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-            //TODO Blutgruppe
             pid.getAdministrativeSex().setValue(Converter.IssSexConverter(patient.getGeschlecht()));
             pid.getPatientAddress(0).getStreetAddress().getStreetName().setValue(patient.getStrasse());
             pid.getPatientAddress(0).getZipOrPostalCode().setValue(patient.getPostleitzahl());
@@ -229,13 +222,13 @@ public class MessageParser {
 
             //PR1 fields
             List<Prozedur> prozedurs = new ProzedurDao(Main.configuration).fetchByOpId(operation.getOpId());
-            for (int i = 0; i < prozedurs.size(); i++) {
+            for (Prozedur prozedur : prozedurs) {
                 PR1 pr1 = bar05.getVISIT(0).getPROCEDURE().getPR1();
-                pr1.getSetIDPR1().setValue(prozedurs.get(i).getProzId().toString());
-                pr1.getProcedureCode().getIdentifier().setValue(prozedurs.get(i).getOpsCode());
-                pr1.getProcedureDescription().setValue(prozedurs.get(i).getAnmerkung());
-                pr1.getProcedureDateTime().getTime().setValue(prozedurs.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-                pr1.getSurgeon(0).getIDNumber().setValue(prozedurs.get(i).getErsteller());
+                pr1.getSetIDPR1().setValue(prozedur.getProzId().toString());
+                pr1.getProcedureCode().getIdentifier().setValue(prozedur.getOpsCode());
+                pr1.getProcedureDescription().setValue(prozedur.getAnmerkung());
+                pr1.getProcedureDateTime().getTime().setValue(prozedur.getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+                pr1.getSurgeon(0).getIDNumber().setValue(prozedur.getErsteller());
             }
         } catch(HL7Exception e){
             Platform.runLater(()->{
@@ -251,7 +244,6 @@ public class MessageParser {
      * This method converts a message to a string so it can be displayed in the tableview in the communicationcontroller
      * @param message the incomming/outgoing message
      * @return the string of the hl7 messagr
-     * @throws HL7Exception is thrown if the message can not be encoded
      */
     public static String messageToString(Message message) {
         try {

@@ -176,6 +176,10 @@ public class CommunicationsController {
         return !patient.getVorname().equals("") && !patient.getName().equals("") && (patient.getGeburtsdatum() == null || !patient.getGeburtsdatum().isAfter(LocalDate.now()));
     }
 
+    public boolean isNewPatient(Patient patient){
+        return new PatientDao(Main.configuration).findById(patient.getPatId()) == null;
+    }
+
     /**
      * This method inserts if its possible the new Patient into our database
      * @param patient the sent patient
@@ -199,7 +203,6 @@ public class CommunicationsController {
         });
 
     }
-
     /**
      * Checks if a case can be inserted (has no invalid entries
      * @param fall the case
