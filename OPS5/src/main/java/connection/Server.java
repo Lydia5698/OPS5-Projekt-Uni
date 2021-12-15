@@ -5,6 +5,7 @@ import ca.uhn.hl7v2.app.*;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import controller.CommunicationsController;
+import controller.MainController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import jooq.tables.pojos.Fall;
@@ -48,6 +49,7 @@ public class Server {
 
                 Patient patient = MessageParser.parseA01Patient(message);
                 CommunicationsController.insertNewPatient(patient);
+                MainController.getInstance().getAdmissionController().setPatient();
                 if(CommunicationsController.getInstance().canInsert(patient)){
                     Fall fall = MessageParser.parseA01Case(message);
                     CommunicationsController.insertNewCase(fall);

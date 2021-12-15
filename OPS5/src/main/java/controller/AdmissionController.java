@@ -61,7 +61,7 @@ public class AdmissionController {
 	/**
 	 * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
 	 */
-	private void setPatient() {
+	public void setPatient() {
 		Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
 			@Override
 			public ListCell<Patient> call(ListView<Patient> patientListView) {
@@ -142,6 +142,11 @@ public class AdmissionController {
 				alert.setHeaderText("Falscher Eintrag!");
 				alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
 				alert.showAndWait();
+		}//Bauchtücher nicht gleich
+		else if(opController.getTowelAfter()!=opController.getTowelBefore()){
+			alert.setHeaderText("Falscher Eintrag!");
+			alert.setContentText("Anzahl Bauchtücher vor und nach der Op muss gleich sein!");
+			alert.showAndWait();
 		}
 		else {
 			Operation operation = new Operation(
