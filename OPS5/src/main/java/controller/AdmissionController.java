@@ -57,7 +57,6 @@ public class AdmissionController {
 	private boolean flagOpEdit = false;
 	private Integer opId = null;
 
-//TODO: Nur Patienten, die nicht storniert sind!
 	/**
 	 * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
 	 */
@@ -177,7 +176,7 @@ public class AdmissionController {
 	/**
 	 * Edits an existing Operation
 	 */
-	public void editOperation(){ // TODO: 06.12.21 zeit sachen überprüfen also schnitt nahtzeit etc.
+	public void editOperation(){
 
 		Operation operation = new Operation(
 				opId, //opId -> the operation to be edited

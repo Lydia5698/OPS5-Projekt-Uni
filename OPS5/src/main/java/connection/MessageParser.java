@@ -110,7 +110,6 @@ public class MessageParser {
         pid.getPatientName(0).getFamilyName().getSurname().setValue(patient.getName());
         pid.getPatientName(0).getGivenName().setValue(patient.getVorname());
         pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-        //TODO Blutgruppe
         pid.getAdministrativeSex().setValue(Converter.IssSexConverter(patient.getGeschlecht()));
         pid.getPatientAddress(0).getStreetAddress().getStreetName().setValue(patient.getStrasse());
         pid.getPatientAddress(0).getZipOrPostalCode().setValue(patient.getPostleitzahl());
@@ -190,7 +189,6 @@ public class MessageParser {
         pid.getPatientName(0).getFamilyName().getSurname().setValue(patient.getName());
         pid.getPatientName(0).getGivenName().setValue(patient.getVorname());
         pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().toString());
-        //TODO Blutgruppe
         pid.getAdministrativeSex().setValue(Converter.IssSexConverter(patient.getGeschlecht()));
         pid.getPatientAddress(0).getStreetAddress().getStreetName().setValue(patient.getStrasse());
         pid.getPatientAddress(0).getZipOrPostalCode().setValue(patient.getPostleitzahl());

@@ -1,18 +1,15 @@
 package controller;
 
 import ExternalFiles.Converter;
-import ExternalFiles.DateTimePicker;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import jooq.tables.daos.RolleDao;
 import jooq.tables.daos.RolleStDao;
@@ -26,6 +23,8 @@ import main.Main;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Comparator;
 import java.sql.Timestamp;
 
 /**
@@ -38,7 +37,7 @@ public class RoleOverviewController {
 	@FXML
 	private TableColumn<Rolle, String> userCol;
 	@FXML
-	private TableColumn<Rolle, Integer> roleCol;
+	private TableColumn<Rolle, String> roleCol;
 	@FXML
 	private TableColumn<Rolle, Integer> opCol;
 	@FXML
@@ -66,10 +65,10 @@ public class RoleOverviewController {
 	public void initialize() {
 		System.out.println("Initialize Rolle-Tab!");
 		initializeColumns();
-		roleTable.setItems(roleView()); // TODO: Text statt Ziffern angeben?
+		roleTable.setItems(roleView());
 		setRole();
 		setOp();
-		setMitarbeiter(); //TODO: KIS rausfiltern
+		setMitarbeiter();
 	}
 
 
@@ -80,7 +79,7 @@ public class RoleOverviewController {
 		// create columns
 		opCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
 		bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
-		roleCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getRolleSt()));
+		roleCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.roleConverter(features.getValue().getRolleSt())));
 		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
 		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
 		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
@@ -186,40 +185,40 @@ public class RoleOverviewController {
 	void roleClicked() {
 		roleTable.setOnMouseClicked((MouseEvent event) -> {
 			if (event.getClickCount() > 0) {
-				System.out.println("Role clicked!");
-				Rolle editRole = roleTable.getSelectionModel().getSelectedItem();
-				MedPersonal medPersX = new MedPersonalDao(Main.configuration).fetchOneByPersId(editRole.getMedPersonalPersId());
-				MedPersonal medPers = new MedPersonal(medPersX){
-					@Override
-					public String toString() {
-						StringBuilder sb = new StringBuilder("");
-						sb.append(medPersX.getNachnameVorname()).append(" ");
-						sb.append(medPersX.getPersId());
-						return sb.toString();
-					}
-				};
-				Operation operationX = new OperationDao(Main.configuration).fetchOneByOpId(editRole.getOpId());
-				Operation operation = new Operation(operationX){
-					@Override
-					public String toString () {
-						StringBuilder sb = new StringBuilder("OP: ");
-						sb.append(operationX.getOpId()).append(", Fall: ").append(operationX.getFallId());
-						sb.append(", Datum: ").append(operationX.getBeginn());
-						return sb.toString();
-					}
-				};
-				RolleSt roleStX = new RolleStDao(Main.configuration).fetchOneByRolle(editRole.getRolleSt());
-				RolleSt roleSt = new RolleSt(roleStX){
-					@Override
-					public String toString() {
-						StringBuilder sb = new StringBuilder("");
-						sb.append(roleStX.getBezeichnung());
-						return sb.toString();
-					}
-				};
-				mitarbeiter.setValue(medPers);
-				op.setValue(operation);
-				role.setValue(roleSt);
+				if (roleTable.getSelectionModel().getSelectedItem() != null) {
+					System.out.println("Role clicked!");
+					Rolle editRole = roleTable.getSelectionModel().getSelectedItem();
+					MedPersonal medPersX = new MedPersonalDao(Main.configuration).fetchOneByPersId(editRole.getMedPersonalPersId());
+					MedPersonal medPers = new MedPersonal(medPersX) {
+						@Override
+						public String toString() {
+							StringBuilder sb = new StringBuilder(medPersX.getNachnameVorname());
+							sb.append(" ");
+							sb.append(medPersX.getPersId());
+							return sb.toString();
+						}
+					};
+					Operation operationX = new OperationDao(Main.configuration).fetchOneByOpId(editRole.getOpId());
+					Operation operation = new Operation(operationX) {
+						@Override
+						public String toString() {
+							StringBuilder sb = new StringBuilder("OP: ");
+							sb.append(operationX.getOpId()).append(", Fall: ").append(operationX.getFallId());
+							sb.append(", Datum: ").append(operationX.getBeginn());
+							return sb.toString();
+						}
+					};
+					RolleSt roleStX = new RolleStDao(Main.configuration).fetchOneByRolle(editRole.getRolleSt());
+					RolleSt roleSt = new RolleSt(roleStX) {
+						@Override
+						public String toString() {
+							return roleStX.getBezeichnung();
+						}
+					};
+					mitarbeiter.setValue(medPers);
+					op.setValue(operation);
+					role.setValue(roleSt);
+				}
 			}
 		});
 	}
@@ -253,7 +252,7 @@ public class RoleOverviewController {
 
 	/**
 	 * This method is called when initialising the window.
-	 * It sets all operaitions of the database as choosing options of the combobox.
+	 * It sets all operations of the database as choosing options of the combobox.
 	 */
 	private void setOp() {
 		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
@@ -281,7 +280,6 @@ public class RoleOverviewController {
 	 * This method is called when initialising the window.
 	 * It sets all medical users of the database as choosing options of the combobox.
 	 */
-	//TODO: Nach Namen sortieren.
 	private void setMitarbeiter() {
 		Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
 			@Override
@@ -301,7 +299,11 @@ public class RoleOverviewController {
 		};
 		mitarbeiter.setButtonCell(cellFactory.call(null));
 		mitarbeiter.setCellFactory(cellFactory);
-		mitarbeiter.getItems().setAll(new MedPersonalDao(Main.configuration).findAll());
+		List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
+		medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
+		var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
+				.collect(Collectors.toList());
+		mitarbeiter.getItems().setAll(result);
 	}
 
 }

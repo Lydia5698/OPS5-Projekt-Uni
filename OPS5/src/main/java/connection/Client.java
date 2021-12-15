@@ -3,6 +3,7 @@ package connection;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Connection;
 import ca.uhn.hl7v2.app.Initiator;
+import ca.uhn.hl7v2.app.TimeoutException;
 import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.model.Message;
 import main.Main;
@@ -41,15 +42,13 @@ public class Client {
      * @throws IOException thrown if the message can not be send
      */
     public Message sendMessage(Message message) throws HL7Exception, LLPException, IOException {
-        int sendCount = 0;
-        boolean error = false;
         Message response;
         for (int i=0; i < 4; i++){ //try 4 times to send the message
             try{
                 response = initiator.sendAndReceive(message);
                 return response;
             }
-            catch(HL7Exception e){ } // if a timeout occures send the message again
+            catch(TimeoutException e){ } // if a timeout occures send the message again
         }
         response = initiator.sendAndReceive(message);  // if the response is not already returned in the try statement, send the message one last time
         return response;

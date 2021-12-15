@@ -11,13 +11,13 @@
 		<Button layoutX="316.0" layoutY="472.0" mnemonicParsing="false" onAction="#createRole" text="Speichern" />
       <TableView fx:id="roleTable" layoutX="29.0" layoutY="21.0" onMouseEntered="#roleClicked" prefHeight="167.0" prefWidth="763.0">
          <columns>
-            <TableColumn fx:id="roleCol" prefWidth="75.0" text="Rolle" />
+            <TableColumn fx:id="roleCol" prefWidth="120.0" text="Rolle" />
             <TableColumn fx:id="userCol" prefWidth="75.0" text="Personal" />
             <TableColumn fx:id="opCol" prefWidth="75.0" text="OP" />
             <TableColumn fx:id="erstellerCol" minWidth="0.0" prefWidth="150.0" text="Ersteller" />
-            <TableColumn fx:id="erstellzeitCol" prefWidth="140.0" text="Erstellzeit" />
+            <TableColumn fx:id="erstellzeitCol" prefWidth="150.0" text="Erstellzeit" />
             <TableColumn fx:id="bearbeiterCol" prefWidth="150.0" text="Bearbeiter" />
-            <TableColumn fx:id="bearbeiterzeitCol" prefWidth="140.0" text="Bearbeiterzeit" />
+            <TableColumn fx:id="bearbeiterzeitCol" prefWidth="150.0" text="Bearbeiterzeit" />
             <TableColumn fx:id="storniertCol" prefWidth="55.0" text="Storniert" />
          </columns>
       </TableView>
