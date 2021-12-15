@@ -8,6 +8,9 @@ import ca.uhn.hl7v2.model.Message;
 import main.Main;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 /**
  * the receiver is listening for incomming messages
@@ -26,6 +29,7 @@ public class Client {
             Connection connection = Main.hapiContext.newClient(ipAdress, port, Main.tls);
 
             initiator = connection.getInitiator();
+            initiator.setTimeout(7, TimeUnit.SECONDS);
     }
 
     /**
@@ -37,7 +41,17 @@ public class Client {
      * @throws IOException thrown if the message can not be send
      */
     public Message sendMessage(Message message) throws HL7Exception, LLPException, IOException {
-        Message response = initiator.sendAndReceive(message);
+        int sendCount = 0;
+        boolean error = false;
+        Message response;
+        for (int i=0; i < 4; i++){ //try 4 times to send the message
+            try{
+                response = initiator.sendAndReceive(message);
+                return response;
+            }
+            catch(HL7Exception e){ } // if a timeout occures send the message again
+        }
+        response = initiator.sendAndReceive(message);  // if the response is not already returned in the try statement, send the message one last time
         return response;
     }
 
