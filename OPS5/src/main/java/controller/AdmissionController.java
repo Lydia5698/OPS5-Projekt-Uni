@@ -142,11 +142,6 @@ public class AdmissionController {
 				alert.setHeaderText("Falscher Eintrag!");
 				alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
 				alert.showAndWait();
-		}//Bauchtücher nicht gleich
-		else if(opController.getTowelAfter()!=opController.getTowelBefore()){
-			alert.setHeaderText("Falscher Eintrag!");
-			alert.setContentText("Anzahl Bauchtücher vor und nach der Op muss gleich sein!");
-			alert.showAndWait();
 		}
 		else {
 			Operation operation = new Operation(
@@ -170,6 +165,14 @@ public class AdmissionController {
 
 			OperationDao operationDao = new OperationDao(Main.configuration);
 			operationDao.insert(operation);
+
+			//Bauchtücher nicht gleich
+			if(opController.getTowelAfter()!=opController.getTowelBefore()){
+				Alert alert1 = new Alert(AlertType.WARNING);
+				alert1.setHeaderText("ACHTUNG Bauchtücher");
+				alert1.setContentText("Die Anzahl der Bauchtücher nach der OP stimmt nicht mit der Anzahl vor der Operation überein!");
+				alert1.showAndWait();
+			}
 
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
