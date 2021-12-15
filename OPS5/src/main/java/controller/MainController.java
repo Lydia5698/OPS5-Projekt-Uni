@@ -153,4 +153,9 @@ public class MainController {
 	public static void setEmployee(int i){
 		createEmployeeComboBox(instance.employeeId, i);
 	}
+
+	public AdmissionController getAdmissionController() {
+		return admissionController;
+	}
+
 }

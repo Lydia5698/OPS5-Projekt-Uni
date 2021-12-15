@@ -125,6 +125,7 @@ public class PatientController{
         catch(DataAccessException e){
             e.printStackTrace();
         }
+        MainController.getInstance().getAdmissionController().setPatient();
 	}
 
 

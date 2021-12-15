@@ -5,6 +5,7 @@ import ca.uhn.hl7v2.app.*;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import controller.CommunicationsController;
+import controller.MainController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import jooq.tables.daos.DiagnoseDao;

@@ -14,7 +14,14 @@ import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.jooq.tools.json.JSONArray;
+import org.jooq.tools.json.JSONObject;
+import org.jooq.tools.json.JSONParser;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -357,4 +364,5 @@ public class DiagnosisController {
 		return true;
 
 	}
+
 }

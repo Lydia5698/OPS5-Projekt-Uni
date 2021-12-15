@@ -61,7 +61,7 @@ public class AdmissionController {
 	/**
 	 * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
 	 */
-	private void setPatient() {
+	public void setPatient() {
 		Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
 			@Override
 			public ListCell<Patient> call(ListView<Patient> patientListView) {
@@ -165,6 +165,14 @@ public class AdmissionController {
 
 			OperationDao operationDao = new OperationDao(Main.configuration);
 			operationDao.insert(operation);
+
+			//Bauchtücher nicht gleich
+			if(opController.getTowelAfter()!=opController.getTowelBefore()){
+				Alert alert1 = new Alert(AlertType.WARNING);
+				alert1.setHeaderText("ACHTUNG Bauchtücher");
+				alert1.setContentText("Die Anzahl der Bauchtücher nach der OP stimmt nicht mit der Anzahl vor der Operation überein!");
+				alert1.showAndWait();
+			}
 
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
