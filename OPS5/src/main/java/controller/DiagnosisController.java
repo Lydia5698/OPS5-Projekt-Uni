@@ -382,6 +382,9 @@ public class DiagnosisController {
 
 	}
 
+	/**
+	 * Opens a new Window for the Web View
+	 */
 	@FXML
 	public void openWebView() {
 		System.out.println("New Patient Window!");
