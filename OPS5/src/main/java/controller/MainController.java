@@ -16,6 +16,8 @@ import jooq.tables.pojos.MedPersonal;
 import main.Main;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
 
 public class MainController {
 
@@ -142,7 +144,9 @@ public class MainController {
 		};
 		employee.setButtonCell(cellFactory.call(null));
 		employee.setCellFactory(cellFactory);
-		employee.getItems().setAll(new MedPersonalDao(Main.configuration).findAll());
+		List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
+		medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
+		employee.getItems().setAll(medPersonalList);
 		employee.getSelectionModel().select(i);
 	}
 
