@@ -154,13 +154,12 @@ public class DiagnosisController {
 	public void diagnoseView(Integer opID){
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
 		List<Diagnose> diagnose = diagnoseDao.findAll();
+		System.out.println(opID);
 		if(opID == 0){
 			diagnosisTable.setItems(FXCollections.observableArrayList(diagnose));
 		}
 		else {
-			Predicate<Diagnose> byOpID = diagnose1 -> diagnose1.getOpId().equals(opID);
-			var result = diagnose.stream().filter(byOpID)
-					.collect(Collectors.toList());
+			List<Diagnose> result = diagnoseDao.fetchByOpId(opID);
 			diagnosisTable.setItems(FXCollections.observableArrayList(result));
 		}
 
