@@ -57,7 +57,6 @@ public class AdmissionController {
 	private boolean flagOpEdit = false;
 	private Integer opId = null;
 
-//TODO: Nur Patienten, die nicht storniert sind!
 	/**
 	 * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
 	 */
