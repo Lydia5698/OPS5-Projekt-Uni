@@ -2,8 +2,6 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.collections.ObservableList;
-import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Alert;
@@ -14,15 +12,12 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import main.Main;
-import org.jooq.impl.DSL;
-import org.jooq.Record1;
-import org.jooq.Result;
 
+import java.util.Comparator;
 import java.util.List;
-import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import java.sql.Timestamp;
 
-import static jooq.Tables.*;
 
 import jooq.tables.pojos.RolleSt;
 import jooq.tables.daos.RolleStDao;
@@ -32,7 +27,6 @@ import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Operation;
 import jooq.tables.daos.RolleDao;
 import jooq.tables.pojos.Rolle;
-import jooq.Tables;
 
 /**
  * The RoleController is responsible for creating a new role.
@@ -116,7 +110,6 @@ public class RoleController{
      * This method is called when initialising the window.
      * It sets all medical users of the database as choosing options of the combobox.
      */
-    //TODO: Nach Namen sortieren.
     private void setMitarbeiter() {
         Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
             @Override
@@ -136,7 +129,11 @@ public class RoleController{
         };
         mitarbeiter.setButtonCell(cellFactory.call(null));
         mitarbeiter.setCellFactory(cellFactory);
-        mitarbeiter.getItems().setAll(new MedPersonalDao(Main.configuration).findAll());
+        List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
+        medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
+        var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
+                .collect(Collectors.toList());
+        mitarbeiter.getItems().setAll(result);
     }
 
     /**
@@ -176,10 +173,10 @@ public class RoleController{
             Alert confirm = new Alert(AlertType.INFORMATION);
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
+            Node source = (Node) event.getSource();
+            Stage thisStage = (Stage) source.getScene().getWindow();
+            thisStage.close();
         }
-        Node source = (Node) event.getSource();
-        Stage thisStage = (Stage) source.getScene().getWindow();
-        thisStage.close();
         System.out.println("Creating role!");
     }
 

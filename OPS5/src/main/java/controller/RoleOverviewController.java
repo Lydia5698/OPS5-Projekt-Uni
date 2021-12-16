@@ -1,151 +1,309 @@
 package controller;
 
 import ExternalFiles.Converter;
-import ExternalFiles.DateTimePicker;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
-import jooq.tables.daos.DiagnoseDao;
-import jooq.tables.daos.DiagnosetypStDao;
-import jooq.tables.daos.Icd10CodeStDao;
+import jooq.tables.daos.RolleDao;
+import jooq.tables.daos.RolleStDao;
 import jooq.tables.daos.OperationDao;
-import jooq.tables.pojos.Diagnose;
-import jooq.tables.pojos.DiagnosetypSt;
-import jooq.tables.pojos.Icd10CodeSt;
+import jooq.tables.daos.MedPersonalDao;
+import jooq.tables.pojos.MedPersonal;
+import jooq.tables.pojos.RolleSt;
+import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Rolle;
 import main.Main;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.sql.Timestamp;
 
 /**
- * This Controller displays the Diagnosis. You can create a new one or edit an existent
+ * This Controller displays the Roles. You can create a new one or edit an existing.
  */
 public class RoleOverviewController {
 
 	@FXML
 	private TableView<Rolle> roleTable;
+	@FXML
+	private TableColumn<Rolle, String> userCol;
+	@FXML
+	private TableColumn<Rolle, String> roleCol;
+	@FXML
+	private TableColumn<Rolle, Integer> opCol;
+	@FXML
+	private TableColumn<Rolle, LocalDateTime> erstellzeitCol;
+	@FXML
+	private TableColumn<Rolle, LocalDateTime> bearbeiterzeitCol;
+	@FXML
+	private TableColumn<Rolle, Boolean> storniertCol;
+	@FXML
+	private TableColumn<Rolle, String> erstellerCol;
+	@FXML
+	private TableColumn<Rolle, String> bearbeiterCol;
+	@FXML
+	private ComboBox<MedPersonal> mitarbeiter;
+	@FXML
+	private ComboBox<RolleSt> role;
+	@FXML
+	private ComboBox<Operation> op;
+
 
 	/**
-	 * This Methode initialize the TableView for the existing Diagnosis and shows the Op-IDs, ICD-10 codes and
-	 * the Diagnosis Type in the Comboboxes
+	 * This Methode initialize the TableView for the existing Roles and shows the roles, Op-IDs and medical Users.
 	 */
 	@FXML
 	public void initialize() {
-
-		System.out.println("Initialize Diagnosis-Tab!");
-
+		System.out.println("Initialize Rolle-Tab!");
+		initializeColumns();
+		roleTable.setItems(roleView());
+		setRole();
+		setOp();
+		setMitarbeiter();
 	}
 
+
 	/**
-	 * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
-	 * a Diagnosis. If the User isn't missing any necessary Values the Diagnose is edited and the Window closes
+	 * Initializes all Columns from the TableView roleTable
+	 */
+	private void initializeColumns() {
+		// create columns
+		opCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
+		bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
+		roleCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.roleConverter(features.getValue().getRolleSt())));
+		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
+		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
+		userCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getMedPersonalPersId()));
+		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+	}
+
+
+	/**
+	 * Launches when the Button Neue Rolle is pressed. It creates a new Rolle with the selected values.
+	 * @param event the event of pushing the Neue Rolle Button
+	 */
+	@FXML
+	void createNewRole(ActionEvent event) {
+		System.out.println("Create new role!");
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Error");
+		alert.setHeaderText("Fehlende Einträge!");
+		if(mitarbeiter.getValue()==null){
+			alert.setContentText("Es muss ein Mitarbeiter ausgewählt werden!");
+			alert.showAndWait();
+		}
+		else if(op.getValue()==null){
+			alert.setContentText("Es muss eine Op ausgewählt werden!");
+			alert.showAndWait();
+		}
+		else if(role.getValue()==null){
+			alert.setContentText("Es muss eine Rolle ausgewählt werden!");
+			alert.showAndWait();
+		}
+		else{
+			Rolle insertRole = new Rolle(
+					op.getSelectionModel().getSelectedItem().getOpId(), //opId
+					null, //bearbeiter
+					role.getSelectionModel().getSelectedItem().getRolle(), //rolleSt
+					null, //bearbeiterZeit
+					new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
+					MainController.getUserId(), //ersteller
+					mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonalPersId
+					false //storniert
+			);
+			RolleDao roleDao = new RolleDao(Main.configuration);
+			roleDao.insert(insertRole);
+			Alert confirm = new Alert(AlertType.INFORMATION);
+			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+			confirm.showAndWait();
+		}
+	}
+
+
+	/**
+	 * Launches when the Button Speichern is pressed. It updates the selected role to the values that the user selects.
+	 * If no role is selected, an alert is shown that you need to select a role before you can edit one.
 	 * @param event the event of pushing the Speichern Button
 	 */
 	@FXML
 	public void createRole(ActionEvent event){
 		System.out.println("Create role!");
-
-	}
-
-
-	/**
-	 * Launches when the Button Neue Diagnose is pressed. It sets the flag false so that we know that the user wants to create
-	 * a new Diagnosis. If the User isn't missing any necessary Values the Diagnose is saved and the Window closes
-	 * @param event the event of pushing the Neue Diagnose Button
-	 */
-	@FXML
-	void createNewRole(ActionEvent event) {
-		System.out.println("Create new role!");
-	}
-
-	/**
-	 * Collects all Diagnosis from the Database and saves them in a observable Array List from Type Diagnose pojo
-	 * @return all Diagnosis
-	 */
-	/*
-	public static ObservableList<Diagnose> diagnoseView(){
-		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
-		List<Diagnose> diagnose = diagnoseDao.findAll();
-		return FXCollections.observableArrayList(diagnose);
-	}
-	*/
-
-	/**
-	 * Inserts or edits a Diagnose in the Database.
-	 */
-	/*
-	private void insertNewRole() {
-		Integer diagID = null;
-		boolean storniert = false;
-		Integer opID = diagnosisOpId.getValue().getOpId();
-		String icdCode = diagnosisIcdCode.getValue().getIcd10Code();
-		Integer diagTyp = diagnosisType.getValue().getDiagnosetyp();
-		String freitext = diagnosisFreetext.getText();
-		LocalDateTime datum;
-		String ersteller = null;
-		LocalDateTime erstellZeit = null;
-		String bearbeiter = null;
-		LocalDateTime bearbeiterZeit = null;
-
-		// Edits Diagnosis
-		if(flagEditDiagnose){
-			diagID = onEditDiagnose();
-			bearbeiter = MainController.getUserId();
-			bearbeiterZeit = LocalDateTime.now();
-			datum = dateDiagnosis.getDateTimeValue();
-
-			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
-			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
-			diagnoseDao.update(diagnose);
+		if (roleTable.getSelectionModel().getSelectedItem() != null) {
+			Rolle selectedRole = roleTable.getSelectionModel().getSelectedItem();
+			Rolle updateRole = new Rolle(
+					op.getSelectionModel().getSelectedItem().getOpId(), //opId
+					MainController.getUserId(), //bearbeiter
+					role.getSelectionModel().getSelectedItem().getRolle(), //rolleSt
+					LocalDateTime.now(), //bearbeiterZeit
+					selectedRole.getErstellZeit(), //erstellZeit
+					selectedRole.getErsteller(), //ersteller
+					mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonalPersId
+					selectedRole.getStorniert() //storniert
+			);
+			RolleDao roleDao = new RolleDao(Main.configuration);
+			roleDao.update(updateRole);
+			Alert confirm = new Alert(AlertType.INFORMATION);
+			confirm.setContentText("Der Datensatz wurde geupdated.");
+			confirm.showAndWait();
 		}
-		// Creates new Diagnosis
 		else{
-			ersteller = MainController.getUserId();
-			erstellZeit = LocalDateTime.now();
-			datum = LocalDateTime.now();
-
-			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
-			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
-			diagnoseDao.insert(diagnose);
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Fehlende Auswahl!");
+			alert.setContentText("Es muss eine Rolle zum Bearbeiten ausgewählt werden!");
+			alert.showAndWait();
 		}
 	}
-	*/
 
 
 	/**
-	 * Gets the Diagnosis ID from the selected Diagnosis in the Table View
-	 * @return Diagnosis ID
+	 * Collects all Roles from the Database and saves them in a observable Array List from Type Role pojo
+	 * @return all Roles
 	 */
-	/*
-	public int onEditRole() {
-		int id = 0;
-		// check the table's selected item and get selected item
-		if (diagnosisTable.getSelectionModel().getSelectedItem() != null) {
-			Diagnose selectedItem = diagnosisTable.getSelectionModel().getSelectedItem();
-			id = selectedItem.getDiagnoseId();
-		}
-		return id;
+	public static ObservableList<Rolle> roleView(){
+		RolleDao roleDao = new RolleDao(Main.configuration);
+		List<Rolle> role = roleDao.findAll();
+		return FXCollections.observableArrayList(role);
 	}
-	*/
 
 
 	/**
-	 * Gets triggered when a Diagnosis in the TableView gets selected
+	 * Gets triggered when a Role in the TableView gets selected.
+	 * It sets the values of the selected role as values of the ComboBoxes.
 	 */
 	@FXML
 	void roleClicked() {
 		roleTable.setOnMouseClicked((MouseEvent event) -> {
 			if (event.getClickCount() > 0) {
-				System.out.println("Role clicked!");
+				if (roleTable.getSelectionModel().getSelectedItem() != null) {
+					System.out.println("Role clicked!");
+					Rolle editRole = roleTable.getSelectionModel().getSelectedItem();
+					MedPersonal medPersX = new MedPersonalDao(Main.configuration).fetchOneByPersId(editRole.getMedPersonalPersId());
+					MedPersonal medPers = new MedPersonal(medPersX) {
+						@Override
+						public String toString() {
+							StringBuilder sb = new StringBuilder(medPersX.getNachnameVorname());
+							sb.append(" ");
+							sb.append(medPersX.getPersId());
+							return sb.toString();
+						}
+					};
+					Operation operationX = new OperationDao(Main.configuration).fetchOneByOpId(editRole.getOpId());
+					Operation operation = new Operation(operationX) {
+						@Override
+						public String toString() {
+							StringBuilder sb = new StringBuilder("OP: ");
+							sb.append(operationX.getOpId()).append(", Fall: ").append(operationX.getFallId());
+							sb.append(", Datum: ").append(operationX.getBeginn());
+							return sb.toString();
+						}
+					};
+					RolleSt roleStX = new RolleStDao(Main.configuration).fetchOneByRolle(editRole.getRolleSt());
+					RolleSt roleSt = new RolleSt(roleStX) {
+						@Override
+						public String toString() {
+							return roleStX.getBezeichnung();
+						}
+					};
+					mitarbeiter.setValue(medPers);
+					op.setValue(operation);
+					role.setValue(roleSt);
+				}
 			}
 		});
 	}
+
+
+	/**
+	 * This method is called when initialising the window.
+	 * It sets all role types of the database as choosing options of the combobox.
+	 */
+	private void setRole() {
+		Callback<ListView<RolleSt>, ListCell<RolleSt>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<RolleSt> call(ListView<RolleSt> rolleListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(RolleSt ro, boolean empty) {
+						super.updateItem(ro, empty);
+						if (ro == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(ro.getBezeichnung());
+						}
+					}
+				};
+			}
+		};
+		role.setButtonCell(cellFactory.call(null));
+		role.setCellFactory(cellFactory);
+		role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
+	}
+
+	/**
+	 * This method is called when initialising the window.
+	 * It sets all operations of the database as choosing options of the combobox.
+	 */
+	private void setOp() {
+		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<Operation> call(ListView<Operation> opListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(Operation oper, boolean empty) {
+						super.updateItem(oper, empty);
+						if (oper == null || empty) {
+							setGraphic(null);
+						} else {
+							setText("OP: " + oper.getOpId() + ", Fall: " + oper.getFallId() + ", Datum: " + oper.getBeginn());
+						}
+					}
+				};
+			}
+		};
+		op.setButtonCell(cellFactory.call(null));
+		op.setCellFactory(cellFactory);
+		op.getItems().setAll(new OperationDao(Main.configuration).findAll());
+	}
+
+	/**
+	 * This method is called when initialising the window.
+	 * It sets all medical users of the database as choosing options of the combobox.
+	 */
+	private void setMitarbeiter() {
+		Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
+			@Override
+			public ListCell<MedPersonal> call(ListView<MedPersonal> userListView) {
+				return new ListCell<>() {
+					@Override
+					protected void updateItem(MedPersonal user, boolean empty) {
+						super.updateItem(user, empty);
+						if (user == null || empty) {
+							setGraphic(null);
+						} else {
+							setText(user.getNachnameVorname() + " " + user.getPersId());
+						}
+					}
+				};
+			}
+		};
+		mitarbeiter.setButtonCell(cellFactory.call(null));
+		mitarbeiter.setCellFactory(cellFactory);
+		List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
+		medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
+		var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
+				.collect(Collectors.toList());
+		mitarbeiter.getItems().setAll(result);
+	}
+
 }

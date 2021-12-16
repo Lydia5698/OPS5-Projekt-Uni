@@ -140,6 +140,27 @@ public class Converter {
         else{return "d";}
     }
 
+    /**
+     * Converts the key of the role to the given description.
+     * @param i the int value of the role.
+     * @return the String value of the role description.
+     */
+    public static String roleConverter(Integer i){
+        if(i == null){return null;}
+        switch (i){
+            case 1:
+                return "Assistent";
+            case 2:
+                return "Assistenzarzt";
+            case 3:
+                return "Diagnosesteller";
+            case 4:
+                return "leitender Chirurg";
+            case 5:
+                return "Operateur";
+        }
+        return "";
+    }
 
     /**
      * creates a callback from all patients which prints only the last and first name of each patient
