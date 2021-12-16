@@ -188,6 +188,8 @@ public class OverviewController {
 
     private Parent root;
 
+    private AdmissionController admissionController;
+
     /**
      * This Methode initializes the TableViews for the Patients and their corresponding Cases and Operations
      */
@@ -345,6 +347,8 @@ public class OverviewController {
                Stage stage = new Stage();
                stage.setTitle("Diagnosen");
                stage.setScene(new Scene(root));
+               DiagnosisController controller = fxmlLoader.getController();
+               controller.diagnoseView(onEditOperation());
                stage.show();
        	}catch (IOException e) {
        		e.printStackTrace();
@@ -365,6 +369,8 @@ public class OverviewController {
             Stage stage = new Stage();
             stage.setTitle("Operation Bearbeiten");
             stage.setScene(new Scene(root));
+            AdmissionController controller = (AdmissionController) fxmlLoader.getController();
+            controller.initializeComboboxen(onEditOperation());
             stage.show();
         }catch (IOException e) {
             e.printStackTrace();
@@ -385,6 +391,8 @@ public class OverviewController {
                Stage stage = new Stage();
                stage.setTitle("Prozeduren");
                stage.setScene(new Scene(root));
+               ProcedureController controller = fxmlLoader.getController();
+               controller.prozedurView(onEditOperation());
                stage.show();
        	}catch (IOException e) {
        		e.printStackTrace();
@@ -463,7 +471,7 @@ public class OverviewController {
             opListOperation.setItems(operationView(onEditCase()));
         }
         else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fehlende Operation");
             alert.setContentText("Bitte wählen Sie eine Operation zum stornieren aus");
             alert.show();

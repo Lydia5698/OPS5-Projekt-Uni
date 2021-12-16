@@ -14,9 +14,18 @@ import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.jooq.tools.json.JSONArray;
+import org.jooq.tools.json.JSONObject;
+import org.jooq.tools.json.JSONParser;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * This Controller displays the Diagnosis. You can create a new one or edit an existent
@@ -82,7 +91,6 @@ public class DiagnosisController {
 		System.out.println("Initialize Diagnosis-Tab!");
 
 		initializeColumns();
-		diagnosisTable.setItems(diagnoseView());
 		setDiagnosisOpId();
 		setDiagnosisIcdCode();
 		setDiagnosisDiagnoseTyp();
@@ -143,10 +151,19 @@ public class DiagnosisController {
 	 * Collects all Diagnosis from the Database and saves them in a observable Array List from Type Diagnose pojo
 	 * @return all Diagnosis
 	 */
-	public static ObservableList<Diagnose> diagnoseView(){
-		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
+	public void diagnoseView(Integer opID){
+		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
 		List<Diagnose> diagnose = diagnoseDao.findAll();
-		return FXCollections.observableArrayList(diagnose);
+		if(opID == 0){
+			diagnosisTable.setItems(FXCollections.observableArrayList(diagnose));
+		}
+		else {
+			Predicate<Diagnose> byOpID = diagnose1 -> diagnose1.getOpId().equals(opID);
+			var result = diagnose.stream().filter(byOpID)
+					.collect(Collectors.toList());
+			diagnosisTable.setItems(FXCollections.observableArrayList(result));
+		}
+
 	}
 
 	/**
@@ -206,6 +223,9 @@ public class DiagnosisController {
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.insert(diagnose);
 		}
+		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+		confirm.showAndWait();
 
 	}
 
@@ -225,7 +245,7 @@ public class DiagnosisController {
 	}
 
 	/**
-	 * Gets all the Operation IDs and  saves them in the diagnosisOpId Combobox
+	 * Gets all the Operation IDs and saves them in the diagnosisOpId Combobox
 	 */
 	private void setDiagnosisOpId(){
 		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
@@ -323,7 +343,7 @@ public class DiagnosisController {
 	public boolean noMissingStatement(){
 
 		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender Diagnose-Code ");
 			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
 			alert.show();
@@ -331,7 +351,7 @@ public class DiagnosisController {
 		}
 
 		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
 			alert.show();
@@ -339,7 +359,7 @@ public class DiagnosisController {
 		}
 
 		if(diagnosisType.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender Diagnosetyp");
 			alert.setContentText("Bitte wählen Sie einen Diagnosetyp aus");
 			alert.show();
@@ -348,7 +368,7 @@ public class DiagnosisController {
 
 
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlende Diagnose");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
 			alert.show();
@@ -357,4 +377,5 @@ public class DiagnosisController {
 		return true;
 
 	}
+
 }

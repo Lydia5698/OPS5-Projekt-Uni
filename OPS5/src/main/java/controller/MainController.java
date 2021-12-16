@@ -12,12 +12,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import jooq.tables.daos.MedPersonalDao;
+import jooq.tables.pojos.Diagnose;
 import jooq.tables.pojos.MedPersonal;
 import main.Main;
 
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainController {
 
@@ -146,7 +148,9 @@ public class MainController {
 		employee.setCellFactory(cellFactory);
 		List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
 		medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
-		employee.getItems().setAll(medPersonalList);
+		var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000"))//KIS
+				.collect(Collectors.toList());
+		employee.getItems().setAll(result);
 		employee.getSelectionModel().select(i);
 	}
 
@@ -157,4 +161,9 @@ public class MainController {
 	public static void setEmployee(int i){
 		createEmployeeComboBox(instance.employeeId, i);
 	}
+
+	public AdmissionController getAdmissionController() {
+		return admissionController;
+	}
+
 }

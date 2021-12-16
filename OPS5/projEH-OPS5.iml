@@ -10,11 +10,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: ca.uhn.hapi:hapi-structures-v251:2.3" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:mac-aarch64:17" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:mac-aarch64:17" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:mac-aarch64:17" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:mac-aarch64:17" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.26" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.11.4" level="project" />
     <orderEntry type="library" name="Maven: org.mariadb.jdbc:mariadb-java-client:3.0.1-beta" level="project" />
@@ -27,13 +22,13 @@
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.14.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.14.0" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:17" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:linux:17" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:mac-aarch64:17" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:17" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:linux:17" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:mac-aarch64:17" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:17" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:linux:17" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:mac-aarch64:17" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:17" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:linux:17" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:mac-aarch64:17" level="project" />
     <orderEntry type="library" name="Maven: org.jooq:jooq:3.15.4" level="project" />
     <orderEntry type="library" name="Maven: io.r2dbc:r2dbc-spi:0.9.0.M1" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
