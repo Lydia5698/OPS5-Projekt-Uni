@@ -49,6 +49,7 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Diagnose-Typ" GridPane.rowIndex="3" />
             <ComboBox fx:id="diagnosisOpId" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
             <ComboBox fx:id="diagnosisIcdCode" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button text="Info" onAction="#showInfo" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <ComboBox fx:id="diagnosisType" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Der verhasste Freitext" GridPane.rowIndex="4" />
             <TextField fx:id="diagnosisFreetext" prefHeight="119.0" prefWidth="400.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
