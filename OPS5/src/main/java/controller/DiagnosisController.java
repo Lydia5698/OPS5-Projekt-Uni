@@ -393,6 +393,7 @@ public class DiagnosisController {
 			System.out.println("Kein ICD Code ausgewählt");
 			return;
 		}
+		openWebView("https://pubmed.ncbi.nlm.nih.gov/?term=Cholera%5BMeSH+Major+Topic%5D");
 		try {
 			JSONObject result = getJsonForCode(code.getIcd10Code());
 			System.out.println("Trying original Code");
@@ -423,10 +424,11 @@ public class DiagnosisController {
 	}
 
 
-	 * Opens a new Window for the Web View
+	 /**
+	  * Opens a new Window for the Web View
 	 */
 	@FXML
-	public void openWebView() {
+	public void openWebView(String url) {
 		System.out.println("New Patient Window!");
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader();
@@ -434,6 +436,8 @@ public class DiagnosisController {
 			Parent root = fxmlLoader.load();
 			Stage stage = new Stage();
 			stage.setScene(new Scene(root));
+			WebViewController controller = fxmlLoader.getController();
+			controller.webView(url);
 			stage.show();
 		}catch (IOException e) {
 			e.printStackTrace();

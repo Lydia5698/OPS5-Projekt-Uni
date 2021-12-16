@@ -3,6 +3,8 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.scene.web.WebView;
 
+import java.net.URL;
+
 /**
  * Displays the Pub Med article
  */
@@ -16,9 +18,11 @@ public class WebViewController {
      */
     @FXML
     public void initialize(){
-        pubMedView.getEngine().load("https://pubmed.ncbi.nlm.nih.gov/?term=Cholera%5BMeSH+Major+Topic%5D");
     }
 
+    public void webView(String url){
+        pubMedView.getEngine().load(url);
+    }
 
 
 }
