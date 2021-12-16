@@ -364,6 +364,12 @@ public class DiagnosisController {
 		return true;
 
 	}
+
+	/**
+	 * If you want to see information about a diagnosis the JSONObject of the icd-10 code is returned.
+	 * If the chosen code returns no result the code is modified a few times until a valid result is returned
+	 * or an alert is shown when no result is given.
+	 */
 	@FXML
 	public void showInfo() {
 		Icd10CodeSt code = diagnosisIcdCode.getValue();
@@ -373,16 +379,28 @@ public class DiagnosisController {
 		}
 		try {
 			JSONObject result = getJsonForCode(code.getIcd10Code());
-			if(!wasFound(result)) {
-				System.out.println("Info not found for "+code.getIcd10Code());
-				String alternativ = code.getIcd10Code().substring(0,3);
-				System.out.println("Trying short Code: "+alternativ);
-				result =getJsonForCode(alternativ);
-				if (!wasFound(result)) {
-					System.out.println("Alternativ not found");
-					return;
-				}
+			System.out.println("Trying original Code");
+			if(wasFound(result)){return;}
+
+			System.out.println("Info not found for "+code.getIcd10Code());
+			String shortCode = code.getIcd10Code().substring(0,3);
+			System.out.println("Trying short Code: "+shortCode);
+			result = getJsonForCode(shortCode);
+			if (wasFound(result)) { return;}
+
+			System.out.println("Info not found for " + shortCode);
+			for(int i=9; i>=0; i--){
+				String codeX = shortCode + "." + Integer.toString(i);
+				System.out.println("Trying code " + codeX);
+				result = getJsonForCode(codeX);
+				if (wasFound(result)){return;}
+				System.out.println("Info not found for " + codeX);
 			}
+			Alert infoalert = new Alert(Alert.AlertType.INFORMATION);
+			infoalert.setTitle("No result");
+			infoalert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
+			infoalert.show();
+
 			// result contains valid data
 
 		} catch (Exception e) {
