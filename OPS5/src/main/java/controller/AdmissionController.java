@@ -57,7 +57,6 @@ public class AdmissionController {
 	private boolean flagOpEdit = false;
 	private Integer opId = null;
 
-//TODO: Nur Patienten, die nicht storniert sind!
 	/**
 	 * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
 	 */
@@ -113,42 +112,7 @@ public class AdmissionController {
 			alert.setContentText("Es muss ein Fall ausgewählt werden!");
 			alert.showAndWait();
 		}//Op-Ende vor Op-Start
-		else if(opController.getOpDateEnd() != null && opController.getOpDateBegin() != null && opController.getOpDateEnd().isBefore(opController.getOpDateBegin())){
-				alert.setHeaderText("Falscher Eintrag!");
-				alert.setContentText("Das Op-Ende kann nicht vor dem Op-Start sein!");
-				alert.showAndWait();
-		}//Schnittzeit vor Op-Beginn
-		else if(opController.getOpDateBegin() != null && opController.getCutTime() != null && opController.getOpDateBegin().isAfter(opController.getCutTime())){
-				alert.setHeaderText("Falscher Eintrag!");
-				alert.setContentText("Die Schnittzeit kann nicht vor dem Op-Start sein!");
-				alert.showAndWait();
-		}//Schnittzeit nach Op-Ende
-		else if(opController.getOpDateEnd() != null && opController.getCutTime() != null && opController.getOpDateEnd().isBefore(opController.getCutTime())){
-				alert.setHeaderText("Falscher Eintrag!");
-				alert.setContentText("Die Schnittzeit kann nicht nach dem Op-Ende sein!");
-				alert.showAndWait();
-		}//Nahtzeit vor Op-Beginn
-		else if(opController.getOpDateBegin() != null && opController.getSewTime() != null && opController.getOpDateBegin().isAfter(opController.getSewTime())){
-				alert.setHeaderText("Falscher Eintrag!");
-				alert.setContentText("Die Nahtzeit kann nicht vor dem Op-Start sein!");
-				alert.showAndWait();
-		}//Nahtzeit vor Schnittzeit
-		else if(opController.getCutTime() != null && opController.getSewTime() != null && opController.getCutTime().isAfter(opController.getSewTime())){
-				alert.setHeaderText("Falscher Eintrag!");
-				alert.setContentText("Die Nahtzeit kann nicht vor der Schnittzeit sein!");
-				alert.showAndWait();
-		}//Nahtzeit nach Op-Ende
-		else if(opController.getOpDateEnd() != null && opController.getSewTime() != null && opController.getOpDateEnd().isBefore(opController.getSewTime())){
-				alert.setHeaderText("Falscher Eintrag!");
-				alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
-				alert.showAndWait();
-		}//Bauchtücher nicht gleich
-		else if(opController.getTowelAfter()!=opController.getTowelBefore()){
-			alert.setHeaderText("Falscher Eintrag!");
-			alert.setContentText("Anzahl Bauchtücher vor und nach der Op muss gleich sein!");
-			alert.showAndWait();
-		}
-		else {
+		else if (falseSatement()){
 			Operation operation = new Operation(
 					null, //opId -> automatisch mit AutoIncrement gesetzt
 					opController.getOpDateBegin(), //beginn
@@ -171,6 +135,14 @@ public class AdmissionController {
 			OperationDao operationDao = new OperationDao(Main.configuration);
 			operationDao.insert(operation);
 
+			//Bauchtücher nicht gleich
+			if(opController.getTowelAfter()!=opController.getTowelBefore()){
+				Alert alert1 = new Alert(AlertType.WARNING);
+				alert1.setHeaderText("ACHTUNG Bauchtücher");
+				alert1.setContentText("Die Anzahl der Bauchtücher nach der OP stimmt nicht mit der Anzahl vor der Operation überein!");
+				alert1.showAndWait();
+			}
+
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 			confirm.showAndWait();
@@ -179,35 +151,80 @@ public class AdmissionController {
 		System.out.println("Creating OP!");
 	}
 
+	private Boolean falseSatement(){
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Error");
+		if(opController.getOpDateEnd() != null && opController.getOpDateBegin() != null && opController.getOpDateEnd().isBefore(opController.getOpDateBegin())){
+			alert.setHeaderText("Falscher Eintrag!");
+			alert.setContentText("Das Op-Ende kann nicht vor dem Op-Start sein!");
+			alert.showAndWait();
+			return false;
+		}//Schnittzeit vor Op-Beginn
+		else if(opController.getOpDateBegin() != null && opController.getCutTime() != null && opController.getOpDateBegin().isAfter(opController.getCutTime())){
+			alert.setHeaderText("Falscher Eintrag!");
+			alert.setContentText("Die Schnittzeit kann nicht vor dem Op-Start sein!");
+			alert.showAndWait();
+			return false;
+		}//Schnittzeit nach Op-Ende
+		else if(opController.getOpDateEnd() != null && opController.getCutTime() != null && opController.getOpDateEnd().isBefore(opController.getCutTime())){
+			alert.setHeaderText("Falscher Eintrag!");
+			alert.setContentText("Die Schnittzeit kann nicht nach dem Op-Ende sein!");
+			alert.showAndWait();
+			return false;
+		}//Nahtzeit vor Op-Beginn
+		else if(opController.getOpDateBegin() != null && opController.getSewTime() != null && opController.getOpDateBegin().isAfter(opController.getSewTime())){
+			alert.setHeaderText("Falscher Eintrag!");
+			alert.setContentText("Die Nahtzeit kann nicht vor dem Op-Start sein!");
+			alert.showAndWait();
+			return false;
+		}//Nahtzeit vor Schnittzeit
+		else if(opController.getCutTime() != null && opController.getSewTime() != null && opController.getCutTime().isAfter(opController.getSewTime())){
+			alert.setHeaderText("Falscher Eintrag!");
+			alert.setContentText("Die Nahtzeit kann nicht vor der Schnittzeit sein!");
+			alert.showAndWait();
+			return false;
+		}//Nahtzeit nach Op-Ende
+		else if(opController.getOpDateEnd() != null && opController.getSewTime() != null && opController.getOpDateEnd().isBefore(opController.getSewTime())){
+			alert.setHeaderText("Falscher Eintrag!");
+			alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
+			alert.showAndWait();
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Edits an existing Operation
 	 */
-	public void editOperation(){ // TODO: 06.12.21 zeit sachen überprüfen also schnitt nahtzeit etc.
+	public void editOperation(){
 
-		Operation operation = new Operation(
-				opId, //opId -> the operation to be edited
-				opController.getOpDateBegin(), //beginn
-				opController.getOpDateEnd(), //ende
-				opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
-				opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
-				opController.getCutTime(), //schnittzeit
-				opController.getSewTime(), //nahtzeit
-				null, //erstellZeit
-				LocalDateTime.now(), //bearbeiterZeit
-				false, //storniert
-				opController.getOpCaseId(), //fallId
-				opController.getOpRoomCode(), //opSaal
-				opController.getNarkose(), //narkoseSt
-				opController.getOpType(), //opTypSt
-				null, //ersteller
-				MainController.getUserId() //bearbeiter
-		);
-		OperationDao operationDao = new OperationDao(Main.configuration);
-		operationDao.update(operation);
+		if(falseSatement()) {
+			Operation operation = new Operation(
+					opId, //opId -> the operation to be edited
+					opController.getOpDateBegin(), //beginn
+					opController.getOpDateEnd(), //ende
+					opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
+					opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
+					opController.getCutTime(), //schnittzeit
+					opController.getSewTime(), //nahtzeit
+					null, //erstellZeit
+					LocalDateTime.now(), //bearbeiterZeit
+					false, //storniert
+					opController.getOpCaseId(), //fallId
+					opController.getOpRoomCode(), //opSaal
+					opController.getNarkose(), //narkoseSt
+					opController.getOpType(), //opTypSt
+					null, //ersteller
+					MainController.getUserId() //bearbeiter
+			);
+			OperationDao operationDao = new OperationDao(Main.configuration);
+			operationDao.update(operation);
 
-		Alert confirm = new Alert(AlertType.INFORMATION);
-		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-		confirm.showAndWait();
+
+			Alert confirm = new Alert(AlertType.INFORMATION);
+			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+			confirm.showAndWait();
+		}
 
 	}
 
@@ -285,6 +302,24 @@ public class AdmissionController {
 		Node source = (Node) event.getSource();
 		Stage thisStage = (Stage) source.getScene().getWindow();
 		thisStage.close();
+	}
+
+	public void initializeComboboxen(int opID){
+		opController.initializeDefaultComboboxen(opID);
+		Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
+		Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
+		Patient patient = new PatientDao(Main.configuration).fetchOneByPatId(fall.getPatId());
+		Patient patient1 = new Patient(patient){
+			@Override
+			public String toString(){
+				StringBuilder sb = new StringBuilder("");
+				sb.append(patient.getName()).append(", ");
+				sb.append(patient.getVorname()).append(", PatID: ");
+				sb.append(patient.getPatId());
+				return sb.toString();
+			}
+		};
+		selectPatient.setValue(patient1);
 	}
 
 

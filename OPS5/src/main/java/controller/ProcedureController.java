@@ -16,6 +16,7 @@ import main.Main;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -73,7 +74,6 @@ public class ProcedureController {
 
     	System.out.println("Initialize Procedure-Tab!");
     	initializeColumns();
-		procedureTable.setItems(prozedurView());
 		setProcedureOpID();
 		setProcedureOpsCode();
 	}
@@ -125,10 +125,18 @@ public class ProcedureController {
 	 *  Collects all Procedures from the Database and saves them in a observable Array List from Type Prozedur pojo
 	 *  @return all Procedures
 	 */
-	public static ObservableList<Prozedur> prozedurView(){
+	public void prozedurView(Integer opID){
 		ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
 		List<Prozedur> prozedur = prozedurDao.findAll();
-		return FXCollections.observableArrayList(prozedur);
+		if(opID == 0){
+			procedureTable.setItems(FXCollections.observableArrayList(prozedur));
+		}
+		else {
+			Predicate<Prozedur> byOpID = prozedur1 -> prozedur1.getOpId().equals(opID);
+			var result = prozedur.stream().filter(byOpID)
+					.collect(Collectors.toList());
+			procedureTable.setItems(FXCollections.observableArrayList(result));
+		}
 	}
 
 	/**
@@ -181,6 +189,9 @@ public class ProcedureController {
 			ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
 			prozedurDao.insert(prozedur);
 		}
+		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+		confirm.showAndWait();
 
     }
 
@@ -205,7 +216,7 @@ public class ProcedureController {
 	 */
 	public boolean noMissingStatement(){
 		if(procedureOpID.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlende OP-ID");
 			alert.setContentText("Bitte wählen Sie eine Operations-ID aus");
 			alert.show();
@@ -213,7 +224,7 @@ public class ProcedureController {
 		}
 
 		if(procedureOpsCode.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender OPS-Code");
 			alert.setContentText("Bitte wählen Sie einen OPS-Code aus");
 			alert.show();
@@ -221,7 +232,7 @@ public class ProcedureController {
 		}
 
 		if(procedureTable.getSelectionModel().isEmpty() && flagEditProzedure){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlende Prozedur");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
 			alert.show();

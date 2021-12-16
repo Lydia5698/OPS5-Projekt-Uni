@@ -299,7 +299,7 @@ public class Patient implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Patient (");
+        StringBuilder sb = new StringBuilder("Patient( ");
 
         sb.append(patId);
         sb.append(", ").append(name);
