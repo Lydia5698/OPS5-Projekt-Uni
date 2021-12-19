@@ -6,7 +6,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -18,6 +21,7 @@ import org.jooq.tools.json.JSONArray;
 import org.jooq.tools.json.JSONObject;
 import org.jooq.tools.json.JSONParser;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -154,13 +158,12 @@ public class DiagnosisController {
 	public void diagnoseView(Integer opID){
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
 		List<Diagnose> diagnose = diagnoseDao.findAll();
+		System.out.println(opID);
 		if(opID == 0){
 			diagnosisTable.setItems(FXCollections.observableArrayList(diagnose));
 		}
 		else {
-			Predicate<Diagnose> byOpID = diagnose1 -> diagnose1.getOpId().equals(opID);
-			var result = diagnose.stream().filter(byOpID)
-					.collect(Collectors.toList());
+			List<Diagnose> result = diagnoseDao.fetchByOpId(opID);
 			diagnosisTable.setItems(FXCollections.observableArrayList(result));
 		}
 
@@ -378,4 +381,91 @@ public class DiagnosisController {
 
 	}
 
+	/**
+	 * If you want to see information about a diagnosis the JSONObject of the icd-10 code is returned.
+	 * If the chosen code returns no result the code is modified a few times until a valid result is returned
+	 * or an alert is shown when no result is given.
+	 */
+	@FXML
+	public void showInfo() {
+		Icd10CodeSt code = diagnosisIcdCode.getValue();
+		if(code==null) {
+			System.out.println("Kein ICD Code ausgewählt");
+			return;
+		}
+		openWebView("https://pubmed.ncbi.nlm.nih.gov/?term=Cholera%5BMeSH+Major+Topic%5D");
+		try {
+			JSONObject result = getJsonForCode(code.getIcd10Code());
+			System.out.println("Trying original Code");
+			if(wasFound(result)){return;}
+
+			System.out.println("Info not found for "+code.getIcd10Code());
+			String shortCode = code.getIcd10Code().substring(0,3);
+			System.out.println("Trying short Code: "+shortCode);
+			result = getJsonForCode(shortCode);
+			if (wasFound(result)) { return;}
+
+			System.out.println("Info not found for " + shortCode);
+			for(int i=9; i>=0; i--){
+				String codeX = shortCode + "." + Integer.toString(i);
+				System.out.println("Trying code " + codeX);
+				result = getJsonForCode(codeX);
+				if (wasFound(result)){return;}
+				System.out.println("Info not found for " + codeX);
+			}
+			Alert infoalert = new Alert(Alert.AlertType.INFORMATION);
+			infoalert.setTitle("No result");
+			infoalert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
+			infoalert.show();
+
+			// result contains valid data
+
+		} catch (Exception e) {e.printStackTrace();}
+	}
+
+
+	 /**
+	  * Opens a new Window for the Web View
+	 */
+	@FXML
+	public void openWebView(String url) {
+		System.out.println("New Patient Window!");
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader();
+			fxmlLoader.setLocation(getClass().getResource("/fxml/WebView.fxml"));
+			Parent root = fxmlLoader.load();
+			Stage stage = new Stage();
+			stage.setScene(new Scene(root));
+			WebViewController controller = fxmlLoader.getController();
+			controller.webView(url);
+			stage.show();
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private JSONObject getJsonForCode(String code) throws Exception {
+		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
+		System.out.println("Calling "+url.toString());
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestProperty("accept", "application/json");
+		InputStream responseStream = connection.getInputStream();
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = (JSONObject)jsonParser.parse(
+				new InputStreamReader(responseStream, "UTF-8"));
+		System.out.println(jsonObject);
+		return jsonObject;
+	}
+
+	private boolean wasFound(JSONObject json) {
+		JSONArray array = (JSONArray) json.get("parameter");
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject item = (JSONObject) array.get(i);
+			if(item.get("name").equals("result") && (Boolean) item.get("valueBoolean")) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
