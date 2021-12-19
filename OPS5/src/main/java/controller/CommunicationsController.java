@@ -28,9 +28,6 @@ import java.time.format.DateTimeFormatter;
 
 public class CommunicationsController {
 
-
-    private static CommunicationsController communicationsController;
-
     @FXML
     private TextField communicationsIpAddress;
     @FXML
@@ -50,7 +47,6 @@ public class CommunicationsController {
     
 	@FXML
 	public void initialize(){
-        communicationsController = this;
         try {
             startServer();
             setCommunicationsObjectBox();
@@ -78,11 +74,18 @@ public class CommunicationsController {
     }
 
     /**
+     * This method closes the server (when the application is closed)
+     */
+    public void closeServer() {
+        server.closeServer();
+    }
+
+    /**
      * This method returns the instance of the CommunicationController
      * @return the communicationcontroller
      */
     public static CommunicationsController getInstance(){
-	    return communicationsController;
+	    return MainController.getInstance().getCommTabController();
     }
 
     /**
@@ -154,7 +157,7 @@ public class CommunicationsController {
 
             Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
 
-            //if in ack was sended back, the value of gueltig changes to true
+            //if in ack was sent back, the value of gültig changes to true
             if(responseMessage instanceof ACK){
                 ACK ack = (ACK) responseMessage;
                 if(ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")){
@@ -163,6 +166,7 @@ public class CommunicationsController {
                             .forEach(tM -> tM.setAckMessage("ja"));
                 }
             }
+            client.closeClient();
         }
     }
 

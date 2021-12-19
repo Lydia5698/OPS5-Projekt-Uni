@@ -166,4 +166,6 @@ public class MainController {
 		return admissionController;
 	}
 
+	public CommunicationsController getCommTabController(){return commTabController;}
+
 }

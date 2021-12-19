@@ -178,4 +178,7 @@ public class Server {
 
     }
 
+    public void closeServer() {
+        hapiServer.stopAndWait();
+    }
 }

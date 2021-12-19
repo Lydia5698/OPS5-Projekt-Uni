@@ -16,6 +16,7 @@ import jooq.tables.pojos.FallTypSt;
 import jooq.tables.pojos.Patient;
 import jooq.tables.pojos.StationSt;
 import main.Main;
+import org.controlsfx.control.textfield.TextFields;
 import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;

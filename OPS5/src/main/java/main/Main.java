@@ -51,7 +51,7 @@ public class Main extends Application{
         try {
             connection = DriverManager.getConnection(url, userName, password);
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            System.out.println("Es kann keine Verbindung zur Datenbank aufgebaut werden, deshalb wird das Programm nicht gestartet.");
         }
     }
 
@@ -84,7 +84,11 @@ public class Main extends Application{
 	}
 	
 	@Override
-	public void stop(){
+	public void stop() throws SQLException {
+        MainController.getInstance().getCommTabController().closeServer();
+        connection.close();
+
+
 	}
 
 }

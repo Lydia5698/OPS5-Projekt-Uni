@@ -20,6 +20,7 @@ import javafx.scene.control.Alert.AlertType;
  */
 public class Client {
 
+    Connection connection;
     Initiator initiator;
 
     /**
@@ -29,7 +30,7 @@ public class Client {
      */
     public Client(String ipAdress, int port){
         try{
-            Connection connection = Main.hapiContext.newClient(ipAdress, port, Main.tls);
+            connection = Main.hapiContext.newClient(ipAdress, port, Main.tls);
 
             initiator = connection.getInitiator();
             initiator.setTimeout(7, TimeUnit.SECONDS);
@@ -57,7 +58,7 @@ public class Client {
                 response = initiator.sendAndReceive(message);
                 return response;
             }
-            catch(TimeoutException e){ } // if a timeout occures send the message again
+            catch(TimeoutException ignored){ } // if a timeout occures send the message again
             catch(HL7Exception | LLPException | IOException e){
                 Platform.runLater(()->{
                     Alert alertConnection = new Alert(Alert.AlertType.WARNING);
@@ -67,6 +68,13 @@ public class Client {
             }
         }
         return null;
+    }
+
+    /**
+     * closes the connection when the process is finished
+     */
+    public void closeClient(){
+        connection.close();
     }
 
 }

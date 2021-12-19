@@ -224,6 +224,12 @@ public class AdmissionController {
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 			confirm.showAndWait();
+
+			if(opController.getTowelBefore() != opController.getTowelAfter()){
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setContentText("Die Bauchtücher vor und nach der Operation haben eine unterschiedliche Anzahl!");
+				alert.show();
+			}
 		}
 
 	}
