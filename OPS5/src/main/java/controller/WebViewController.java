@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.web.WebView;
 
@@ -22,6 +23,18 @@ public class WebViewController {
 
     public void webView(String url){
         pubMedView.getEngine().load(url);
+    }
+
+    public void goBack() {
+        Platform.runLater(() -> {
+            pubMedView.getEngine().executeScript("history.back()");
+        });
+    }
+
+    public void goForward() {
+        Platform.runLater(() -> {
+            pubMedView.getEngine().executeScript("history.forward()");
+        });
     }
 
 

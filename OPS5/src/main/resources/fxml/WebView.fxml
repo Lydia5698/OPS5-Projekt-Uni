@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane prefHeight="539.0" prefWidth="821.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.WebViewController">
+<AnchorPane prefHeight="607.0" prefWidth="875.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.WebViewController">
    <children>
-      <WebView fx:id="pubMedView" prefHeight="539.0" prefWidth="821.0" />
+      <WebView fx:id="pubMedView" layoutY="27.0" prefHeight="580.0" prefWidth="875.0" />
+      <ImageView fitHeight="25.0" fitWidth="33.0" layoutX="36.0" layoutY="2.0" onMouseClicked="#goBack" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@/Pictures/backArrow.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="25.0" fitWidth="33.0" layoutX="77.0" layoutY="2.0" onMouseClicked="#goForward" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@/Pictures/forwardArrow.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>
