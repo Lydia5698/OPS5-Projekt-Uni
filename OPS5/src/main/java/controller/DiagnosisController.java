@@ -11,20 +11,24 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.jooq.meta.derby.sys.Sys;
 import org.jooq.tools.json.JSONArray;
 import org.jooq.tools.json.JSONObject;
 import org.jooq.tools.json.JSONParser;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -393,32 +397,22 @@ public class DiagnosisController {
 			System.out.println("Kein ICD Code ausgewählt");
 			return;
 		}
-		openWebView("https://pubmed.ncbi.nlm.nih.gov/?term=Cholera%5BMeSH+Major+Topic%5D");
 		try {
-			JSONObject result = getJsonForCode(code.getIcd10Code());
-			System.out.println("Trying original Code");
-			if(wasFound(result)){return;}
-
-			System.out.println("Info not found for "+code.getIcd10Code());
-			String shortCode = code.getIcd10Code().substring(0,3);
-			System.out.println("Trying short Code: "+shortCode);
-			result = getJsonForCode(shortCode);
-			if (wasFound(result)) { return;}
-
-			System.out.println("Info not found for " + shortCode);
-			for(int i=9; i>=0; i--){
-				String codeX = shortCode + "." + Integer.toString(i);
-				System.out.println("Trying code " + codeX);
-				result = getJsonForCode(codeX);
-				if (wasFound(result)){return;}
-				System.out.println("Info not found for " + codeX);
+			JSONObject result = searchForResult(code);
+			if(result==null) {
+				Alert infoalert = new Alert(Alert.AlertType.INFORMATION);
+				infoalert.setTitle("No result");
+				infoalert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
+				infoalert.show();
+			} else {
+				JSONObject match = findJsonByName((JSONArray) result.get("parameter"), "match");
+				JSONObject concept = findJsonByName((JSONArray) match.get("part"), "concept");
+				JSONObject coding = (JSONObject) concept.get("valueCoding");
+				String display = (String) coding.get("display");
+				System.out.println("display: " + display);
+				openWebView("https://pubmed.ncbi.nlm.nih.gov/?term=" + display + "%5BMeSH+Major+Topic%5D");
 			}
-			Alert infoalert = new Alert(Alert.AlertType.INFORMATION);
-			infoalert.setTitle("No result");
-			infoalert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
-			infoalert.show();
 
-			// result contains valid data
 
 		} catch (Exception e) {e.printStackTrace();}
 	}
@@ -458,6 +452,28 @@ public class DiagnosisController {
 		return jsonObject;
 	}
 
+	private JSONObject searchForResult(Icd10CodeSt code) throws Exception {
+		JSONObject result = getJsonForCode(code.getIcd10Code());
+		System.out.println("Trying original Code");
+		if(wasFound(result)){return result;}
+
+		System.out.println("Info not found for "+code.getIcd10Code());
+		String shortCode = code.getIcd10Code().substring(0,3);
+		System.out.println("Trying short Code: "+shortCode);
+		result = getJsonForCode(shortCode);
+		if (wasFound(result)) { return result;}
+
+		System.out.println("Info not found for " + shortCode);
+		for(int i=9; i>=0; i--){
+			String codeX = shortCode + "." + Integer.toString(i);
+			System.out.println("Trying code " + codeX);
+			result = getJsonForCode(codeX);
+			if (wasFound(result)){return result;}
+			System.out.println("Info not found for " + codeX);
+		}
+		return null;
+	}
+
 	private boolean wasFound(JSONObject json) {
 		JSONArray array = (JSONArray) json.get("parameter");
 		for (int i = 0; i < array.size(); i++) {
@@ -467,5 +483,16 @@ public class DiagnosisController {
 			}
 		}
 		return false;
+	}
+
+	private JSONObject findJsonByName(JSONArray array, String name) {
+		if (array==null) {return null;}
+		for (int i = 0; i < array.size(); i++) {
+			JSONObject item = (JSONObject) array.get(i);
+			if(item.get("name").equals(name)) {
+				return item;
+			}
+		}
+		return null;
 	}
 }
