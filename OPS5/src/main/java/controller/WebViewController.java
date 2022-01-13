@@ -21,16 +21,26 @@ public class WebViewController {
     public void initialize(){
     }
 
+    /**
+     * Loads the PubMed web page using the entered url
+     * @param url the PubMed Url
+     */
     public void webView(String url){
         pubMedView.getEngine().load(url);
     }
 
+    /**
+     * Goes to the previous page in the browser
+     */
     public void goBack() {
         Platform.runLater(() -> {
             pubMedView.getEngine().executeScript("history.back()");
         });
     }
 
+    /**
+     * Goes to the next page in the browser
+     */
     public void goForward() {
         Platform.runLater(() -> {
             pubMedView.getEngine().executeScript("history.forward()");

@@ -439,6 +439,7 @@ public class DiagnosisController {
 
 	}
 
+
 	private JSONObject getJsonForCode(String code) throws Exception {
 		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
 		System.out.println("Calling "+url.toString());

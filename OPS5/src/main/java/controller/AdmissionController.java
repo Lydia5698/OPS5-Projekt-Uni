@@ -2,15 +2,11 @@ package controller;
 
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import jooq.tables.daos.DiagnoseDao;
 import jooq.tables.daos.FallDao;
-import jooq.tables.pojos.Diagnose;
 import jooq.tables.pojos.Fall;
 import main.Main;
 
 import java.io.IOException;
-import java.util.List;
 import java.time.LocalDateTime;
 import java.sql.Timestamp;
 
@@ -23,18 +19,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
 import javafx.stage.Stage;
 import javafx.event.EventHandler;
-import javafx.event.ActionEvent;
 
-import jooq.Tables;
 import jooq.tables.pojos.Operation;
 import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Patient;
 import jooq.tables.daos.PatientDao;
-import jooq.tables.records.PatientRecord;
-
-import org.jooq.Record1;
-import org.jooq.Result;
-import org.jooq.impl.DSL;
 
 
 /**
@@ -112,7 +101,7 @@ public class AdmissionController {
 			alert.setContentText("Es muss ein Fall ausgewählt werden!");
 			alert.showAndWait();
 		}//Op-Ende vor Op-Start
-		else if (falseSatement()){
+		else if (noFalseStatement()){
 			Operation operation = new Operation(
 					null, //opId -> automatisch mit AutoIncrement gesetzt
 					opController.getOpDateBegin(), //beginn
@@ -151,7 +140,11 @@ public class AdmissionController {
 		System.out.println("Creating OP!");
 	}
 
-	private Boolean falseSatement(){
+	/**
+	 * Checks the user input for the operation for incorrect input
+	 * @return true if no false Statement
+	 */
+	private Boolean noFalseStatement(){
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
 		if(opController.getOpDateEnd() != null && opController.getOpDateBegin() != null && opController.getOpDateEnd().isBefore(opController.getOpDateBegin())){
@@ -198,7 +191,7 @@ public class AdmissionController {
 	 */
 	public void editOperation(){
 
-		if(falseSatement()) {
+		if(noFalseStatement()) {
 			Operation operation = new Operation(
 					opId, //opId -> the operation to be edited
 					opController.getOpDateBegin(), //beginn
@@ -310,6 +303,10 @@ public class AdmissionController {
 		thisStage.close();
 	}
 
+	/**
+	 * Sets the comboboxes in the Edit Op window to the values of the previously selected op to be edited.
+	 * @param opID the OpId to be processed
+	 */
 	public void initializeComboboxen(int opID){
 		opController.initializeDefaultComboboxen(opID);
 		Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);

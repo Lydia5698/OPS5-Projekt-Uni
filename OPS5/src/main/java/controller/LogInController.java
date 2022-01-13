@@ -7,6 +7,9 @@ import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import jooq.tables.pojos.MedPersonal;
 
+/**
+ * Ensures that one person is always logged in to edit.
+ */
 public class LogInController {
 
     @FXML
@@ -19,7 +22,10 @@ public class LogInController {
         MainController.createEmployeeComboBox(mitarbeiter,1);
     }
 
-    public void loginNewEmployee(ActionEvent actionEvent) {
+    /**
+     * Logs in the new selected user
+     */
+    public void loginNewEmployee() {
         MainController.setEmployee(mitarbeiter.getSelectionModel().getSelectedIndex());
         Stage stage = (Stage) login.getScene().getWindow();
         stage.close();

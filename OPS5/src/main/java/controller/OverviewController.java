@@ -494,6 +494,9 @@ public class OverviewController {
         }
     }
 
+    /**
+     * Opens a new window where the roles are displayed. These can then be edited
+     */
     @FXML
     void showRoles(){
         System.out.println("Show and edit Role Window!");

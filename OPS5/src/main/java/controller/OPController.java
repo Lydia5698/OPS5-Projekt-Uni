@@ -290,6 +290,10 @@ public class OPController{
         towelsAfter.decrement(towelsAfter.getValue());
     }
 
+    /**
+     * Sets the combo boxes in the Edit Op window to the values of the previously selected op to be edited.
+     * @param opID the OpId to be processed
+     */
     public void initializeDefaultComboboxen(int opID){
         Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
         Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
