@@ -1,29 +1,27 @@
 package controller;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 import jooq.tables.daos.FallDao;
+import jooq.tables.daos.OperationDao;
+import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Fall;
+import jooq.tables.pojos.Operation;
+import jooq.tables.pojos.Patient;
 import main.Main;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.sql.Timestamp;
-
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert.AlertType;
-import javafx.util.Callback;
-import javafx.stage.Stage;
-import javafx.event.EventHandler;
-
-import jooq.tables.pojos.Operation;
-import jooq.tables.daos.OperationDao;
-import jooq.tables.pojos.Patient;
-import jooq.tables.daos.PatientDao;
+import java.time.LocalDateTime;
 
 
 /**
@@ -31,299 +29,301 @@ import jooq.tables.daos.PatientDao;
  * It also contains the buttons for opening windows to creating new roles and patients.
  */
 public class AdmissionController {
-	
-	private Parent root;
 
-	@FXML
+    private Parent root;
+
+    @FXML
     private ComboBox<Patient> selectPatient;
 
     @FXML
     private OPController opController;
 
-	@FXML
-	private Button saveBtn;
+    @FXML
+    private Button saveBtn;
 
-	private boolean flagOpEdit = false;
-	private Integer opId = null;
+    private Integer opId = null;
 
-	/**
-	 * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
-	 */
-	public void setPatient() {
-		Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
-			@Override
-			public ListCell<Patient> call(ListView<Patient> patientListView) {
-				return new ListCell<>() {
-					@Override
-					protected void updateItem(Patient pat, boolean empty) {
-						super.updateItem(pat, empty);
-						if (pat == null || empty) {
-							setGraphic(null);
-						} else {
-							setText(pat.getName() + ", " + pat.getVorname() + ";  " + pat.getPatId());
-						}
-					}
-				};
-			}
-		};
-		selectPatient.setButtonCell(cellFactory.call(null));
-		selectPatient.setCellFactory(cellFactory);
-		selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
-	}
-
-	/**
-	 * When the window for creating an operation is opened, this method is called.
-	 * The patients can be selected and the initial case id gets selected by the chosen patient, which can be null.
-	 */
-	@FXML
-	public void initialize() {
-		selectPatient.setOnAction(new EventHandler<ActionEvent>(){
-			public void handle(ActionEvent e){
-				if(selectPatient.getValue() != null){opController.setCase(selectPatient.getValue().getPatId());}
-			}
-		});
-		setPatient();
-
-    	System.out.println("Initialize Admission-Tab!");
+    /**
+     * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
+     */
+    public void setPatient() {
+        Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<Patient> call(ListView<Patient> patientListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Patient pat, boolean empty) {
+                        super.updateItem(pat, empty);
+                        if (pat == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(pat.getName() + ", " + pat.getVorname() + ";  " + pat.getPatId());
+                        }
+                    }
+                };
+            }
+        };
+        selectPatient.setButtonCell(cellFactory.call(null));
+        selectPatient.setCellFactory(cellFactory);
+        selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
     }
 
-	/**
-	 * This method is called when a button is pushed.
-	 * Checks are run that all input is valid and all the non-nullable objects have a value.
-	 * A new operation is created and inserted into the database.
-	 */
-	@FXML
-	public void create() {
-		Alert alert = new Alert(AlertType.ERROR);
-		alert.setTitle("Error");
-		if (opController.getOpCaseId() == null){
-			alert.setHeaderText("Fehlende Einträge!");
-			alert.setContentText("Es muss ein Fall ausgewählt werden!");
-			alert.showAndWait();
-		}//Op-Ende vor Op-Start
-		else if (noFalseStatement()){
-			Operation operation = new Operation(
-					null, //opId -> automatisch mit AutoIncrement gesetzt
-					opController.getOpDateBegin(), //beginn
-					opController.getOpDateEnd(), //ende
-					opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
-					opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
-					opController.getCutTime(), //schnittzeit
-					opController.getSewTime(), //nahtzeit
-					new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
-					null, //bearbeiterZeit
-					false, //storniert
-					opController.getOpCaseId(), //fallId
-					opController.getOpRoomCode(), //opSaal
-					opController.getNarkose(), //narkoseSt
-					opController.getOpType(), //opTypSt
-					MainController.getUserId(), //ersteller
-					null //bearbeiter
-			);
-
-			OperationDao operationDao = new OperationDao(Main.configuration);
-			operationDao.insert(operation);
-
-			//Bauchtücher nicht gleich
-			if(opController.getTowelAfter()!=opController.getTowelBefore()){
-				Alert alert1 = new Alert(AlertType.WARNING);
-				alert1.setHeaderText("ACHTUNG Bauchtücher");
-				alert1.setContentText("Die Anzahl der Bauchtücher nach der OP stimmt nicht mit der Anzahl vor der Operation überein!");
-				alert1.showAndWait();
-			}
-
-			Alert confirm = new Alert(AlertType.INFORMATION);
-			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-			confirm.showAndWait();
-			clearFields();
-		}
-		System.out.println("Creating OP!");
-	}
-
-	/**
-	 * Checks the user input for the operation for incorrect input
-	 * @return true if no false Statement
-	 */
-	private Boolean noFalseStatement(){
-		Alert alert = new Alert(AlertType.ERROR);
-		alert.setTitle("Error");
-		if(opController.getOpDateEnd() != null && opController.getOpDateBegin() != null && opController.getOpDateEnd().isBefore(opController.getOpDateBegin())){
-			alert.setHeaderText("Falscher Eintrag!");
-			alert.setContentText("Das Op-Ende kann nicht vor dem Op-Start sein!");
-			alert.showAndWait();
-			return false;
-		}//Schnittzeit vor Op-Beginn
-		else if(opController.getOpDateBegin() != null && opController.getCutTime() != null && opController.getOpDateBegin().isAfter(opController.getCutTime())){
-			alert.setHeaderText("Falscher Eintrag!");
-			alert.setContentText("Die Schnittzeit kann nicht vor dem Op-Start sein!");
-			alert.showAndWait();
-			return false;
-		}//Schnittzeit nach Op-Ende
-		else if(opController.getOpDateEnd() != null && opController.getCutTime() != null && opController.getOpDateEnd().isBefore(opController.getCutTime())){
-			alert.setHeaderText("Falscher Eintrag!");
-			alert.setContentText("Die Schnittzeit kann nicht nach dem Op-Ende sein!");
-			alert.showAndWait();
-			return false;
-		}//Nahtzeit vor Op-Beginn
-		else if(opController.getOpDateBegin() != null && opController.getSewTime() != null && opController.getOpDateBegin().isAfter(opController.getSewTime())){
-			alert.setHeaderText("Falscher Eintrag!");
-			alert.setContentText("Die Nahtzeit kann nicht vor dem Op-Start sein!");
-			alert.showAndWait();
-			return false;
-		}//Nahtzeit vor Schnittzeit
-		else if(opController.getCutTime() != null && opController.getSewTime() != null && opController.getCutTime().isAfter(opController.getSewTime())){
-			alert.setHeaderText("Falscher Eintrag!");
-			alert.setContentText("Die Nahtzeit kann nicht vor der Schnittzeit sein!");
-			alert.showAndWait();
-			return false;
-		}//Nahtzeit nach Op-Ende
-		else if(opController.getOpDateEnd() != null && opController.getSewTime() != null && opController.getOpDateEnd().isBefore(opController.getSewTime())){
-			alert.setHeaderText("Falscher Eintrag!");
-			alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
-			alert.showAndWait();
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Edits an existing Operation
-	 */
-	public void editOperation(){
-
-		if(noFalseStatement()) {
-			Operation operation = new Operation(
-					opId, //opId -> the operation to be edited
-					opController.getOpDateBegin(), //beginn
-					opController.getOpDateEnd(), //ende
-					opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
-					opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
-					opController.getCutTime(), //schnittzeit
-					opController.getSewTime(), //nahtzeit
-					null, //erstellZeit
-					LocalDateTime.now(), //bearbeiterZeit
-					false, //storniert
-					opController.getOpCaseId(), //fallId
-					opController.getOpRoomCode(), //opSaal
-					opController.getNarkose(), //narkoseSt
-					opController.getOpType(), //opTypSt
-					null, //ersteller
-					MainController.getUserId() //bearbeiter
-			);
-			OperationDao operationDao = new OperationDao(Main.configuration);
-			operationDao.update(operation);
-
-
-			Alert confirm = new Alert(AlertType.INFORMATION);
-			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-			confirm.showAndWait();
-
-			if(opController.getTowelBefore() != opController.getTowelAfter()){
-				Alert alert = new Alert(AlertType.WARNING);
-				alert.setContentText("Die Bauchtücher vor und nach der Operation haben eine unterschiedliche Anzahl!");
-				alert.show();
-			}
-		}
-
-	}
-
-	/**
-	 * When the button for creating a new role is pushed, a new window is opened.
-	 */
+    /**
+     * When the window for creating an operation is opened, this method is called.
+     * The patients can be selected and the initial case id gets selected by the chosen patient, which can be null.
+     */
     @FXML
-	public void createRole(){
-		System.out.println("Creating Role in new window!");
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader();
-			fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRole.fxml"));
-			root = fxmlLoader.load();
-			Stage stage = new Stage();
-			stage.setTitle("Patient");
-			stage.setScene(new Scene(root));
-			stage.show();
-		}catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    public void initialize() {
+        selectPatient.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+                if (selectPatient.getValue() != null) {
+                    opController.setCase(selectPatient.getValue().getPatId());
+                }
+            }
+        });
+        setPatient();
 
-	@FXML
-	public void createAndShowNewPatientWindow() {
-    	System.out.println("New Patient Window!");
-    	try {
-    		FXMLLoader fxmlLoader = new FXMLLoader();
+        System.out.println("Initialize Admission-Tab!");
+    }
+
+    /**
+     * This method is called when a button is pushed.
+     * Checks are run that all input is valid and all the non-nullable objects have a value.
+     * A new operation is created and inserted into the database.
+     */
+    @FXML
+    public void create() {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error");
+        if (opController.getOpCaseId() == null) {
+            alert.setHeaderText("Fehlende Einträge!");
+            alert.setContentText("Es muss ein Fall ausgewählt werden!");
+            alert.showAndWait();
+        }//Op-Ende vor Op-Start
+        else if (noFalseStatement()) {
+            Operation operation = new Operation(
+                    null, //opId -> automatisch mit AutoIncrement gesetzt
+                    opController.getOpDateBegin(), //beginn
+                    opController.getOpDateEnd(), //ende
+                    opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
+                    opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
+                    opController.getCutTime(), //schnittzeit
+                    opController.getSewTime(), //nahtzeit
+                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
+                    null, //bearbeiterZeit
+                    false, //storniert
+                    opController.getOpCaseId(), //fallId
+                    opController.getOpRoomCode(), //opSaal
+                    opController.getNarkose(), //narkoseSt
+                    opController.getOpType(), //opTypSt
+                    MainController.getUserId(), //ersteller
+                    null //bearbeiter
+            );
+
+            OperationDao operationDao = new OperationDao(Main.configuration);
+            operationDao.insert(operation);
+
+            //Bauchtücher nicht gleich
+            if (opController.getTowelAfter() != opController.getTowelBefore()) {
+                Alert alert1 = new Alert(AlertType.WARNING);
+                alert1.setHeaderText("ACHTUNG Bauchtücher");
+                alert1.setContentText("Die Anzahl der Bauchtücher nach der OP stimmt nicht mit der Anzahl vor der Operation überein!");
+                alert1.showAndWait();
+            }
+
+            Alert confirm = new Alert(AlertType.INFORMATION);
+            confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+            confirm.showAndWait();
+            clearFields();
+        }
+        System.out.println("Creating OP!");
+    }
+
+    /**
+     * Checks the user input for the operation for incorrect input
+     *
+     * @return true if no false Statement
+     */
+    private Boolean noFalseStatement() {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Error");
+        if (opController.getOpDateEnd() != null && opController.getOpDateBegin() != null && opController.getOpDateEnd().isBefore(opController.getOpDateBegin())) {
+            alert.setHeaderText("Falscher Eintrag!");
+            alert.setContentText("Das Op-Ende kann nicht vor dem Op-Start sein!");
+            alert.showAndWait();
+            return false;
+        }//Schnittzeit vor Op-Beginn
+        else if (opController.getOpDateBegin() != null && opController.getCutTime() != null && opController.getOpDateBegin().isAfter(opController.getCutTime())) {
+            alert.setHeaderText("Falscher Eintrag!");
+            alert.setContentText("Die Schnittzeit kann nicht vor dem Op-Start sein!");
+            alert.showAndWait();
+            return false;
+        }//Schnittzeit nach Op-Ende
+        else if (opController.getOpDateEnd() != null && opController.getCutTime() != null && opController.getOpDateEnd().isBefore(opController.getCutTime())) {
+            alert.setHeaderText("Falscher Eintrag!");
+            alert.setContentText("Die Schnittzeit kann nicht nach dem Op-Ende sein!");
+            alert.showAndWait();
+            return false;
+        }//Nahtzeit vor Op-Beginn
+        else if (opController.getOpDateBegin() != null && opController.getSewTime() != null && opController.getOpDateBegin().isAfter(opController.getSewTime())) {
+            alert.setHeaderText("Falscher Eintrag!");
+            alert.setContentText("Die Nahtzeit kann nicht vor dem Op-Start sein!");
+            alert.showAndWait();
+            return false;
+        }//Nahtzeit vor Schnittzeit
+        else if (opController.getCutTime() != null && opController.getSewTime() != null && opController.getCutTime().isAfter(opController.getSewTime())) {
+            alert.setHeaderText("Falscher Eintrag!");
+            alert.setContentText("Die Nahtzeit kann nicht vor der Schnittzeit sein!");
+            alert.showAndWait();
+            return false;
+        }//Nahtzeit nach Op-Ende
+        else if (opController.getOpDateEnd() != null && opController.getSewTime() != null && opController.getOpDateEnd().isBefore(opController.getSewTime())) {
+            alert.setHeaderText("Falscher Eintrag!");
+            alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
+            alert.showAndWait();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Edits an existing Operation
+     */
+    public void editOperation() {
+
+        if (noFalseStatement()) {
+            Operation operation = new Operation(
+                    opId, //opId -> the operation to be edited
+                    opController.getOpDateBegin(), //beginn
+                    opController.getOpDateEnd(), //ende
+                    opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
+                    opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
+                    opController.getCutTime(), //schnittzeit
+                    opController.getSewTime(), //nahtzeit
+                    null, //erstellZeit
+                    LocalDateTime.now(), //bearbeiterZeit
+                    false, //storniert
+                    opController.getOpCaseId(), //fallId
+                    opController.getOpRoomCode(), //opSaal
+                    opController.getNarkose(), //narkoseSt
+                    opController.getOpType(), //opTypSt
+                    null, //ersteller
+                    MainController.getUserId() //bearbeiter
+            );
+            OperationDao operationDao = new OperationDao(Main.configuration);
+            operationDao.update(operation);
+
+
+            Alert confirm = new Alert(AlertType.INFORMATION);
+            confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+            confirm.showAndWait();
+
+            if (!opController.getTowelBefore().equals(opController.getTowelAfter())) {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setContentText("Die Bauchtücher vor und nach der Operation haben eine unterschiedliche Anzahl!");
+                alert.show();
+            }
+        }
+
+    }
+
+    /**
+     * When the button for creating a new role is pushed, a new window is opened.
+     */
+    @FXML
+    public void createRole() {
+        System.out.println("Creating Role in new window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRole.fxml"));
+            root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Patient");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void createAndShowNewPatientWindow() {
+        System.out.println("New Patient Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PanePatient.fxml"));
             root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.setTitle("Patient");
             stage.setScene(new Scene(root));
             stage.show();
-    	}catch (IOException e) {
-    		e.printStackTrace();
-    	}
-    	
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
-	public void createAndShowNewFallWindow(ActionEvent actionEvent) {
-		System.out.println("New Fall Window!");
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader();
-			fxmlLoader.setLocation(getClass().getResource("/fxml/PaneFall.fxml"));
-			root = fxmlLoader.load();
-			Stage stage = new Stage();
-			stage.setTitle("Fall");
-			stage.setScene(new Scene(root));
-			stage.show();
-		}catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    public void createAndShowNewFallWindow(ActionEvent actionEvent) {
+        System.out.println("New Fall Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneFall.fxml"));
+            root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Fall");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * after succussfully insertion of operation set all fields to default
-	 */
-	private void clearFields(){
-    	selectPatient.getSelectionModel().clearSelection();
-    	opController.clearFields();
-	}
+    /**
+     * after succussfully insertion of operation set all fields to default
+     */
+    private void clearFields() {
+        selectPatient.getSelectionModel().clearSelection();
+        opController.clearFields();
+    }
 
-	/**
-	 *  Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
-	 * 	the Operation. The Operation is edited and the Window closes
-	 * 	@param event the event of pushing the Speichern Button
-	 *
-	 */
-	@FXML
-	public void saveEditOp(ActionEvent event) {
-    	flagOpEdit = true;
-    	opId = OverviewController.getOpId();
-    	editOperation();
-		Node source = (Node) event.getSource();
-		Stage thisStage = (Stage) source.getScene().getWindow();
-		thisStage.close();
-	}
+    /**
+     * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
+     * the Operation. The Operation is edited and the Window closes
+     *
+     * @param event the event of pushing the Speichern Button
+     */
+    @FXML
+    public void saveEditOp(ActionEvent event) {
+        boolean flagOpEdit = true;
+        opId = OverviewController.getOpId();
+        editOperation();
+        Node source = (Node) event.getSource();
+        Stage thisStage = (Stage) source.getScene().getWindow();
+        thisStage.close();
+    }
 
-	/**
-	 * Sets the comboboxes in the Edit Op window to the values of the previously selected op to be edited.
-	 * @param opID the OpId to be processed
-	 */
-	public void initializeComboboxen(int opID){
-		opController.initializeDefaultComboboxen(opID);
-		Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
-		Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
-		Patient patient = new PatientDao(Main.configuration).fetchOneByPatId(fall.getPatId());
-		Patient patient1 = new Patient(patient){
-			@Override
-			public String toString(){
-				StringBuilder sb = new StringBuilder("");
-				sb.append(patient.getName()).append(", ");
-				sb.append(patient.getVorname()).append(", PatID: ");
-				sb.append(patient.getPatId());
-				return sb.toString();
-			}
-		};
-		selectPatient.setValue(patient1);
-	}
+    /**
+     * Sets the comboboxes in the Edit Op window to the values of the previously selected op to be edited.
+     *
+     * @param opID the OpId to be processed
+     */
+    public void initializeComboboxen(int opID) {
+        opController.initializeDefaultComboboxen(opID);
+        Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
+        Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
+        Patient patient = new PatientDao(Main.configuration).fetchOneByPatId(fall.getPatId());
+        Patient patient1 = new Patient(patient) {
+            @Override
+            public String toString() {
+                String sb = "" + patient.getName() + ", " +
+                        patient.getVorname() + ", PatID: " +
+                        patient.getPatId();
+                return sb;
+            }
+        };
+        selectPatient.setValue(patient1);
+    }
 
 
 }

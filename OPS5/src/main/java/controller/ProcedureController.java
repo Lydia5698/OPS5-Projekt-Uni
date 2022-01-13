@@ -123,7 +123,6 @@ public class ProcedureController {
 
 	/**
 	 *  Collects all Procedures from the Database and saves them in a observable Array List from Type Prozedur pojo
-	 *  @return all Procedures
 	 */
 	public void prozedurView(Integer opID){
 		ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);

@@ -369,7 +369,7 @@ public class OverviewController {
             Stage stage = new Stage();
             stage.setTitle("Operation Bearbeiten");
             stage.setScene(new Scene(root));
-            AdmissionController controller = (AdmissionController) fxmlLoader.getController();
+            AdmissionController controller = fxmlLoader.getController();
             controller.initializeComboboxen(onEditOperation());
             stage.show();
         }catch (IOException e) {

@@ -300,10 +300,9 @@ public class OPController{
         Fall fall1 = new Fall(fall){
             @Override
             public String toString(){
-                StringBuilder sb = new StringBuilder("Fall-ID: ");
-                sb.append(fall.getFallId()).append(", Aufnahmedatum: ");
-                sb.append(fall.getAufnahmedatum());
-                return sb.toString();
+                String sb = "Fall-ID: " + fall.getFallId() + ", Aufnahmedatum: " +
+                        fall.getAufnahmedatum();
+                return sb;
             }
         };
         opCaseId.setValue(fall1);

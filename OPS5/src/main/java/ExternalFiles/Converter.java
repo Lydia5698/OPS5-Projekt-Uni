@@ -8,6 +8,7 @@ import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.MedPersonal;
+import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
 import main.Main;
 
@@ -185,4 +186,24 @@ public class Converter {
         };
         return cellFactory;
     }
+    public static Callback<ListView<Operation>, ListCell<Operation>> getOperation(){
+        Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<Operation> call(ListView<Operation> medPersonalListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Operation operation, boolean empty) {
+                        super.updateItem(operation, empty);
+                        if (operation == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(operation.getOpId().toString());
+                        }
+                    }
+                };
+            }
+        };
+        return cellFactory;
+    }
+
 }
