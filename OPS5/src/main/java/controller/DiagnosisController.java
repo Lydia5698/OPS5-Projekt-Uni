@@ -97,12 +97,10 @@ public class DiagnosisController {
 	public void initialize() {
 
 		System.out.println("Initialize Diagnosis-Tab!");
-
 		initializeColumns();
 		setDiagnosisOpId();
 		setDiagnosisIcdCode();
 		setDiagnosisDiagnoseTyp();
-
 	}
 
 	/**
@@ -127,15 +125,12 @@ public class DiagnosisController {
 			alert.show();
 
 		}
-
 		else{
 			insertNewDiagnose();
 			Node source = (Node) event.getSource();
 			Stage thisStage = (Stage) source.getScene().getWindow();
 			thisStage.close();
 		}
-
-
 	}
 
 
@@ -157,19 +152,20 @@ public class DiagnosisController {
 
 	/**
 	 * Collects all Diagnosis from the Database and saves them in a observable Array List from Type Diagnose pojo
-	 * @return all Diagnosis
 	 */
 	public void diagnoseView(Integer opID){
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
 		List<Diagnose> diagnose = diagnoseDao.findAll();
 		if(opID == 0){
+			Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+			confirm.setContentText("Es werden zurzeit alle Diagnosen angezeigt. Bitte wähle eine Operation aus, um eine spezifische Diagnose zu sehen.");
+			confirm.showAndWait();
 			diagnosisTable.setItems(FXCollections.observableArrayList(diagnose));
 		}
 		else {
 			List<Diagnose> result = diagnoseDao.fetchByOpId(opID);
 			diagnosisTable.setItems(FXCollections.observableArrayList(result));
 		}
-
 	}
 
 	/**
@@ -440,16 +436,14 @@ public class DiagnosisController {
 
 	}
 
-
 	private JSONObject getJsonForCode(String code) throws Exception {
 		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestProperty("accept", "application/json");
 		InputStream responseStream = connection.getInputStream();
 		JSONParser jsonParser = new JSONParser();
-		JSONObject jsonObject = (JSONObject)jsonParser.parse(
+		return (JSONObject)jsonParser.parse(
 				new InputStreamReader(responseStream, "UTF-8"));
-		return jsonObject;
 	}
 
 	private JSONObject searchForResult(Icd10CodeSt code) throws Exception {
