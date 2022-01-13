@@ -205,6 +205,7 @@ public class OverviewController {
             if (event.getClickCount() > 0) {
                 int patientId = onEditPatient();
                 opListCase.setItems(fallView(patientId));
+                opListOperation.setItems(null);
                 btnRole.setVisible(false);
             }
         });
