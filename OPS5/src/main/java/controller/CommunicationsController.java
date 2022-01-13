@@ -152,24 +152,27 @@ public class CommunicationsController {
         }
         else{
             Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
+            try {
+                Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
+                String stringFromMessage = MessageParser.messageToString(sendMessage);
 
-            Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
-            String stringFromMessage = MessageParser.messageToString(sendMessage);
+                ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
 
-            ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
+                Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
 
-            Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
-
-            //if in ack was sent back, the value of gültig changes to true
-            if(responseMessage instanceof ACK){
-                ACK ack = (ACK) responseMessage;
-                if(ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")){
-                    ts.getItems().stream()
-                            .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
-                            .forEach(tM -> tM.setAckMessage("ja"));
+                //if in ack was sent back, the value of gültig changes to true
+                if (responseMessage instanceof ACK) {
+                    ACK ack = (ACK) responseMessage;
+                    if (ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")) {
+                        ts.getItems().stream()
+                                .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
+                                .forEach(tM -> tM.setAckMessage("ja"));
+                    }
                 }
             }
-            client.closeClient();
+            finally {
+                client.closeClient();
+            }
         }
     }
 

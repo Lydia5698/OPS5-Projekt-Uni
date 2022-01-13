@@ -162,7 +162,6 @@ public class DiagnosisController {
 	public void diagnoseView(Integer opID){
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
 		List<Diagnose> diagnose = diagnoseDao.findAll();
-		System.out.println(opID);
 		if(opID == 0){
 			diagnosisTable.setItems(FXCollections.observableArrayList(diagnose));
 		}
@@ -394,14 +393,17 @@ public class DiagnosisController {
 	public void showInfo() {
 		Icd10CodeSt code = diagnosisIcdCode.getValue();
 		if(code==null) {
-			System.out.println("Kein ICD Code ausgewählt");
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setHeaderText("Kein Code ausgewählt.");
+			alert.setContentText("Für weitere Informationen muss ein ICD-10 Code ausgewählt werden");
+			alert.showAndWait();
 			return;
 		}
 		try {
 			JSONObject result = searchForResult(code);
 			if(result==null) {
 				Alert infoalert = new Alert(Alert.AlertType.INFORMATION);
-				infoalert.setTitle("No result");
+				infoalert.setHeaderText("Kein Ergebnis gefunden");
 				infoalert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
 				infoalert.show();
 			} else {
@@ -409,7 +411,6 @@ public class DiagnosisController {
 				JSONObject concept = findJsonByName((JSONArray) match.get("part"), "concept");
 				JSONObject coding = (JSONObject) concept.get("valueCoding");
 				String display = (String) coding.get("display");
-				System.out.println("display: " + display);
 				openWebView("https://pubmed.ncbi.nlm.nih.gov/?term=" + display + "%5BMeSH+Major+Topic%5D");
 			}
 
@@ -442,35 +443,26 @@ public class DiagnosisController {
 
 	private JSONObject getJsonForCode(String code) throws Exception {
 		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
-		System.out.println("Calling "+url.toString());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestProperty("accept", "application/json");
 		InputStream responseStream = connection.getInputStream();
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = (JSONObject)jsonParser.parse(
 				new InputStreamReader(responseStream, "UTF-8"));
-		System.out.println(jsonObject);
 		return jsonObject;
 	}
 
 	private JSONObject searchForResult(Icd10CodeSt code) throws Exception {
 		JSONObject result = getJsonForCode(code.getIcd10Code());
-		System.out.println("Trying original Code");
 		if(wasFound(result)){return result;}
-
-		System.out.println("Info not found for "+code.getIcd10Code());
 		String shortCode = code.getIcd10Code().substring(0,3);
-		System.out.println("Trying short Code: "+shortCode);
 		result = getJsonForCode(shortCode);
 		if (wasFound(result)) { return result;}
 
-		System.out.println("Info not found for " + shortCode);
 		for(int i=9; i>=0; i--){
-			String codeX = shortCode + "." + Integer.toString(i);
-			System.out.println("Trying code " + codeX);
+			String codeX = shortCode + "." + i;
 			result = getJsonForCode(codeX);
 			if (wasFound(result)){return result;}
-			System.out.println("Info not found for " + codeX);
 		}
 		return null;
 	}

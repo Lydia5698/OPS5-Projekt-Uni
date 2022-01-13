@@ -87,8 +87,9 @@ public class Main extends Application{
 	public void stop() throws SQLException {
         MainController.getInstance().getCommTabController().closeServer();
         connection.close();
-
-
+        System.exit(0);
+        //Wir haben alles geschlossen, was an Verbindungen existiert (DB, Hapiserver und CLientconnection), aber die
+        //Applikation schließt nicht korrekt, daher gehen wir den Weg über System.exit()
 	}
 
 }
