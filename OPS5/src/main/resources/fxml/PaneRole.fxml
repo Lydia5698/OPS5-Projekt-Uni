@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.controlsfx.control.SearchableComboBox?>
 
 <AnchorPane minHeight="180.0" minWidth="200.0" prefHeight="200.0" prefWidth="695.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RoleController">
 							<children>
@@ -18,9 +19,9 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 									</rowConstraints>
 									<children>
-										<ComboBox fx:id="mitarbeiter" GridPane.columnIndex="1" />
-										<ComboBox fx:id="role" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-										<ComboBox fx:id="op" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+										<SearchableComboBox fx:id="mitarbeiter" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" />
+										<SearchableComboBox fx:id="role" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+										<SearchableComboBox fx:id="op" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 										<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Mitarbeiter" />
 										<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Rolle" GridPane.rowIndex="2" />
 										<Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP" GridPane.rowIndex="1" />
