@@ -223,7 +223,7 @@ public class OPController{
                         if (opSaal == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(opSaal.getCode() + ", " + opSaal.getBeschreibung());
+                            setText(opSaal.getBeschreibung());
                         }
                     }
                 };
