@@ -16,6 +16,7 @@ import jooq.tables.pojos.FallTypSt;
 import jooq.tables.pojos.Patient;
 import jooq.tables.pojos.StationSt;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
@@ -24,13 +25,13 @@ import java.time.LocalDateTime;
 public class FallController {
 
     @FXML
-    private ComboBox<Patient> patient;
+    private SearchableComboBox<Patient> patient;
 
     @FXML
-    private ComboBox<FallTypSt> falltyp;
+    private SearchableComboBox<FallTypSt> falltyp;
 
     @FXML
-    private ComboBox<StationSt> station;
+    private SearchableComboBox<StationSt> station;
 
     @FXML
     private DateTimePicker aufnahmedatum;

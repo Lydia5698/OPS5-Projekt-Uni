@@ -10,6 +10,7 @@ import jooq.tables.pojos.*;
 import main.Main;
 
 import ExternalFiles.DateTimePicker;
+import org.controlsfx.control.SearchableComboBox;
 
 /**
  * The OPController is visually a part of the Admission window.
@@ -18,17 +19,17 @@ import ExternalFiles.DateTimePicker;
 public class OPController{	
     
     @FXML
-    private ComboBox<Fall> opCaseId;
+    private SearchableComboBox<Fall> opCaseId;
     @FXML
     private DateTimePicker opDateBegin;
     @FXML
     private DateTimePicker opDateEnd;
     @FXML
-    private ComboBox<OpTypSt> opType;
+    private SearchableComboBox<OpTypSt> opType;
     @FXML
-    private ComboBox<OpSaalSt> opRoom;
+    private SearchableComboBox<OpSaalSt> opRoom;
     @FXML
-    private ComboBox<NarkoseSt> narkose;
+    private SearchableComboBox<NarkoseSt> narkose;
     @FXML
     private DateTimePicker cutTime;
     @FXML

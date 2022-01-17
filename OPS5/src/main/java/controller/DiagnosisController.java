@@ -18,6 +18,7 @@ import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 import org.jooq.meta.derby.sys.Sys;
 import org.jooq.tools.json.JSONArray;
 import org.jooq.tools.json.JSONObject;
@@ -41,11 +42,11 @@ import java.util.stream.Collectors;
 public class DiagnosisController {
 	
 	@FXML
-	private ComboBox<Operation> diagnosisOpId;
+	private SearchableComboBox<Operation> diagnosisOpId;
 	@FXML
-	private ComboBox<Icd10CodeSt> diagnosisIcdCode;
+	private SearchableComboBox<Icd10CodeSt> diagnosisIcdCode;
 	@FXML
-	private ComboBox<DiagnosetypSt> diagnosisType;
+	private SearchableComboBox<DiagnosetypSt> diagnosisType;
 	@FXML
 	private TextField diagnosisFreetext;	
 	@FXML

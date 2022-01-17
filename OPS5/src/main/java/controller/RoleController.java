@@ -27,6 +27,7 @@ import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Operation;
 import jooq.tables.daos.RolleDao;
 import jooq.tables.pojos.Rolle;
+import org.controlsfx.control.SearchableComboBox;
 
 /**
  * The RoleController is responsible for creating a new role.
@@ -34,11 +35,11 @@ import jooq.tables.pojos.Rolle;
 public class RoleController{
 
     @FXML
-    private ComboBox<MedPersonal> mitarbeiter;
+    private SearchableComboBox<MedPersonal> mitarbeiter;
     @FXML
-    private ComboBox<RolleSt> role;
+    private SearchableComboBox<RolleSt> role;
     @FXML
-    private ComboBox<Operation> op;
+    private SearchableComboBox<Operation> op;
 
     /**
      * This method is called when the window is created.

@@ -1,6 +1,7 @@
 package controller;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -14,6 +15,7 @@ import javafx.util.Callback;
 import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.pojos.MedPersonal;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -32,7 +34,7 @@ public class MainController {
     @FXML
     private Label systemMessage;
     @FXML
-    private ComboBox<MedPersonal> employeeId;
+    private SearchableComboBox<MedPersonal> employeeId;
     @FXML
     private Button btnLogout;
     // Controllers
@@ -120,7 +122,6 @@ public class MainController {
         }
 
     }
-
     /**
      * sets all employees into a combobox
      *
@@ -155,7 +156,7 @@ public class MainController {
     }
 
     /**
-     * !!! only used by LogOutController when nobody is logedin!!!
+     * !!! only used by LogInController when nobody is logedin!!!
      *
      * @param i index of selected employee in log in window
      */

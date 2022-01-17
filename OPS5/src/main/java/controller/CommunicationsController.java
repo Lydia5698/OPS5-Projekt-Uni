@@ -20,6 +20,7 @@ import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -37,7 +38,7 @@ public class CommunicationsController {
     @FXML
     private TextField communicationsPort;
     @FXML
-    private ComboBox<Operation> communicationsObject;
+    private SearchableComboBox<Operation> communicationsObject;
     @FXML
     private TableView<TableViewMessage> ts;
     @FXML

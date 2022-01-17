@@ -20,6 +20,7 @@ import jooq.tables.pojos.RolleSt;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Rolle;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,11 +52,11 @@ public class RoleOverviewController {
 	@FXML
 	private TableColumn<Rolle, String> bearbeiterCol;
 	@FXML
-	private ComboBox<MedPersonal> mitarbeiter;
+	private SearchableComboBox<MedPersonal> mitarbeiter;
 	@FXML
-	private ComboBox<RolleSt> role;
+	private SearchableComboBox<RolleSt> role;
 	@FXML
-	private ComboBox<Operation> op;
+	private SearchableComboBox<Operation> op;
 
 
 	/**

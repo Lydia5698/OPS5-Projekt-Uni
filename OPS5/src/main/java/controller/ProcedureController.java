@@ -13,6 +13,7 @@ import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,10 +56,10 @@ public class ProcedureController {
     private TableColumn<Prozedur, String> erstellerCol;
 
     @FXML
-    private ComboBox<Operation> procedureOpID;
+    private SearchableComboBox<Operation> procedureOpID;
 
     @FXML
-    private ComboBox<OpsCodeSt> procedureOpsCode;
+    private SearchableComboBox<OpsCodeSt> procedureOpsCode;
 
     @FXML
     private TextField procedureAnmerkung;

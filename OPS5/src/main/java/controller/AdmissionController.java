@@ -18,6 +18,7 @@ import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -33,7 +34,7 @@ public class AdmissionController {
     private Parent root;
 
     @FXML
-    private ComboBox<Patient> selectPatient;
+    private SearchableComboBox<Patient> selectPatient;
 
     @FXML
     private OPController opController;

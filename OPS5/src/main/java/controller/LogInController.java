@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import jooq.tables.pojos.MedPersonal;
+import org.controlsfx.control.SearchableComboBox;
 
 /**
  * Ensures that one person is always logged in to edit.
@@ -12,7 +13,7 @@ import jooq.tables.pojos.MedPersonal;
 public class LogInController {
 
     @FXML
-    private ComboBox<MedPersonal> mitarbeiter;
+    private SearchableComboBox<MedPersonal> mitarbeiter;
     @FXML
     private Button login;
 
