@@ -1,5 +1,6 @@
 package controller;
 
+import ExternalFiles.CustomSelectionModel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -67,6 +68,7 @@ public class AdmissionController {
         selectPatient.setButtonCell(cellFactory.call(null));
         selectPatient.setCellFactory(cellFactory);
         selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
+        selectPatient.setSelectionModel(new CustomSelectionModel<>(selectPatient));
     }
 
     /**

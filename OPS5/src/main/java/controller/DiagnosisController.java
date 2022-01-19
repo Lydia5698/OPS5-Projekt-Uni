@@ -1,5 +1,6 @@
 package controller;
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -270,6 +271,7 @@ public class DiagnosisController {
 		diagnosisOpId.setButtonCell(cellFactory.call(null));
 		diagnosisOpId.setCellFactory(cellFactory);
 		diagnosisOpId.getItems().setAll(new OperationDao(Main.configuration).findAll());
+		diagnosisOpId.setSelectionModel(new CustomSelectionModel<>(diagnosisOpId));
 	}
 
 	/**
@@ -295,6 +297,7 @@ public class DiagnosisController {
 		diagnosisIcdCode.setButtonCell(cellFactory.call(null));
 		diagnosisIcdCode.setCellFactory(cellFactory);
 		diagnosisIcdCode.getItems().setAll(new Icd10CodeStDao(Main.configuration).findAll());
+		diagnosisIcdCode.setSelectionModel(new CustomSelectionModel<>(diagnosisIcdCode));
 	}
 
 	/**
@@ -320,6 +323,7 @@ public class DiagnosisController {
 		diagnosisType.setButtonCell(cellFactory.call(null));
 		diagnosisType.setCellFactory(cellFactory);
 		diagnosisType.getItems().setAll(new DiagnosetypStDao(Main.configuration).findAll());
+		diagnosisType.setSelectionModel(new CustomSelectionModel<>(diagnosisType));
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package controller;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -64,9 +65,7 @@ public class FallController {
         patient.setButtonCell(cellFactory.call(null));
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
-
-        //patient.setEditable(true);
-        //TextFields.bindAutoCompletion(patient.getEditor(),patient.getItems());
+        patient.setSelectionModel(new CustomSelectionModel<>(patient));
     }
 
     /**
@@ -94,6 +93,7 @@ public class FallController {
         falltyp.setButtonCell(cellFactory.call(null));
         falltyp.setCellFactory(cellFactory);
         falltyp.getItems().setAll(new FallTypStDao(Main.configuration).findAll());
+        falltyp.setSelectionModel(new CustomSelectionModel<>(falltyp));
     }
 
     /**
@@ -121,12 +121,7 @@ public class FallController {
         station.setButtonCell(cellFactory.call(null));
         station.setCellFactory(cellFactory);
         station.getItems().setAll(new StationStDao(Main.configuration).findAll());
-//
-//        station.setButtonCell(cellFactory.call(null));
-//        station.setCellFactory(cellFactory);
-//        station.setEditable(true);
-//        station.setVisibleRowCount(5);
-//        TextFields.bindAutoCompletion(station.getEditor(), station.getItems());
+        station.setSelectionModel(new CustomSelectionModel<>(station));
     }
 
     /**

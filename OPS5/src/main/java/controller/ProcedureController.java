@@ -1,6 +1,7 @@
 package controller;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -282,6 +283,7 @@ public class ProcedureController {
         procedureOpID.setButtonCell(cellFactory.call(null));
         procedureOpID.setCellFactory(cellFactory);
         procedureOpID.getItems().setAll(new OperationDao(Main.configuration).findAll());
+        procedureOpID.setSelectionModel(new CustomSelectionModel<>(procedureOpID));
     }
 
     /**
@@ -307,6 +309,7 @@ public class ProcedureController {
         procedureOpsCode.setButtonCell(cellFactory.call(null));
         procedureOpsCode.setCellFactory(cellFactory);
         procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
+        procedureOpsCode.setSelectionModel(new CustomSelectionModel<>(procedureOpsCode));
 
     }
 }

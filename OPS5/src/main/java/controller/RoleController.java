@@ -1,5 +1,6 @@
 package controller;
 
+import ExternalFiles.CustomSelectionModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -79,6 +80,7 @@ public class RoleController{
         role.setButtonCell(cellFactory.call(null));
         role.setCellFactory(cellFactory);
         role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
+        role.setSelectionModel(new CustomSelectionModel<>(role));
     }
 
     /**
@@ -105,6 +107,7 @@ public class RoleController{
         op.setButtonCell(cellFactory.call(null));
         op.setCellFactory(cellFactory);
         op.getItems().setAll(new OperationDao(Main.configuration).findAll());
+        op.setSelectionModel(new CustomSelectionModel<>(op));
     }
 
     /**
@@ -135,6 +138,7 @@ public class RoleController{
         var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
                 .collect(Collectors.toList());
         mitarbeiter.getItems().setAll(result);
+        mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
     }
 
     /**

@@ -1,4 +1,5 @@
 package controller;
+import ExternalFiles.CustomSelectionModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -181,6 +182,7 @@ public class OPController{
         opCaseId.setCellFactory(cellFactory);
         opCaseId.getItems().setAll(new FallDao(Main.configuration).fetchByPatId(patId));
         opCaseId.valueProperty().set(null);
+        opCaseId.setSelectionModel(new CustomSelectionModel<>(opCaseId));
     }
 
     /**
@@ -207,6 +209,7 @@ public class OPController{
         opType.setButtonCell(cellFactory.call(null));
         opType.setCellFactory(cellFactory);
         opType.getItems().setAll(new OpTypStDao(Main.configuration).findAll());
+        opType.setSelectionModel(new CustomSelectionModel<>(opType));
     }
     /**
      * This method is called when initialising the window.
@@ -232,6 +235,7 @@ public class OPController{
         opRoom.setButtonCell(cellFactory.call(null));
         opRoom.setCellFactory(cellFactory);
         opRoom.getItems().setAll(new OpSaalStDao(Main.configuration).findAll());
+        opRoom.setSelectionModel(new CustomSelectionModel<>(opRoom));
     }
     /**
      * This method is called when initialising the window.
@@ -257,6 +261,7 @@ public class OPController{
         narkose.setButtonCell(cellFactory.call(null));
         narkose.setCellFactory(cellFactory);
         narkose.getItems().setAll(new NarkoseStDao(Main.configuration).findAll());
+        narkose.setSelectionModel(new CustomSelectionModel<>(narkose));
     }
 
     /**

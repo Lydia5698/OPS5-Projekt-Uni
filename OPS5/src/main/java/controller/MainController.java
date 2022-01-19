@@ -1,5 +1,6 @@
 package controller;
 
+import ExternalFiles.CustomSelectionModel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -152,6 +153,7 @@ public class MainController {
         var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000"))//KIS
                 .collect(Collectors.toList());
         employee.getItems().setAll(result);
+        employee.setSelectionModel(new CustomSelectionModel<>(employee));
         employee.getSelectionModel().select(i);
     }
 

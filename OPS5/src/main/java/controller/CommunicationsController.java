@@ -1,6 +1,7 @@
 package controller;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.TableViewMessage;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
@@ -119,6 +120,7 @@ public class CommunicationsController {
         communicationsObject.setButtonCell(cellFactory.call(null));
         communicationsObject.setCellFactory(cellFactory);
         communicationsObject.getItems().setAll(new OperationDao(Main.configuration).findAll());
+        communicationsObject.setSelectionModel(new CustomSelectionModel<>(communicationsObject));
     }
 
     /**

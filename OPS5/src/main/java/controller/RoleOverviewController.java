@@ -1,6 +1,7 @@
 package controller;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -249,6 +250,7 @@ public class RoleOverviewController {
 		role.setButtonCell(cellFactory.call(null));
 		role.setCellFactory(cellFactory);
 		role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
+		role.setSelectionModel(new CustomSelectionModel<>(role));
 	}
 
 	/**
@@ -275,6 +277,7 @@ public class RoleOverviewController {
 		op.setButtonCell(cellFactory.call(null));
 		op.setCellFactory(cellFactory);
 		op.getItems().setAll(new OperationDao(Main.configuration).findAll());
+		op.setSelectionModel(new CustomSelectionModel<>(op));
 	}
 
 	/**
@@ -305,6 +308,7 @@ public class RoleOverviewController {
 		var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
 				.collect(Collectors.toList());
 		mitarbeiter.getItems().setAll(result);
+		mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
 	}
 
 }
