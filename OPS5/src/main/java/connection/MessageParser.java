@@ -107,6 +107,7 @@ public class MessageParser {
                 List<DG1> dg1List = adtMsg.getDG1All();
                 for (DG1 dg1 : dg1List) {
                     Diagnose diagnose = new Diagnose();
+                    diagnose.setDiagnoseId(Integer.parseInt(dg1.getDg11_SetIDDG1().getValue()));
                     diagnose.setErsteller("00000000");
                     diagnose.setErstellZeit(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(dg1.getDiagnosisDateTime().getTime().getValue())));
                     diagnose.setDiagnosetyp(1);
