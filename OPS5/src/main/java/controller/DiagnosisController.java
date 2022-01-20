@@ -337,9 +337,28 @@ public class DiagnosisController {
 			Icd10CodeSt icd10CodeSt = new Icd10CodeStDao(Main.configuration).fetchOneByIcd10Code(diagnose.getIcd10Code());
 			Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(diagnose.getOpId());
 			DiagnosetypSt diagnosetypSt = new DiagnosetypStDao(Main.configuration).fetchOneByDiagnosetyp(diagnose.getDiagnosetyp());
-			diagnosisIcdCode.setValue(icd10CodeSt);
-			diagnosisOpId.setValue(operation);
-			diagnosisType.setValue(diagnosetypSt);
+			Icd10CodeSt icd10CodeSt1 = new Icd10CodeSt(icd10CodeSt){
+				@Override
+				public String toString(){
+					return icd10CodeSt.getIcd10Code() + " " +
+							icd10CodeSt.getBeschreibung();
+				}
+			};
+			Operation operation1 = new Operation(operation){
+				@Override
+				public String toString(){
+					return operation.getOpId().toString();
+				}
+			};
+			DiagnosetypSt diagnosetypSt1 = new DiagnosetypSt(diagnosetypSt){
+				@Override
+				public String toString(){
+					return diagnosetypSt.getBeschreibung();
+				}
+			};
+			diagnosisIcdCode.setValue(icd10CodeSt1);
+			diagnosisOpId.setValue(operation1);
+			diagnosisType.setValue(diagnosetypSt1);
 		}
 	}
 

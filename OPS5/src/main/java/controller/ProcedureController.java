@@ -249,13 +249,27 @@ public class ProcedureController {
      */
     @FXML
     void mouseEntered(MouseEvent event) {
-
         if (event.getClickCount() > 0) {
             Prozedur prozedur = procedureTable.getSelectionModel().getSelectedItem();
             OpsCodeSt opsCodeSt = new OpsCodeStDao(Main.configuration).fetchOneByOpsCode(prozedur.getOpsCode());
             Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(prozedur.getOpId());
-            procedureOpsCode.setValue(opsCodeSt);
-            procedureOpID.setValue(operation);
+            OpsCodeSt opsCodeSt1 = new OpsCodeSt(opsCodeSt){
+                @Override
+                public String toString(){
+                    String sb =  opsCodeSt.getOpsCode() + " " +
+                            opsCodeSt.getBeschreibung();
+                    return sb;
+                }
+            };
+            Operation operation1 = new Operation(operation){
+                @Override
+                public String toString(){
+                    String sb =  operation.getOpId().toString();
+                    return sb;
+                }
+            };
+            procedureOpsCode.setValue(opsCodeSt1);
+            procedureOpID.setValue(operation1);
         }
 
     }
