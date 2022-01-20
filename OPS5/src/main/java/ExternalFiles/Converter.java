@@ -154,10 +154,8 @@ public class Converter {
             case 2:
                 return "Assistenzarzt";
             case 3:
-                return "Diagnosesteller";
-            case 4:
                 return "leitender Chirurg";
-            case 5:
+            case 4:
                 return "Operateur";
         }
         return "";

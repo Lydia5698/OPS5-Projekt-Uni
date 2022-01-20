@@ -37,7 +37,6 @@ public class Server {
             public Message processMessage(Message message, Map<String, Object> map){
                 try{
                     String encodedMessage = MessageParser.pipeParser.encode(message);
-                    //System.out.println(encodedMessage);
                     CommunicationsController.getInstance().insertReceivedMessage(message);
 
                     Platform.runLater(()->{
@@ -46,7 +45,7 @@ public class Server {
                         alert.setTitle("Es wurde etwas geschickt");
                         alert.setHeaderText("Das KIS hat einen neuen Patienten geschickt");
                         alert.setContentText(encodedMessage);
-                        alert.showAndWait();
+                        alert.show();
                     });
                 } catch(HL7Exception e){
                     Platform.runLater(()->{
@@ -63,20 +62,22 @@ public class Server {
                 if(CommunicationsController.getInstance().canInsertPatient(patient)){
                     Fall fall = MessageParser.parseA01Case(message);
                     if(CommunicationsController.getInstance().canInsertCase(fall)){
-                        //wir gehen davon aus, dass es sich immer um einen neuen Fall handelt, sonst wäre es keine Neuaufnahme
-                        //gewesen
-                        CommunicationsController.insertNewCase(fall);
-                        System.out.println("Patient und Fall eingefügt");
-                        Platform.runLater(()-> {
-                            Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-                            confirm.setContentText("Die Datenbank wurde synchronisiert.");
-                            confirm.showAndWait();
-                        });
+                        if(CommunicationsController.getInstance().isNewCase(fall)){
+                            CommunicationsController.insertNewCase(fall);
+                            System.out.println("Patient und Fall eingefügt");
+                            Platform.runLater(()-> {
+                                Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                                confirm.setContentText("Die Datenbank wurde synchronisiert.");
+                                confirm.showAndWait();
+                            });
+                        }
                         if(MessageParser.a01WithDignosis(message)){
                             List<Diagnose> diagnoseList = MessageParser.parseA01Diagnose(message);
                             assert diagnoseList != null;
                             for (Diagnose diagnose : diagnoseList) {
-                                new DiagnoseDao(Main.configuration).insert(diagnose);
+                                if(CommunicationsController.getInstance().isNewDiagnosis(diagnose)){
+                                    new DiagnoseDao(Main.configuration).insert(diagnose);
+                                }
                             }
                             Platform.runLater(()-> {
                                 Alert confirm = new Alert(Alert.AlertType.INFORMATION);
@@ -85,6 +86,9 @@ public class Server {
                             });
                         }
                     }
+
+
+
                 }
                 try {
                     return message.generateACK();

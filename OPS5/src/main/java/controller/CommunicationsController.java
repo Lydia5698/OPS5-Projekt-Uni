@@ -14,9 +14,11 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
+import jooq.tables.daos.DiagnoseDao;
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.OperationDao;
 import jooq.tables.daos.PatientDao;
+import jooq.tables.pojos.Diagnose;
 import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
@@ -195,6 +197,10 @@ public class CommunicationsController {
         return new PatientDao(Main.configuration).findById(patient.getPatId()) == null;
     }
 
+    public boolean isNewDiagnosis(Diagnose diagnose){
+        return new DiagnoseDao(Main.configuration).findById(diagnose.getDiagnoseId()) == null;
+    }
+
     /**
      * This method inserts if its possible the new Patient into our database
      *
@@ -232,6 +238,10 @@ public class CommunicationsController {
         return fall.getEntlassungsdatum() == null || !fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum());
     }
 
+    public boolean isNewCase(Fall fall){
+        return new FallDao(Main.configuration).findById(fall.getFallId()) == null;
+    }
+
     /**
      * This method checks if the sent case can be inserted in our database and if yes , the case will be inserted
      *
@@ -245,7 +255,7 @@ public class CommunicationsController {
             alert.setTitle("Error");
             alert.setHeaderText("Fehlender Eintrag!");
 
-            //checking for invalid entrys concerning the dates
+            //checking for invalid entries concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
             if (!getInstance().canInsertCase(fall)) {
                 alert.setContentText("Der Fall hat invalide Eingaben und kann nicht eingefügt werden");
