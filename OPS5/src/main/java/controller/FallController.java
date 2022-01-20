@@ -23,6 +23,9 @@ import org.jooq.exception.DataAccessException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+/**
+ * Takes care of the newly created cases
+ */
 public class FallController {
 
     @FXML
@@ -44,7 +47,7 @@ public class FallController {
     private Button speicherbutton;
 
     /**
-     * the comboboxes are filled with the entries of the database
+     * The comboboxes are filled with the entries of the database
      */
     @FXML
     public void initialize() {
@@ -56,9 +59,9 @@ public class FallController {
     }
 
     /**
-     * but all patients into the combobox to select one of them
-     * each patient is represented by its lastname and first name
-     * can't be null for insert a new case!!
+     * But all patients into the combobox to select one of them
+     * each patient is represented by its lastname and first name.
+     * Can't be null for insert a new case!!
      */
     private void setPatient() {
         Callback<ListView<Patient>, ListCell<Patient>> cellFactory = Converter.getPatient();
@@ -69,9 +72,9 @@ public class FallController {
     }
 
     /**
-     * but all casetypes into the combox to select one of them
-     * each type is represented by its description
-     * can be null
+     * But all casetypes into the combox to select one of them
+     * each type is represented by its description.
+     * Can be null
      */
     private void setFallTyp(){
         Callback<ListView<FallTypSt>, ListCell<FallTypSt>> cellFactory = new Callback<>() {
@@ -97,9 +100,9 @@ public class FallController {
     }
 
     /**
-     * but all stations into the combox to select one of them
-     * each station is represented by its description
-     * can be null
+     * But all stations into the combox to select one of them
+     * each station is represented by its description.
+     * Can be null
      */
     private void setStation(){
         Callback<ListView<StationSt>, ListCell<StationSt>> cellFactory = new Callback<>() {
@@ -127,7 +130,7 @@ public class FallController {
     /**
      * After pressing the button, the entries are transferred to the attribute values and the
      * case is inserted into the database with the help of the DAO and the window is closed afterwards
-     * @param actionEvent is activated if the user pushes the button
+     * @param actionEvent Is activated if the user pushes the button
      */
     public void createFall(ActionEvent actionEvent) {
         try{

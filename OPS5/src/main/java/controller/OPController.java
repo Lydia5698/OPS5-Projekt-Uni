@@ -42,7 +42,7 @@ public class OPController{
 
     /**
      * This method returns the integer of the selected integer
-     * @return the integer of the selected op case
+     * @return The integer of the selected op case
      */
     public Integer getOpCaseId() {
         if(opCaseId.getSelectionModel().getSelectedItem() != null){
@@ -59,7 +59,7 @@ public class OPController{
 
     /**
      * This method returns the time and date of the beginning of the operation.
-     * @return an DateTimePicker object with the selected beginning time.
+     * @return An DateTimePicker object with the selected beginning time.
      */
     public LocalDateTime getOpDateBegin() {
         if(opDateBegin.getDateTimeValue() != null){
@@ -73,7 +73,7 @@ public class OPController{
 
     /**
      * This method returns the time and date of the ending of the operation.
-     * @return an DateTimePicker object with the selected ending time.
+     * @return An DateTimePicker object with the selected ending time.
      */
     public LocalDateTime getOpDateEnd() {
         if(opDateEnd.getDateTimeValue() != null){
@@ -86,7 +86,7 @@ public class OPController{
 
     /**
      * Getter for the operation type.
-     * @return the int value of the OpTyp.
+     * @return The int value of the OpTyp.
      */
     public Integer getOpType() {
         if(opType.getSelectionModel().getSelectedItem() != null){
@@ -97,7 +97,7 @@ public class OPController{
 
     /**
      * Getter for the operation room.
-     * @return the int value of the code of the selected OpRoom.
+     * @return The int value of the code of the selected OpRoom.
      */
     public Integer getOpRoomCode() {
         if(opRoom.getSelectionModel().getSelectedItem() != null){
@@ -108,7 +108,7 @@ public class OPController{
 
     /**
      * Getter for the type of Narkose.
-     * @return the int value of Narkose.
+     * @return The int value of Narkose.
      */
     public Integer getNarkose() {
         if(narkose.getSelectionModel().getSelectedItem() != null){
@@ -119,7 +119,7 @@ public class OPController{
 
     /**
      * Getter for the cutting time.
-     * @return an DateTimePicker object with the selected cutting time.
+     * @return An DateTimePicker object with the selected cutting time.
      */
     public LocalDateTime getCutTime() {
         if(cutTime.getDateTimeValue() != null){
@@ -132,7 +132,7 @@ public class OPController{
 
     /**
      * Getter for the sewing time.
-     * @return an DateTimePicker object with the selected sewing time.
+     * @return An DateTimePicker object with the selected sewing time.
      */
     public LocalDateTime getSewTime() {
         if(sewTime.getDateTimeValue() != null){
@@ -145,13 +145,13 @@ public class OPController{
 
     /**
      * Getter for the amount of belly towels before the operation.
-     * @return int value of belly towels before the operation.
+     * @return Int value of belly towels before the operation.
      */
     public Integer getTowelBefore() {return (Integer) towelsBefore.getValue();}
 
     /**
      * Getter for the amount of belly towels after the operation.
-     * @return int value of belly towels after the operation.
+     * @return Int value of belly towels after the operation.
      */
     public Integer getTowelAfter() {return (Integer) towelsAfter.getValue();}
 
@@ -159,7 +159,7 @@ public class OPController{
      * Sets the values for the combobox of the cases.
      * This method is called when the window gets initialized and every time, a new patient is selected.
      * It then displayes all cases of the selected patient.
-     * @param patId of the selected patient.
+     * @param patId Of the selected patient.
      */
     public void setCase(Integer patId){
         Callback<ListView<Fall>, ListCell<Fall>> cellFactory = new Callback<>() {
@@ -282,7 +282,7 @@ public class OPController{
 	}
 
     /**
-     * after the successfully insertion of an operation set all fields to default
+     * After the successfully insertion of an operation set all fields to default
      */
 	public void clearFields(){
         opType.getSelectionModel().clearSelection();
@@ -298,7 +298,7 @@ public class OPController{
 
     /**
      * Sets the combo boxes in the Edit Op window to the values of the previously selected op to be edited.
-     * @param opID the OpId to be processed
+     * @param opID The OpId to be processed
      */
     public void initializeDefaultComboboxen(int opID){
         Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);

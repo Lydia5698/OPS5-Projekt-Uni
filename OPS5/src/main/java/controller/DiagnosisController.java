@@ -108,7 +108,7 @@ public class DiagnosisController {
 	/**
 	 * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
 	 * a Diagnosis. If the User isn't missing any necessary Values the Diagnose is edited and the Window closes
-	 * @param event the event of pushing the Speichern Button
+	 * @param event The event of pushing the Speichern Button
 	 */
 	@FXML
 	public void editDiagnosis(ActionEvent event){
@@ -139,7 +139,7 @@ public class DiagnosisController {
 	/**
 	 * Launches when the Button Neue Diagnose is pressed. It sets the flag false so that we know that the user wants to create
 	 * a new Diagnosis. If the User isn't missing any necessary Values the Diagnose is saved and the Window closes
-	 * @param event the event of pushing the Neue Diagnose Button
+	 * @param event The event of pushing the Neue Diagnose Button
 	 */
 	@FXML
 	void createNewDiagnosis(ActionEvent event) {
@@ -364,7 +364,7 @@ public class DiagnosisController {
 
 	/**
 	 * Checks if all the necessary Values for the Diagnosis are selected
-	 * @return boolean if no Statement is missing
+	 * @return Boolean if no Statement is missing
 	 */
 	public boolean noMissingStatement(){
 
@@ -460,6 +460,12 @@ public class DiagnosisController {
 
 	}
 
+	/**
+	 * Finds the JSON object for the given icd-10 code
+	 * @param code ICD-10 Code to be found
+	 * @return JSON Object
+	 * @throws Exception
+	 */
 	private JSONObject getJsonForCode(String code) throws Exception {
 		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -470,6 +476,12 @@ public class DiagnosisController {
 				new InputStreamReader(responseStream, "UTF-8"));
 	}
 
+	/**
+	 * Searches for an result for the given ICD-10 code. To achieve this, various terminal codes are compared with the JSON file.
+	 * @param code Selected ICD-10 Code
+	 * @return JSON Object of the ICD-10 code, null if nothing was found
+	 * @throws Exception
+	 */
 	private JSONObject searchForResult(Icd10CodeSt code) throws Exception {
 		JSONObject result = getJsonForCode(code.getIcd10Code());
 		if(wasFound(result)){return result;}
@@ -485,6 +497,11 @@ public class DiagnosisController {
 		return null;
 	}
 
+	/**
+	 * Checks if the JSON file was found and has a content
+	 * @param json The JSON file to be checked
+	 * @return True if found, false if not
+	 */
 	private boolean wasFound(JSONObject json) {
 		JSONArray array = (JSONArray) json.get("parameter");
 		for (int i = 0; i < array.size(); i++) {
@@ -496,6 +513,12 @@ public class DiagnosisController {
 		return false;
 	}
 
+	/**
+	 * Finds the JSON entry with the Name name and returns the item
+	 * @param array With JSON Items
+	 * @param name Name of the item
+	 * @return The item if found else null
+	 */
 	private JSONObject findJsonByName(JSONArray array, String name) {
 		if (array==null) {return null;}
 		for (int i = 0; i < array.size(); i++) {

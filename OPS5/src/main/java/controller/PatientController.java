@@ -14,6 +14,9 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 
 
+/**
+ * The controller inserts emergency patients
+ */
 public class PatientController{
 
     @FXML
@@ -70,7 +73,7 @@ public class PatientController{
     /**
      * After pressing the button, the entries from the text fields are transferred to the attribute values and the
      * patient is inserted into the database with the help of the DAO and the window is closed afterwards
-     * @param event event which is fired when the button is pushed
+     * @param event Event which is fired when the button is pushed
      */
     @FXML
     void createPatient(ActionEvent event) {
@@ -130,7 +133,7 @@ public class PatientController{
 
 
     /**
-     * this method converts the selected toggle into a string
+     * This method converts the selected toggle into a string
      * @return String of the selected blutgruppe
      */
     private String getBlutgruppe() {
@@ -142,7 +145,7 @@ public class PatientController{
     }
 
     /**
-     * this method converts the selected toggle into a sex
+     * This method converts the selected toggle into a sex
      * @return String of the selected sex
      */
     private String getGeschlecht(){

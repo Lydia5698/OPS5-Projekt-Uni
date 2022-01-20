@@ -84,7 +84,7 @@ public class ProcedureController {
      * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
      * a Procedure. If the User isn't missing any necessary Values the Procedure is edited and the Window closes
      *
-     * @param event the event of pushing the Speichern Button
+     * @param event The event of pushing the Speichern Button
      */
     @FXML
     public void editProcedure(ActionEvent event) {
@@ -108,7 +108,7 @@ public class ProcedureController {
      * Launches when the Button Neue Prozedur is pressed. It sets the flag false so that we know that the user wants to create
      * a new Procedure. If the User isn't missing any necessary Values the Procedure is saved and the Window closes
      *
-     * @param event the event of pushing the Neue Diagnose Button
+     * @param event The event of pushing the Neue Diagnose Button
      */
     @FXML
     void createNewProcedure(ActionEvent event) {
@@ -215,7 +215,7 @@ public class ProcedureController {
     /**
      * Checks if all the necessary Values for the Procedure are selected
      *
-     * @return boolean if no Statement is missing
+     * @return Boolean if no Statement is missing
      */
     public boolean noMissingStatement() {
         if (procedureOpID.getSelectionModel().isEmpty()) {

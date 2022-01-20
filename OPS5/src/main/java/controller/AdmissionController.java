@@ -145,7 +145,7 @@ public class AdmissionController {
     /**
      * Checks the user input for the operation for incorrect input
      *
-     * @return true if no false Statement
+     * @return True if no false Statement
      */
     private Boolean noFalseStatement() {
         Alert alert = new Alert(AlertType.ERROR);
@@ -283,7 +283,7 @@ public class AdmissionController {
     }
 
     /**
-     * after succussfully insertion of operation set all fields to default
+     * After succussfully insertion of operation set all fields to default
      */
     private void clearFields() {
         selectPatient.getSelectionModel().clearSelection();
@@ -294,7 +294,7 @@ public class AdmissionController {
      * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
      * the Operation. The Operation is edited and the Window closes
      *
-     * @param event the event of pushing the Speichern Button
+     * @param event The event of pushing the Speichern Button
      */
     @FXML
     public void saveEditOp(ActionEvent event) {
@@ -309,7 +309,7 @@ public class AdmissionController {
     /**
      * Sets the comboboxes in the Edit Op window to the values of the previously selected op to be edited.
      *
-     * @param opID the OpId to be processed
+     * @param opID The OpId to be processed
      */
     public void initializeComboboxen(int opID) {
         opController.initializeDefaultComboboxen(opID);

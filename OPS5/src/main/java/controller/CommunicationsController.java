@@ -89,7 +89,7 @@ public class CommunicationsController {
     /**
      * This method returns the instance of the CommunicationController
      *
-     * @return the communicationcontroller
+     * @return The communicationcontroller
      */
     public static CommunicationsController getInstance() {
         return MainController.getInstance().getCommTabController();
@@ -126,7 +126,7 @@ public class CommunicationsController {
     /**
      * This method inserts the received message into the tableview as hl7 string
      *
-     * @param message the incomming message
+     * @param message The incomming message
      */
     public void insertReceivedMessage(Message message) {
         try {
@@ -142,7 +142,7 @@ public class CommunicationsController {
     }
 
     /**
-     * when the user pushes the button the selected patient/operation will be sent to the kis
+     * When the user pushes the button the selected patient/operation will be sent to the kis
      */
     @FXML
     public void send() {
@@ -183,8 +183,8 @@ public class CommunicationsController {
     /**
      * This method checks if the sent patient can be inserted into our database
      *
-     * @param patient the sent patient
-     * @return true if he can be inserted and false if not
+     * @param patient The sent patient
+     * @return True if he can be inserted and false if not
      */
     public boolean canInsertPatient(Patient patient) {
         //checking for values which can not be null (in this case it is the patients first and lastname)
@@ -198,7 +198,7 @@ public class CommunicationsController {
     /**
      * This method inserts if its possible the new Patient into our database
      *
-     * @param patient the sent patient
+     * @param patient The sent patient
      */
     public static void insertNewPatient(Patient patient) {
         PatientDao patientDao = new PatientDao(Main.configuration);
@@ -220,22 +220,22 @@ public class CommunicationsController {
     }
 
     /**
-     * Checks if a case can be inserted (has no invalid entries
+     * Checks if a case can be inserted (has no invalid entries)
      *
-     * @param fall the case
-     * @return true or false
+     * @param fall The case
+     * @return false if there is wrong information about the case
      */
     public boolean canInsertCase(Fall fall) {
         if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())) {
-            return false;
+            return true;
         }
-        return fall.getEntlassungsdatum() == null || !fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum());
+        return !(fall.getEntlassungsdatum() == null || !fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum()));
     }
 
     /**
      * This method checks if the sent case can be inserted in our database and if yes , the case will be inserted
      *
-     * @param fall the sent case
+     * @param fall The sent case
      */
     public static void insertNewCase(Fall fall) {
         FallDao fallDao = new FallDao(Main.configuration);
@@ -247,7 +247,7 @@ public class CommunicationsController {
 
             //checking for invalid entrys concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
-            if (!getInstance().canInsertCase(fall)) {
+            if (getInstance().canInsertCase(fall)) {
                 alert.setContentText("Der Fall hat invalide Eingaben und kann nicht eingefügt werden");
                 alert.showAndWait();
             } else {

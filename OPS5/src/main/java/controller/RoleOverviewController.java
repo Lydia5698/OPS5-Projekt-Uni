@@ -92,7 +92,7 @@ public class RoleOverviewController {
 
 	/**
 	 * Launches when the Button Neue Rolle is pressed. It creates a new Rolle with the selected values.
-	 * @param event the event of pushing the Neue Rolle Button
+	 * @param event The event of pushing the Neue Rolle Button
 	 */
 	@FXML
 	void createNewRole(ActionEvent event) {
@@ -135,7 +135,7 @@ public class RoleOverviewController {
 	/**
 	 * Launches when the Button Speichern is pressed. It updates the selected role to the values that the user selects.
 	 * If no role is selected, an alert is shown that you need to select a role before you can edit one.
-	 * @param event the event of pushing the Speichern Button
+	 * @param event The event of pushing the Speichern Button
 	 */
 	@FXML
 	public void createRole(ActionEvent event){
@@ -170,7 +170,7 @@ public class RoleOverviewController {
 
 	/**
 	 * Collects all Roles from the Database and saves them in a observable Array List from Type Role pojo
-	 * @return all Roles
+	 * @return All Roles
 	 */
 	public static ObservableList<Rolle> roleView(){
 		RolleDao roleDao = new RolleDao(Main.configuration);
