@@ -59,7 +59,7 @@ public class AdmissionController {
                         if (pat == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(pat.getName() + ", " + pat.getVorname() + ";  " + pat.getPatId());
+                            setText(pat.getName() + ", " + pat.getVorname() + " (" + pat.getPatId() + ")");
                         }
                     }
                 };
@@ -319,10 +319,9 @@ public class AdmissionController {
         Patient patient1 = new Patient(patient) {
             @Override
             public String toString() {
-                String sb = "" + patient.getName() + ", " +
+                return "" + patient.getName() + ", " +
                         patient.getVorname() + ", PatID: " +
                         patient.getPatId();
-                return sb;
             }
         };
         selectPatient.setValue(patient1);

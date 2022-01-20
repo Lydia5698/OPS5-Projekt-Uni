@@ -63,12 +63,12 @@ public class OpsCodeSt implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(); //"OpsCodeSt ("
+        StringBuilder sb = new StringBuilder("OpsCodeSt (");
 
         sb.append(opsCode);
-        //sb.append(", ").append(beschreibung);
+        sb.append(", ").append(beschreibung);
 
-        //sb.append(")");
+        sb.append(")");
         return sb.toString();
     }
 }

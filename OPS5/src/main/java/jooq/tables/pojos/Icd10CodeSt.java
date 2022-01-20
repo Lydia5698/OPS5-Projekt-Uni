@@ -63,12 +63,12 @@ public class Icd10CodeSt implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(); //"Icd10CodeSt ("
+        StringBuilder sb = new StringBuilder("Icd10CodeSt (");
 
         sb.append(icd10Code);
-        //sb.append(", ").append(beschreibung);
+        sb.append(", ").append(beschreibung);
 
-        //sb.append(")");
+        sb.append(")");
         return sb.toString();
     }
 }

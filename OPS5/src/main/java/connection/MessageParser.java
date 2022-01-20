@@ -113,8 +113,6 @@ public class MessageParser {
                     diagnose.setIcd10Code(dg1.getDiagnosisCodeDG1().getCe1_Identifier().getValue());
                     diagnose.setKlartextDiagnose(dg1.getDiagnosisDescription().getValue());
                     diagnose.setStorniert(false);
-                    //TODO ersteller kis oder medpersonal
-                    //TODO erstellzeit now oder aus der Nachricht
                     diagnoses.add(diagnose);
                     return diagnoses;
                 }
