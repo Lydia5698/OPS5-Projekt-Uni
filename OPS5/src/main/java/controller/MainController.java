@@ -1,6 +1,9 @@
 package controller;
 
 import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -155,6 +158,17 @@ public class MainController {
         employee.getItems().setAll(result);
         employee.setSelectionModel(new CustomSelectionModel<>(employee));
         employee.getSelectionModel().select(i);
+        employee.valueProperty().addListener(new ChangeListener<MedPersonal>() {
+            @Override
+            public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        employee.setValue(oldValue);
+                    });
+                }
+
+            }
+        });
     }
 
     /**
