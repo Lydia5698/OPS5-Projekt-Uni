@@ -91,19 +91,6 @@ public class MessageParser {
                 return null;
             }
             else{
-                PV1 pv1 = adtMsg.getPV1();
-
-                Operation operation = new Operation();
-                operation.setErsteller("00000000");
-                operation.setStorniert(false);
-                operation.setErstellZeit(LocalDateTime.now());
-                operation.setFallId(Integer.parseInt(pv1.getSetIDPV1().getValue()));
-                operation.setBauchtuecherPrae(0);
-                operation.setBauchtuecherPost(0);
-
-                new OperationDao(Main.configuration).insert(operation);
-
-
                 List<DG1> dg1List = adtMsg.getDG1All();
                 for (DG1 dg1 : dg1List) {
                     Diagnose diagnose = new Diagnose();
@@ -115,8 +102,8 @@ public class MessageParser {
                     diagnose.setKlartextDiagnose(dg1.getDiagnosisDescription().getValue());
                     diagnose.setStorniert(false);
                     diagnoses.add(diagnose);
-                    return diagnoses;
                 }
+                return diagnoses;
              }
         } catch(HL7Exception e){
                 Platform.runLater(()->{
@@ -126,7 +113,6 @@ public class MessageParser {
                 });
                 return null;
         }
-        return null;
     }
 
 
@@ -135,14 +121,13 @@ public class MessageParser {
      * @param message the sent message
      * @return ture, if the message contains a diagnosis
      */
-    public static boolean a01WithDignosis(Message message){
+    public static boolean a01WithDiagnosis(Message message){
         ADT_A01 adt_a01 = (ADT_A01) message;
         try{
             return adt_a01.getDG1All().size() > 0;
         } catch(HL7Exception e){
             return false;
         }
-
     }
 
     /**
