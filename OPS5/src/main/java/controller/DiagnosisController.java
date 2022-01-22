@@ -2,7 +2,10 @@ package controller;
 import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -272,6 +275,16 @@ public class DiagnosisController {
 		diagnosisOpId.setCellFactory(cellFactory);
 		diagnosisOpId.getItems().setAll(new OperationDao(Main.configuration).findAll());
 		diagnosisOpId.setSelectionModel(new CustomSelectionModel<>(diagnosisOpId));
+		diagnosisOpId.valueProperty().addListener(new ChangeListener<Operation>() {
+			@Override
+			public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						diagnosisOpId.setValue(oldValue);
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -298,6 +311,16 @@ public class DiagnosisController {
 		diagnosisIcdCode.setCellFactory(cellFactory);
 		diagnosisIcdCode.getItems().setAll(new Icd10CodeStDao(Main.configuration).findAll());
 		diagnosisIcdCode.setSelectionModel(new CustomSelectionModel<>(diagnosisIcdCode));
+		diagnosisIcdCode.valueProperty().addListener(new ChangeListener<Icd10CodeSt>() {
+			@Override
+			public void changed(ObservableValue<? extends Icd10CodeSt> observable, Icd10CodeSt oldValue, Icd10CodeSt newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						diagnosisIcdCode.setValue(oldValue);
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -324,6 +347,18 @@ public class DiagnosisController {
 		diagnosisType.setCellFactory(cellFactory);
 		diagnosisType.getItems().setAll(new DiagnosetypStDao(Main.configuration).findAll());
 		diagnosisType.setSelectionModel(new CustomSelectionModel<>(diagnosisType));
+		diagnosisType.valueProperty().addListener(new ChangeListener<DiagnosetypSt>() {
+			@Override
+			public void changed(ObservableValue<? extends DiagnosetypSt> observable, DiagnosetypSt oldValue, DiagnosetypSt newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						diagnosisType.setValue(oldValue);
+					});
+				}
+			}
+		});
+
+
 	}
 
 	/**

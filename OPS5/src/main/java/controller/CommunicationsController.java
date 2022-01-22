@@ -11,6 +11,8 @@ import connection.MessageParser;
 import connection.Server;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -123,6 +125,16 @@ public class CommunicationsController {
         communicationsObject.setCellFactory(cellFactory);
         communicationsObject.getItems().setAll(new OperationDao(Main.configuration).findAll());
         communicationsObject.setSelectionModel(new CustomSelectionModel<>(communicationsObject));
+        communicationsObject.valueProperty().addListener(new ChangeListener<Operation>() {
+            @Override
+            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        communicationsObject.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**

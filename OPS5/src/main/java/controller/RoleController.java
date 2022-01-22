@@ -1,6 +1,9 @@
 package controller;
 
 import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -81,6 +84,16 @@ public class RoleController{
         role.setCellFactory(cellFactory);
         role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
         role.setSelectionModel(new CustomSelectionModel<>(role));
+        role.valueProperty().addListener(new ChangeListener<RolleSt>() {
+            @Override
+            public void changed(ObservableValue<? extends RolleSt> observable, RolleSt oldValue, RolleSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        role.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -108,6 +121,16 @@ public class RoleController{
         op.setCellFactory(cellFactory);
         op.getItems().setAll(new OperationDao(Main.configuration).findAll());
         op.setSelectionModel(new CustomSelectionModel<>(op));
+        op.valueProperty().addListener(new ChangeListener<Operation>() {
+            @Override
+            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        op.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -139,6 +162,16 @@ public class RoleController{
                 .collect(Collectors.toList());
         mitarbeiter.getItems().setAll(result);
         mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
+        mitarbeiter.valueProperty().addListener(new ChangeListener<MedPersonal>() {
+            @Override
+            public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        mitarbeiter.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**

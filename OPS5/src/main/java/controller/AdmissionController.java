@@ -1,6 +1,9 @@
 package controller;
 
 import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -69,6 +72,16 @@ public class AdmissionController {
         selectPatient.setCellFactory(cellFactory);
         selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
         selectPatient.setSelectionModel(new CustomSelectionModel<>(selectPatient));
+        selectPatient.valueProperty().addListener(new ChangeListener<Patient>() {
+            @Override
+            public void changed(ObservableValue<? extends Patient> observable, Patient oldValue, Patient newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        selectPatient.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**

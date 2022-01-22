@@ -3,6 +3,9 @@ package controller;
 import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -69,6 +72,16 @@ public class FallController {
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
         patient.setSelectionModel(new CustomSelectionModel<>(patient));
+        patient.valueProperty().addListener(new ChangeListener<Patient>() {
+            @Override
+            public void changed(ObservableValue<? extends Patient> observable, Patient oldValue, Patient newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        patient.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -97,6 +110,16 @@ public class FallController {
         falltyp.setCellFactory(cellFactory);
         falltyp.getItems().setAll(new FallTypStDao(Main.configuration).findAll());
         falltyp.setSelectionModel(new CustomSelectionModel<>(falltyp));
+        falltyp.valueProperty().addListener(new ChangeListener<FallTypSt>() {
+            @Override
+            public void changed(ObservableValue<? extends FallTypSt> observable, FallTypSt oldValue, FallTypSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        falltyp.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -125,6 +148,16 @@ public class FallController {
         station.setCellFactory(cellFactory);
         station.getItems().setAll(new StationStDao(Main.configuration).findAll());
         station.setSelectionModel(new CustomSelectionModel<>(station));
+        station.valueProperty().addListener(new ChangeListener<StationSt>() {
+            @Override
+            public void changed(ObservableValue<? extends StationSt> observable, StationSt oldValue, StationSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        station.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**

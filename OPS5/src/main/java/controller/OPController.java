@@ -1,5 +1,8 @@
 package controller;
 import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -183,6 +186,16 @@ public class OPController{
         opCaseId.getItems().setAll(new FallDao(Main.configuration).fetchByPatId(patId));
         opCaseId.valueProperty().set(null);
         opCaseId.setSelectionModel(new CustomSelectionModel<>(opCaseId));
+        opCaseId.valueProperty().addListener(new ChangeListener<Fall>() {
+            @Override
+            public void changed(ObservableValue<? extends Fall> observable, Fall oldValue, Fall newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        opCaseId.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -210,6 +223,16 @@ public class OPController{
         opType.setCellFactory(cellFactory);
         opType.getItems().setAll(new OpTypStDao(Main.configuration).findAll());
         opType.setSelectionModel(new CustomSelectionModel<>(opType));
+        opType.valueProperty().addListener(new ChangeListener<OpTypSt>() {
+            @Override
+            public void changed(ObservableValue<? extends OpTypSt> observable, OpTypSt oldValue, OpTypSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        opType.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
     /**
      * This method is called when initialising the window.
@@ -236,6 +259,16 @@ public class OPController{
         opRoom.setCellFactory(cellFactory);
         opRoom.getItems().setAll(new OpSaalStDao(Main.configuration).findAll());
         opRoom.setSelectionModel(new CustomSelectionModel<>(opRoom));
+        opRoom.valueProperty().addListener(new ChangeListener<OpSaalSt>() {
+            @Override
+            public void changed(ObservableValue<? extends OpSaalSt> observable, OpSaalSt oldValue, OpSaalSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        opRoom.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
     /**
      * This method is called when initialising the window.
@@ -262,6 +295,16 @@ public class OPController{
         narkose.setCellFactory(cellFactory);
         narkose.getItems().setAll(new NarkoseStDao(Main.configuration).findAll());
         narkose.setSelectionModel(new CustomSelectionModel<>(narkose));
+        narkose.valueProperty().addListener(new ChangeListener<NarkoseSt>() {
+            @Override
+            public void changed(ObservableValue<? extends NarkoseSt> observable, NarkoseSt oldValue, NarkoseSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        narkose.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
