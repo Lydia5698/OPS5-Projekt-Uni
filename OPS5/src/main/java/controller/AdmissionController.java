@@ -72,14 +72,9 @@ public class AdmissionController {
         selectPatient.setCellFactory(cellFactory);
         selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
         selectPatient.setSelectionModel(new CustomSelectionModel<>(selectPatient));
-        selectPatient.valueProperty().addListener(new ChangeListener<Patient>() {
-            @Override
-            public void changed(ObservableValue<? extends Patient> observable, Patient oldValue, Patient newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        selectPatient.setValue(oldValue);
-                    });
-                }
+        selectPatient.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == null){
+                Platform.runLater(()-> selectPatient.setValue(oldValue));
             }
         });
     }
@@ -90,11 +85,9 @@ public class AdmissionController {
      */
     @FXML
     public void initialize() {
-        selectPatient.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e) {
-                if (selectPatient.getValue() != null) {
-                    opController.setCase(selectPatient.getValue().getPatId());
-                }
+        selectPatient.setOnAction(e -> {
+            if (selectPatient.getValue() != null) {
+                opController.setCase(selectPatient.getValue().getPatId());
             }
         });
         setPatient();
@@ -140,14 +133,17 @@ public class AdmissionController {
             operationDao.insert(operation);
 
             //Bauchtücher nicht gleich
-            if (opController.getTowelAfter() != opController.getTowelBefore()) {
+            if (!opController.getTowelAfter().equals(opController.getTowelBefore())) {
                 Alert alert1 = new Alert(AlertType.WARNING);
-                alert1.setHeaderText("ACHTUNG Bauchtücher");
+                alert1.setTitle("Achtung");
+                alert1.setHeaderText("Bauchtücher");
                 alert1.setContentText("Die Anzahl der Bauchtücher nach der OP stimmt nicht mit der Anzahl vor der Operation überein!");
                 alert1.showAndWait();
             }
 
             Alert confirm = new Alert(AlertType.INFORMATION);
+            confirm.setTitle("Information");
+            confirm.setHeaderText("Erfolgreich eingefügt");
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
             clearFields();
@@ -231,11 +227,15 @@ public class AdmissionController {
 
 
             Alert confirm = new Alert(AlertType.INFORMATION);
+            confirm.setTitle("Information");
+            confirm.setHeaderText("Erfolgreich eingefügt");
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
 
             if (!opController.getTowelBefore().equals(opController.getTowelAfter())) {
                 Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Achtung");
+                alert.setHeaderText("Bauchtücher");
                 alert.setContentText("Die Bauchtücher vor und nach der Operation haben eine unterschiedliche Anzahl!");
                 alert.show();
             }
@@ -311,7 +311,6 @@ public class AdmissionController {
      */
     @FXML
     public void saveEditOp(ActionEvent event) {
-        boolean flagOpEdit = true;
         opId = OverviewController.getOpId();
         editOperation();
         Node source = (Node) event.getSource();
@@ -326,6 +325,7 @@ public class AdmissionController {
      */
     public void initializeComboboxen(int opID) {
         opController.initializeDefaultComboboxen(opID);
+        opController.initializeDefaultDateTimePicker(opID);
         Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
         Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
         Patient patient = new PatientDao(Main.configuration).fetchOneByPatId(fall.getPatId());

@@ -117,6 +117,8 @@ public class PatientController{
                 System.out.println("Creating patient!");
 
                 Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                confirm.setTitle("Information");
+                confirm.setHeaderText("Erfolgreich eingefügt");
                 confirm.setContentText("Der Patient wurde in die Datenbank eingefügt.");
                 confirm.showAndWait();
 

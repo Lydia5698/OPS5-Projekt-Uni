@@ -471,9 +471,10 @@ public class OverviewController {
         }
         else{
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Fehlende Operation");
+            alert.setTitle("Error");
+            alert.setHeaderText("Fehlende Operation");
             alert.setContentText("Bitte wählen Sie eine Operation zum stornieren aus");
-            alert.show();
+            alert.showAndWait();
         }
     }
 

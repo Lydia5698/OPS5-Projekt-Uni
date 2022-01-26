@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Predicate;
@@ -118,16 +119,18 @@ public class DiagnosisController {
 		System.out.println("Create diagnosis!");
 		flagEditDiagnose = true;
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle("Fehlende Diagnose");
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Fehlende Diagnose");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
-			alert.show();
+			alert.showAndWait();
 		}
 		else if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle("Fehlender Diagnose-Code");
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
-			alert.show();
+			alert.showAndWait();
 
 		}
 		else{
@@ -163,6 +166,8 @@ public class DiagnosisController {
 		List<Diagnose> diagnose = diagnoseDao.findAll();
 		if(opID == 0){
 			Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+			confirm.setTitle("Information");
+			confirm.setHeaderText("Alle Diagnosen");
 			confirm.setContentText("Es werden zurzeit alle Diagnosen angezeigt. Bitte wähle eine Operation aus, um eine spezifische Diagnose zu sehen.");
 			confirm.showAndWait();
 			diagnosisTable.setItems(FXCollections.observableArrayList(diagnose));
@@ -231,6 +236,8 @@ public class DiagnosisController {
 			diagnoseDao.insert(diagnose);
 		}
 		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+		confirm.setTitle("Information");
+		confirm.setHeaderText("Erfolgreich eingefügt");
 		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 		confirm.showAndWait();
 
@@ -275,14 +282,9 @@ public class DiagnosisController {
 		diagnosisOpId.setCellFactory(cellFactory);
 		diagnosisOpId.getItems().setAll(new OperationDao(Main.configuration).findAll());
 		diagnosisOpId.setSelectionModel(new CustomSelectionModel<>(diagnosisOpId));
-		diagnosisOpId.valueProperty().addListener(new ChangeListener<Operation>() {
-			@Override
-			public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						diagnosisOpId.setValue(oldValue);
-					});
-				}
+		diagnosisOpId.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if(newValue == null){
+				Platform.runLater(()-> diagnosisOpId.setValue(oldValue));
 			}
 		});
 	}
@@ -311,14 +313,9 @@ public class DiagnosisController {
 		diagnosisIcdCode.setCellFactory(cellFactory);
 		diagnosisIcdCode.getItems().setAll(new Icd10CodeStDao(Main.configuration).findAll());
 		diagnosisIcdCode.setSelectionModel(new CustomSelectionModel<>(diagnosisIcdCode));
-		diagnosisIcdCode.valueProperty().addListener(new ChangeListener<Icd10CodeSt>() {
-			@Override
-			public void changed(ObservableValue<? extends Icd10CodeSt> observable, Icd10CodeSt oldValue, Icd10CodeSt newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						diagnosisIcdCode.setValue(oldValue);
-					});
-				}
+		diagnosisIcdCode.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if(newValue == null){
+				Platform.runLater(()-> diagnosisIcdCode.setValue(oldValue));
 			}
 		});
 	}
@@ -347,14 +344,9 @@ public class DiagnosisController {
 		diagnosisType.setCellFactory(cellFactory);
 		diagnosisType.getItems().setAll(new DiagnosetypStDao(Main.configuration).findAll());
 		diagnosisType.setSelectionModel(new CustomSelectionModel<>(diagnosisType));
-		diagnosisType.valueProperty().addListener(new ChangeListener<DiagnosetypSt>() {
-			@Override
-			public void changed(ObservableValue<? extends DiagnosetypSt> observable, DiagnosetypSt oldValue, DiagnosetypSt newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						diagnosisType.setValue(oldValue);
-					});
-				}
+		diagnosisType.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if(newValue == null){
+				Platform.runLater(()-> diagnosisType.setValue(oldValue));
 			}
 		});
 
@@ -402,37 +394,35 @@ public class DiagnosisController {
 	 * @return Boolean if no Statement is missing
 	 */
 	public boolean noMissingStatement(){
+		Alert alert = new Alert(Alert.AlertType.ERROR);
+		alert.setTitle("Error");
 
 		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlender Diagnose-Code ");
+			alert.setHeaderText("Fehlender Diagnose-Code ");
 			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
-			alert.show();
+			alert.showAndWait();
 			return false;
 		}
 
 		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlender Diagnose-Code");
+			alert.setHeaderText("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
-			alert.show();
+			alert.showAndWait();
 			return false;
 		}
 
 		if(diagnosisType.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlender Diagnosetyp");
+			alert.setHeaderText("Fehlender Diagnosetyp");
 			alert.setContentText("Bitte wählen Sie einen Diagnosetyp aus");
-			alert.show();
+			alert.showAndWait();
 			return false;
 		}
 
 
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlende Diagnose");
+			alert.setHeaderText("Fehlende Diagnose");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
-			alert.show();
+			alert.showAndWait();
 			return false;
 		}
 		return true;
@@ -447,8 +437,9 @@ public class DiagnosisController {
 	@FXML
 	public void showInfo() {
 		Icd10CodeSt code = diagnosisIcdCode.getValue();
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Information");
 		if(code==null) {
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
 			alert.setHeaderText("Kein Code ausgewählt.");
 			alert.setContentText("Für weitere Informationen muss ein ICD-10 Code ausgewählt werden");
 			alert.showAndWait();
@@ -457,10 +448,9 @@ public class DiagnosisController {
 		try {
 			JSONObject result = searchForResult(code);
 			if(result==null) {
-				Alert infoalert = new Alert(Alert.AlertType.INFORMATION);
-				infoalert.setHeaderText("Kein Ergebnis gefunden");
-				infoalert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
-				infoalert.show();
+				alert.setHeaderText("Kein Ergebnis gefunden");
+				alert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
+				alert.showAndWait();
 			} else {
 				JSONObject match = findJsonByName((JSONArray) result.get("parameter"), "match");
 				JSONObject concept = findJsonByName((JSONArray) match.get("part"), "concept");
@@ -508,7 +498,7 @@ public class DiagnosisController {
 		InputStream responseStream = connection.getInputStream();
 		JSONParser jsonParser = new JSONParser();
 		return (JSONObject)jsonParser.parse(
-				new InputStreamReader(responseStream, "UTF-8"));
+				new InputStreamReader(responseStream, StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -539,9 +529,9 @@ public class DiagnosisController {
 	 */
 	private boolean wasFound(JSONObject json) {
 		JSONArray array = (JSONArray) json.get("parameter");
-		for (int i = 0; i < array.size(); i++) {
-			JSONObject item = (JSONObject) array.get(i);
-			if(item.get("name").equals("result") && (Boolean) item.get("valueBoolean")) {
+		for (Object o : array) {
+			JSONObject item = (JSONObject) o;
+			if (item.get("name").equals("result") && (Boolean) item.get("valueBoolean")) {
 				return true;
 			}
 		}
@@ -556,9 +546,9 @@ public class DiagnosisController {
 	 */
 	private JSONObject findJsonByName(JSONArray array, String name) {
 		if (array==null) {return null;}
-		for (int i = 0; i < array.size(); i++) {
-			JSONObject item = (JSONObject) array.get(i);
-			if(item.get("name").equals(name)) {
+		for (Object o : array) {
+			JSONObject item = (JSONObject) o;
+			if (item.get("name").equals(name)) {
 				return item;
 			}
 		}

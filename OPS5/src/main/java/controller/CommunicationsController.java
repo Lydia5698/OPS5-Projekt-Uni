@@ -70,6 +70,8 @@ public class CommunicationsController {
         } catch (UnknownHostException e) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Achtung");
+                alert.setHeaderText("Adresse");
                 alert.setContentText("Die Adresse kann nicht zu einer IP Adresse gecastet werden.");
                 alert.showAndWait();
             });
@@ -125,14 +127,9 @@ public class CommunicationsController {
         communicationsObject.setCellFactory(cellFactory);
         communicationsObject.getItems().setAll(new OperationDao(Main.configuration).findAll());
         communicationsObject.setSelectionModel(new CustomSelectionModel<>(communicationsObject));
-        communicationsObject.valueProperty().addListener(new ChangeListener<Operation>() {
-            @Override
-            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        communicationsObject.setValue(oldValue);
-                    });
-                }
+        communicationsObject.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == null){
+                Platform.runLater(()-> communicationsObject.setValue(oldValue));
             }
         });
     }
@@ -148,6 +145,8 @@ public class CommunicationsController {
         } catch (HL7Exception e) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Achtung");
+                alert.setHeaderText("Nachricht");
                 alert.setContentText("Die Nachricht kann nicht in einen String umgewandelt werden.");
                 alert.showAndWait();
             });
