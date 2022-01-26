@@ -65,36 +65,7 @@ public class RoleController{
      * It sets all role types of the database as choosing options of the combobox.
      */
     private void setRole() {
-        Callback<ListView<RolleSt>, ListCell<RolleSt>> cellFactory = new Callback<>() {
-            @Override
-            public ListCell<RolleSt> call(ListView<RolleSt> rolleListView) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(RolleSt ro, boolean empty) {
-                        super.updateItem(ro, empty);
-                        if (ro == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            setText(ro.getBezeichnung());
-                        }
-                    }
-                };
-            }
-        };
-        role.setButtonCell(cellFactory.call(null));
-        role.setCellFactory(cellFactory);
-        role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
-        role.setSelectionModel(new CustomSelectionModel<>(role));
-        role.valueProperty().addListener(new ChangeListener<RolleSt>() {
-            @Override
-            public void changed(ObservableValue<? extends RolleSt> observable, RolleSt oldValue, RolleSt newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        role.setValue(oldValue);
-                    });
-                }
-            }
-        });
+        Converter.setRolle(role);
     }
 
     /**

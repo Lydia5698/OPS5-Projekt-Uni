@@ -6,14 +6,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
-import jooq.tables.daos.FallDao;
-import jooq.tables.daos.MedPersonalDao;
-import jooq.tables.daos.OperationDao;
-import jooq.tables.daos.PatientDao;
-import jooq.tables.pojos.Fall;
-import jooq.tables.pojos.MedPersonal;
-import jooq.tables.pojos.Operation;
-import jooq.tables.pojos.Patient;
+import jooq.tables.daos.*;
+import jooq.tables.pojos.*;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
@@ -254,6 +248,12 @@ public class Converter {
         });
     }
 
+    /**
+     * sets the values for the medpersonal
+     * @param mitarbeiter the combobox of the medpersonal
+     * @param select true if a specific value has to be selected
+     * @param i the index of the selected item
+     */
     public static void setMitarbeiter(SearchableComboBox<MedPersonal> mitarbeiter, boolean select, int i){
         Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
             @Override
@@ -286,6 +286,43 @@ public class Converter {
                 if(newValue == null){
                     Platform.runLater(()->{
                         mitarbeiter.setValue(oldValue);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * Sets the values for the role so only the bezeichnung is shown
+     * @param role the combobox of the role
+     */
+    public static void setRolle(SearchableComboBox<RolleSt> role){
+        Callback<ListView<RolleSt>, ListCell<RolleSt>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<RolleSt> call(ListView<RolleSt> rolleListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(RolleSt ro, boolean empty) {
+                        super.updateItem(ro, empty);
+                        if (ro == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(ro.getBezeichnung());
+                        }
+                    }
+                };
+            }
+        };
+        role.setButtonCell(cellFactory.call(null));
+        role.setCellFactory(cellFactory);
+        role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
+        role.setSelectionModel(new CustomSelectionModel<>(role));
+        role.valueProperty().addListener(new ChangeListener<RolleSt>() {
+            @Override
+            public void changed(ObservableValue<? extends RolleSt> observable, RolleSt oldValue, RolleSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        role.setValue(oldValue);
                     });
                 }
             }
