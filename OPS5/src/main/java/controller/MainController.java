@@ -1,5 +1,6 @@
 package controller;
 
+import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -89,7 +90,7 @@ public class MainController {
      * Show all employees in a combobox by their Pers-ID and their name
      */
     private void setEmployeeId() {
-        createEmployeeComboBox(employeeId, 1);
+        Converter.setMitarbeiter(employeeId, true, 0);
     }
 
     /**
@@ -126,50 +127,6 @@ public class MainController {
         }
 
     }
-    /**
-     * Sets all employees into a combobox
-     *
-     * @param employee The combobox
-     * @param i        The index of the selected employee
-     */
-    public static void createEmployeeComboBox(ComboBox<MedPersonal> employee, int i) {
-        Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
-            @Override
-            public ListCell<MedPersonal> call(ListView<MedPersonal> medPersonalListView) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(MedPersonal med, boolean empty) {
-                        super.updateItem(med, empty);
-                        if (med == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            setText(med.getPersId() + " : " + med.getNachnameVorname());
-                        }
-                    }
-                };
-            }
-        };
-        employee.setButtonCell(cellFactory.call(null));
-        employee.setCellFactory(cellFactory);
-        List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
-        medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
-        var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000"))//KIS
-                .collect(Collectors.toList());
-        employee.getItems().setAll(result);
-        employee.setSelectionModel(new CustomSelectionModel<>(employee));
-        employee.getSelectionModel().select(i);
-        employee.valueProperty().addListener(new ChangeListener<MedPersonal>() {
-            @Override
-            public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        employee.setValue(oldValue);
-                    });
-                }
-
-            }
-        });
-    }
 
     /**
      * !!! Only used by LogInController when nobody is logged in!!!
@@ -177,7 +134,7 @@ public class MainController {
      * @param i Index of selected employee in log in window
      */
     public static void setEmployee(int i) {
-        createEmployeeComboBox(instance.employeeId, i);
+        Converter.setMitarbeiter(instance.employeeId, true, i);
     }
 
     public AdmissionController getAdmissionController() {

@@ -17,6 +17,10 @@ import jooq.tables.pojos.Patient;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Class that has static methods for convert different values
  */
@@ -244,6 +248,44 @@ public class Converter {
                 if(newValue == null){
                     Platform.runLater(()->{
                         op.setValue(oldValue);
+                    });
+                }
+            }
+        });
+    }
+
+    public static void setMitarbeiter(SearchableComboBox<MedPersonal> mitarbeiter, boolean select, int i){
+        Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<MedPersonal> call(ListView<MedPersonal> userListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(MedPersonal user, boolean empty) {
+                        super.updateItem(user, empty);
+                        if (user == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(user.getPersId() + " : " + user.getNachnameVorname());
+                        }
+                    }
+                };
+            }
+        };
+        mitarbeiter.setButtonCell(cellFactory.call(null));
+        mitarbeiter.setCellFactory(cellFactory);
+        List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
+        medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
+        var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
+                .collect(Collectors.toList());
+        mitarbeiter.getItems().setAll(result);
+        mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
+        if(select){mitarbeiter.getSelectionModel().select(i);}
+        mitarbeiter.valueProperty().addListener(new ChangeListener<MedPersonal>() {
+            @Override
+            public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        mitarbeiter.setValue(oldValue);
                     });
                 }
             }
