@@ -105,36 +105,7 @@ public class CommunicationsController {
      * and the same for operation
      */
     private void setCommunicationsObjectBox() {
-        Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
-            @Override
-            public ListCell<Operation> call(ListView<Operation> patientListView) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(Operation op, boolean empty) {
-                        super.updateItem(op, empty);
-                        if (op == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            setText("OP-ID: " + op.getOpId() + ", " + "Fall-ID: " + op.getFallId() + "(" + Converter.fallIdToPatientsNameConverter(op.getFallId()) + ")");
-                        }
-                    }
-                };
-            }
-        };
-        communicationsObject.setButtonCell(cellFactory.call(null));
-        communicationsObject.setCellFactory(cellFactory);
-        communicationsObject.getItems().setAll(new OperationDao(Main.configuration).findAll());
-        communicationsObject.setSelectionModel(new CustomSelectionModel<>(communicationsObject));
-        communicationsObject.valueProperty().addListener(new ChangeListener<Operation>() {
-            @Override
-            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        communicationsObject.setValue(oldValue);
-                    });
-                }
-            }
-        });
+        Converter.setOperation(communicationsObject, "communication");
     }
 
     /**

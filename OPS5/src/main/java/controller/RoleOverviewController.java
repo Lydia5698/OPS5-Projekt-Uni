@@ -271,36 +271,7 @@ public class RoleOverviewController {
 	 * It sets all operations of the database as choosing options of the combobox.
 	 */
 	private void setOp() {
-		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
-			@Override
-			public ListCell<Operation> call(ListView<Operation> opListView) {
-				return new ListCell<>() {
-					@Override
-					protected void updateItem(Operation oper, boolean empty) {
-						super.updateItem(oper, empty);
-						if (oper == null || empty) {
-							setGraphic(null);
-						} else {
-							setText("OP: " + oper.getOpId() + ", Fall: " + oper.getFallId() + ", Datum: " + oper.getBeginn());
-						}
-					}
-				};
-			}
-		};
-		op.setButtonCell(cellFactory.call(null));
-		op.setCellFactory(cellFactory);
-		op.getItems().setAll(new OperationDao(Main.configuration).findAll());
-		op.setSelectionModel(new CustomSelectionModel<>(op));
-		op.valueProperty().addListener(new ChangeListener<Operation>() {
-			@Override
-			public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						op.setValue(oldValue);
-					});
-				}
-			}
-		});
+		Converter.setOperation(op, "role");
 	}
 
 	/**
