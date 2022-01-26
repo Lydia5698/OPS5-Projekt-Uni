@@ -316,10 +316,10 @@ public class Operation implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(); //"Operation ("
+        StringBuilder sb = new StringBuilder("Operation (");
 
         sb.append(opId);
-        /*sb.append(", ").append(beginn);
+        sb.append(", ").append(beginn);
         sb.append(", ").append(ende);
         sb.append(", ").append(bauchtuecherPrae);
         sb.append(", ").append(bauchtuecherPost);
@@ -333,9 +333,9 @@ public class Operation implements Serializable {
         sb.append(", ").append(narkoseSt);
         sb.append(", ").append(opTypSt);
         sb.append(", ").append(ersteller);
-        sb.append(", ").append(bearbeiter);*/
+        sb.append(", ").append(bearbeiter);
 
-        //sb.append(")");
+        sb.append(")");
         return sb.toString();
     }
 }

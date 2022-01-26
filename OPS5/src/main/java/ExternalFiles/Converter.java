@@ -13,13 +13,13 @@ import jooq.tables.pojos.Patient;
 import main.Main;
 
 /**
- * class that has static methods for convert different values
+ * Class that has static methods for convert different values
  */
 public class Converter {
 
     /**
-     * converts case type from int to string
-     * @param i the integer from the case which string is needed
+     * Converts case type from int to string
+     * @param i The integer from the case which string is needed
      * @return String of the case type
      */
     public static String fallTypConverter(Integer i){
@@ -29,9 +29,9 @@ public class Converter {
     }
 
     /**
-     * converts a patient id to its name
-     * @param i patient id
-     * @return string of last and first name from the patient
+     * Converts a patient id to its name
+     * @param i Patient id
+     * @return String of last and first name from the patient
      */
     public static String patientConverter(Integer i){
         PatientDao patientDao = new PatientDao(Main.configuration);
@@ -41,8 +41,8 @@ public class Converter {
 
     /**
      * This method converts a given fall id to the name of the patient of this case
-     * @param i id from the given case
-     * @return the last name and first name from the patient
+     * @param i Id from the given case
+     * @return The last name and first name from the patient
      */
     public static String fallIdToPatientsNameConverter(Integer i){
         FallDao fallDao = new FallDao(Main.configuration);
@@ -55,9 +55,9 @@ public class Converter {
 
 
     /**
-     * converts the mersonals id into its name
-     * @param s string of the id from medpersonal
-     * @return string of its first and last name
+     * Converts the mersonals id into its name
+     * @param s String of the id from medpersonal
+     * @return String of its first and last name
      */
     public static String medPersonalConverter(String s){
         if(s == null){return null;}
@@ -69,9 +69,9 @@ public class Converter {
     }
 
     /**
-     * converts an optype to its integer to the description
-     * @param i integer from op type
-     * @return string of the description
+     * Converts an optype to its integer to the description
+     * @param i Integer from op type
+     * @return String of the description
      */
     public static String opTypConverter(Integer i){
         if(i == null){return null;}
@@ -81,9 +81,9 @@ public class Converter {
     }
 
     /**
-     * converts an integer to its description from narkose
-     * @param i integer from the narkose
-     * @return string with its description
+     * Converts an integer to its description from narkose
+     * @param i Integer from the narkose
+     * @return String with its description
      */
     public static String narkoseConverter(Integer i){
         if(i == null){return null;}
@@ -95,9 +95,9 @@ public class Converter {
     }
 
     /**
-     * converts a diagnosis type to its string
-     * @param i integer from the diagnis
-     * @return the string from the description of the diagnosis type
+     * Converts a diagnosis type to its string
+     * @param i Integer from the diagnis
+     * @return The string from the description of the diagnosis type
      */
     public static String diagnoseTypConverter(Integer i){
         if(i == null){return null;}
@@ -106,9 +106,9 @@ public class Converter {
     }
 
     /**
-     * converts a sex char into the word
-     * @param s s ist the char of the sex
-     * @return string of the sex
+     * Converts a sex char into the word
+     * @param s S ist the char of the sex
+     * @return String of the sex
      */
     public static String geschlechtConverter(String s){
         if(s == null){return null;}
@@ -118,9 +118,9 @@ public class Converter {
     }
 
     /**
-     * converts the sex into the iss standard for the hl7 message
+     * Converts the sex into the iss standard for the hl7 message
      * @param s String from the sex of our database logic
-     * @return the string of the sex for the iss standard
+     * @return The string of the sex for the iss standard
      */
     public static String IssSexConverter(String s){
         if(s == null){return null;}
@@ -131,8 +131,8 @@ public class Converter {
 
     /**
      * Converts the iss standard of the sec into our logic
-     * @param s the iss sex of the sent person
-     * @return the string of the sex in our logic
+     * @param s The iss sex of the sent person
+     * @return The string of the sex in our logic
      */
     public static String SexFromISSToOurConverter(String s){
         if(s == null){return null;}
@@ -143,8 +143,8 @@ public class Converter {
 
     /**
      * Converts the key of the role to the given description.
-     * @param i the int value of the role.
-     * @return the String value of the role description.
+     * @param i The int value of the role.
+     * @return The String value of the role description.
      */
     public static String roleConverter(Integer i){
         if(i == null){return null;}
@@ -154,18 +154,16 @@ public class Converter {
             case 2:
                 return "Assistenzarzt";
             case 3:
-                return "Diagnosesteller";
-            case 4:
                 return "leitender Chirurg";
-            case 5:
+            case 4:
                 return "Operateur";
         }
         return "";
     }
 
     /**
-     * creates a callback from all patients which prints only the last and first name of each patient
-     * @return the callback
+     * Creates a callback from all patients which prints only the last and first name of each patient
+     * @return The callback
      */
     public static Callback<ListView<Patient>, ListCell<Patient>> getPatient() {
         Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
@@ -186,6 +184,11 @@ public class Converter {
         };
         return cellFactory;
     }
+
+    /**
+     * Creates a callback from all Operations which prints only the OP-ID of each Operation
+     * @return the Callback
+     */
     public static Callback<ListView<Operation>, ListCell<Operation>> getOperation(){
         Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
             @Override

@@ -100,7 +100,7 @@ public class Patient extends TableImpl<PatientRecord> {
     /**
      * The column <code>pmiw21g05_v01.patient.erstell_zeit</code>.
      */
-    public final TableField<PatientRecord, LocalDateTime> ERSTELL_ZEIT = createField(DSL.name("erstell_zeit"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.field("'0000-00-00 00:00:00'", SQLDataType.LOCALDATETIME)), this, "");
+    public final TableField<PatientRecord, LocalDateTime> ERSTELL_ZEIT = createField(DSL.name("erstell_zeit"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.field("current_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
 
     /**
      * The column <code>pmiw21g05_v01.patient.storniert</code>.

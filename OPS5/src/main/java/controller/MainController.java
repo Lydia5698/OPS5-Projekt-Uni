@@ -1,6 +1,11 @@
 package controller;
 
+import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -14,6 +19,7 @@ import javafx.util.Callback;
 import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.pojos.MedPersonal;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -32,7 +38,7 @@ public class MainController {
     @FXML
     private Label systemMessage;
     @FXML
-    private ComboBox<MedPersonal> employeeId;
+    private SearchableComboBox<MedPersonal> employeeId;
     @FXML
     private Button btnLogout;
     // Controllers
@@ -62,7 +68,7 @@ public class MainController {
      * anywhere via MainController.getInstance(). This allows accessing all nested
      * Controllers and their fields!
      *
-     * @return the instance of the MainController as initialized by the FXMLLoader
+     * @return The instance of the MainController as initialized by the FXMLLoader
      * in main.
      */
     public static MainController getInstance() {
@@ -73,32 +79,32 @@ public class MainController {
      * Is called once from the Main class to initialize the Instance! Do not use
      * this Method unless you know exactly what you are doing!
      *
-     * @param instance the instance to set
+     * @param instance The instance to set
      */
     public static void setInstance(MainController instance) {
         MainController.instance = instance;
     }
 
     /**
-     * show all employees in a combobox by their persid and their name
+     * Show all employees in a combobox by their Pers-ID and their name
      */
     private void setEmployeeId() {
         createEmployeeComboBox(employeeId, 1);
     }
 
     /**
-     * returns the person which is currently logged in
+     * Returns the person which is currently logged in
      *
-     * @return persid from the user
+     * @return Pers-ID from the user
      */
     public static String getUserId() {
         return getInstance().employeeId.getValue().getPersId();
     }
 
     /**
-     * clears the selection of the employee and opens a new window to log in
+     * Clears the selection of the employee and opens a new window to log in
      *
-     * @param actionEvent
+     * @param actionEvent Of the logout Button
      */
     public void log_out(ActionEvent actionEvent) {
         employeeId.getSelectionModel().clearSelection();
@@ -120,12 +126,11 @@ public class MainController {
         }
 
     }
-
     /**
-     * sets all employees into a combobox
+     * Sets all employees into a combobox
      *
-     * @param employee the combobox
-     * @param i        the index of the selected employee
+     * @param employee The combobox
+     * @param i        The index of the selected employee
      */
     public static void createEmployeeComboBox(ComboBox<MedPersonal> employee, int i) {
         Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
@@ -151,13 +156,25 @@ public class MainController {
         var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000"))//KIS
                 .collect(Collectors.toList());
         employee.getItems().setAll(result);
+        employee.setSelectionModel(new CustomSelectionModel<>(employee));
         employee.getSelectionModel().select(i);
+        employee.valueProperty().addListener(new ChangeListener<MedPersonal>() {
+            @Override
+            public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        employee.setValue(oldValue);
+                    });
+                }
+
+            }
+        });
     }
 
     /**
-     * !!! only used by LogOutController when nobody is logedin!!!
+     * !!! Only used by LogInController when nobody is logged in!!!
      *
-     * @param i index of selected employee in log in window
+     * @param i Index of selected employee in log in window
      */
     public static void setEmployee(int i) {
         createEmployeeComboBox(instance.employeeId, i);

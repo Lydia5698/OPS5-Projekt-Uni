@@ -2,10 +2,10 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import org.controlsfx.control.SearchableComboBox?>
 
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="1156.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OverviewController">
 	<children>
@@ -44,7 +44,7 @@
             <TableColumn fx:id="bearbeiterzeitCol" prefWidth="140.0" text="Bearbeiterzeit" />
             <TableColumn fx:id="storniertCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>
-      <ComboBox layoutX="233.0" layoutY="16.0" prefWidth="150.0" promptText="Station" visible="false" />
+      <SearchableComboBox layoutX="233.0" layoutY="16.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="150.0" promptText="Station" visible="false" />
       <Button fx:id="btnDiag" layoutX="422.0" layoutY="422.0" mnemonicParsing="false" onAction="#createAndShowDiagnosisWindow" text="Diagnosen" />
       <Button fx:id="btnProc" layoutX="527.0" layoutY="422.0" mnemonicParsing="false" onAction="#createAndShowProcedureWindow" text="Prozeduren" />
       <TableView fx:id="opListOperation" layoutX="745.0" layoutY="45.0" prefHeight="353.0" prefWidth="262.0">

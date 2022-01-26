@@ -1,4 +1,8 @@
 package controller;
+import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -10,6 +14,7 @@ import jooq.tables.pojos.*;
 import main.Main;
 
 import ExternalFiles.DateTimePicker;
+import org.controlsfx.control.SearchableComboBox;
 
 /**
  * The OPController is visually a part of the Admission window.
@@ -18,17 +23,17 @@ import ExternalFiles.DateTimePicker;
 public class OPController{	
     
     @FXML
-    private ComboBox<Fall> opCaseId;
+    private SearchableComboBox<Fall> opCaseId;
     @FXML
     private DateTimePicker opDateBegin;
     @FXML
     private DateTimePicker opDateEnd;
     @FXML
-    private ComboBox<OpTypSt> opType;
+    private SearchableComboBox<OpTypSt> opType;
     @FXML
-    private ComboBox<OpSaalSt> opRoom;
+    private SearchableComboBox<OpSaalSt> opRoom;
     @FXML
-    private ComboBox<NarkoseSt> narkose;
+    private SearchableComboBox<NarkoseSt> narkose;
     @FXML
     private DateTimePicker cutTime;
     @FXML
@@ -40,7 +45,7 @@ public class OPController{
 
     /**
      * This method returns the integer of the selected integer
-     * @return the integer of the selected op case
+     * @return The integer of the selected op case
      */
     public Integer getOpCaseId() {
         if(opCaseId.getSelectionModel().getSelectedItem() != null){
@@ -57,7 +62,7 @@ public class OPController{
 
     /**
      * This method returns the time and date of the beginning of the operation.
-     * @return an DateTimePicker object with the selected beginning time.
+     * @return An DateTimePicker object with the selected beginning time.
      */
     public LocalDateTime getOpDateBegin() {
         if(opDateBegin.getDateTimeValue() != null){
@@ -71,7 +76,7 @@ public class OPController{
 
     /**
      * This method returns the time and date of the ending of the operation.
-     * @return an DateTimePicker object with the selected ending time.
+     * @return An DateTimePicker object with the selected ending time.
      */
     public LocalDateTime getOpDateEnd() {
         if(opDateEnd.getDateTimeValue() != null){
@@ -84,7 +89,7 @@ public class OPController{
 
     /**
      * Getter for the operation type.
-     * @return the int value of the OpTyp.
+     * @return The int value of the OpTyp.
      */
     public Integer getOpType() {
         if(opType.getSelectionModel().getSelectedItem() != null){
@@ -95,7 +100,7 @@ public class OPController{
 
     /**
      * Getter for the operation room.
-     * @return the int value of the code of the selected OpRoom.
+     * @return The int value of the code of the selected OpRoom.
      */
     public Integer getOpRoomCode() {
         if(opRoom.getSelectionModel().getSelectedItem() != null){
@@ -106,7 +111,7 @@ public class OPController{
 
     /**
      * Getter for the type of Narkose.
-     * @return the int value of Narkose.
+     * @return The int value of Narkose.
      */
     public Integer getNarkose() {
         if(narkose.getSelectionModel().getSelectedItem() != null){
@@ -117,7 +122,7 @@ public class OPController{
 
     /**
      * Getter for the cutting time.
-     * @return an DateTimePicker object with the selected cutting time.
+     * @return An DateTimePicker object with the selected cutting time.
      */
     public LocalDateTime getCutTime() {
         if(cutTime.getDateTimeValue() != null){
@@ -130,7 +135,7 @@ public class OPController{
 
     /**
      * Getter for the sewing time.
-     * @return an DateTimePicker object with the selected sewing time.
+     * @return An DateTimePicker object with the selected sewing time.
      */
     public LocalDateTime getSewTime() {
         if(sewTime.getDateTimeValue() != null){
@@ -143,13 +148,13 @@ public class OPController{
 
     /**
      * Getter for the amount of belly towels before the operation.
-     * @return int value of belly towels before the operation.
+     * @return Int value of belly towels before the operation.
      */
     public Integer getTowelBefore() {return (Integer) towelsBefore.getValue();}
 
     /**
      * Getter for the amount of belly towels after the operation.
-     * @return int value of belly towels after the operation.
+     * @return Int value of belly towels after the operation.
      */
     public Integer getTowelAfter() {return (Integer) towelsAfter.getValue();}
 
@@ -157,7 +162,7 @@ public class OPController{
      * Sets the values for the combobox of the cases.
      * This method is called when the window gets initialized and every time, a new patient is selected.
      * It then displayes all cases of the selected patient.
-     * @param patId of the selected patient.
+     * @param patId Of the selected patient.
      */
     public void setCase(Integer patId){
         Callback<ListView<Fall>, ListCell<Fall>> cellFactory = new Callback<>() {
@@ -180,6 +185,17 @@ public class OPController{
         opCaseId.setCellFactory(cellFactory);
         opCaseId.getItems().setAll(new FallDao(Main.configuration).fetchByPatId(patId));
         opCaseId.valueProperty().set(null);
+        opCaseId.setSelectionModel(new CustomSelectionModel<>(opCaseId));
+        opCaseId.valueProperty().addListener(new ChangeListener<Fall>() {
+            @Override
+            public void changed(ObservableValue<? extends Fall> observable, Fall oldValue, Fall newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        opCaseId.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -206,6 +222,17 @@ public class OPController{
         opType.setButtonCell(cellFactory.call(null));
         opType.setCellFactory(cellFactory);
         opType.getItems().setAll(new OpTypStDao(Main.configuration).findAll());
+        opType.setSelectionModel(new CustomSelectionModel<>(opType));
+        opType.valueProperty().addListener(new ChangeListener<OpTypSt>() {
+            @Override
+            public void changed(ObservableValue<? extends OpTypSt> observable, OpTypSt oldValue, OpTypSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        opType.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
     /**
      * This method is called when initialising the window.
@@ -222,7 +249,7 @@ public class OPController{
                         if (opSaal == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(opSaal.getCode() + ", " + opSaal.getBeschreibung());
+                            setText(opSaal.getBeschreibung());
                         }
                     }
                 };
@@ -231,6 +258,17 @@ public class OPController{
         opRoom.setButtonCell(cellFactory.call(null));
         opRoom.setCellFactory(cellFactory);
         opRoom.getItems().setAll(new OpSaalStDao(Main.configuration).findAll());
+        opRoom.setSelectionModel(new CustomSelectionModel<>(opRoom));
+        opRoom.valueProperty().addListener(new ChangeListener<OpSaalSt>() {
+            @Override
+            public void changed(ObservableValue<? extends OpSaalSt> observable, OpSaalSt oldValue, OpSaalSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        opRoom.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
     /**
      * This method is called when initialising the window.
@@ -256,6 +294,17 @@ public class OPController{
         narkose.setButtonCell(cellFactory.call(null));
         narkose.setCellFactory(cellFactory);
         narkose.getItems().setAll(new NarkoseStDao(Main.configuration).findAll());
+        narkose.setSelectionModel(new CustomSelectionModel<>(narkose));
+        narkose.valueProperty().addListener(new ChangeListener<NarkoseSt>() {
+            @Override
+            public void changed(ObservableValue<? extends NarkoseSt> observable, NarkoseSt oldValue, NarkoseSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        narkose.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -276,7 +325,7 @@ public class OPController{
 	}
 
     /**
-     * after the successfully insertion of an operation set all fields to default
+     * After the successfully insertion of an operation set all fields to default
      */
 	public void clearFields(){
         opType.getSelectionModel().clearSelection();
@@ -292,7 +341,7 @@ public class OPController{
 
     /**
      * Sets the combo boxes in the Edit Op window to the values of the previously selected op to be edited.
-     * @param opID the OpId to be processed
+     * @param opID The OpId to be processed
      */
     public void initializeDefaultComboboxen(int opID){
         Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);

@@ -1,7 +1,11 @@
 package controller;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +17,7 @@ import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,10 +60,10 @@ public class ProcedureController {
     private TableColumn<Prozedur, String> erstellerCol;
 
     @FXML
-    private ComboBox<Operation> procedureOpID;
+    private SearchableComboBox<Operation> procedureOpID;
 
     @FXML
-    private ComboBox<OpsCodeSt> procedureOpsCode;
+    private SearchableComboBox<OpsCodeSt> procedureOpsCode;
 
     @FXML
     private TextField procedureAnmerkung;
@@ -82,7 +87,7 @@ public class ProcedureController {
      * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
      * a Procedure. If the User isn't missing any necessary Values the Procedure is edited and the Window closes
      *
-     * @param event the event of pushing the Speichern Button
+     * @param event The event of pushing the Speichern Button
      */
     @FXML
     public void editProcedure(ActionEvent event) {
@@ -106,7 +111,7 @@ public class ProcedureController {
      * Launches when the Button Neue Prozedur is pressed. It sets the flag false so that we know that the user wants to create
      * a new Procedure. If the User isn't missing any necessary Values the Procedure is saved and the Window closes
      *
-     * @param event the event of pushing the Neue Diagnose Button
+     * @param event The event of pushing the Neue Diagnose Button
      */
     @FXML
     void createNewProcedure(ActionEvent event) {
@@ -213,7 +218,7 @@ public class ProcedureController {
     /**
      * Checks if all the necessary Values for the Procedure are selected
      *
-     * @return boolean if no Statement is missing
+     * @return Boolean if no Statement is missing
      */
     public boolean noMissingStatement() {
         if (procedureOpID.getSelectionModel().isEmpty()) {
@@ -247,13 +252,27 @@ public class ProcedureController {
      */
     @FXML
     void mouseEntered(MouseEvent event) {
-
         if (event.getClickCount() > 0) {
             Prozedur prozedur = procedureTable.getSelectionModel().getSelectedItem();
             OpsCodeSt opsCodeSt = new OpsCodeStDao(Main.configuration).fetchOneByOpsCode(prozedur.getOpsCode());
             Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(prozedur.getOpId());
-            procedureOpsCode.setValue(opsCodeSt);
-            procedureOpID.setValue(operation);
+            OpsCodeSt opsCodeSt1 = new OpsCodeSt(opsCodeSt){
+                @Override
+                public String toString(){
+                    String sb =  opsCodeSt.getOpsCode() + " " +
+                            opsCodeSt.getBeschreibung();
+                    return sb;
+                }
+            };
+            Operation operation1 = new Operation(operation){
+                @Override
+                public String toString(){
+                    String sb =  operation.getOpId().toString();
+                    return sb;
+                }
+            };
+            procedureOpsCode.setValue(opsCodeSt1);
+            procedureOpID.setValue(operation1);
         }
 
     }
@@ -281,6 +300,17 @@ public class ProcedureController {
         procedureOpID.setButtonCell(cellFactory.call(null));
         procedureOpID.setCellFactory(cellFactory);
         procedureOpID.getItems().setAll(new OperationDao(Main.configuration).findAll());
+        procedureOpID.setSelectionModel(new CustomSelectionModel<>(procedureOpID));
+        procedureOpID.valueProperty().addListener(new ChangeListener<Operation>() {
+            @Override
+            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        procedureOpID.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -306,6 +336,17 @@ public class ProcedureController {
         procedureOpsCode.setButtonCell(cellFactory.call(null));
         procedureOpsCode.setCellFactory(cellFactory);
         procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
+        procedureOpsCode.setSelectionModel(new CustomSelectionModel<>(procedureOpsCode));
+        procedureOpsCode.valueProperty().addListener(new ChangeListener<OpsCodeSt>() {
+            @Override
+            public void changed(ObservableValue<? extends OpsCodeSt> observable, OpsCodeSt oldValue, OpsCodeSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        procedureOpsCode.setValue(oldValue);
+                    });
+                }
+            }
+        });
 
     }
 }

@@ -15,7 +15,7 @@ public class WebViewController {
     private WebView pubMedView;
 
     /**
-     * initialize the Webpage for the Pub Med search
+     * Initialize the Webpage for the Pub Med search
      */
     @FXML
     public void initialize(){
@@ -23,7 +23,7 @@ public class WebViewController {
 
     /**
      * Loads the PubMed web page using the entered url
-     * @param url the PubMed Url
+     * @param url The PubMed Url
      */
     public void webView(String url){
         pubMedView.getEngine().load(url);

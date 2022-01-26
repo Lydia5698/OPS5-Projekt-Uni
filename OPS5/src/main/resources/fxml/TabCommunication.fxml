@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
+<?import org.controlsfx.control.SearchableComboBox?>
 
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="712.0" prefWidth="826.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CommunicationsController">
 	<children>
 		<Text layoutX="40.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Zieladresse" />
-		<ComboBox fx:id="communicationsObject" layoutX="479.0" layoutY="83.0" prefHeight="25.0" prefWidth="195.0" />
+		<SearchableComboBox fx:id="communicationsObject" layoutX="479.0" layoutY="83.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="195.0" />
 		<TextField fx:id="communicationsIpAddress" layoutX="110.0" layoutY="84.0" prefHeight="25.0" prefWidth="142.0" />
 		<TextField fx:id="communicationsPort" layoutX="302.0" layoutY="84.0" prefHeight="25.0" prefWidth="75.0" />
       <TableView fx:id="ts" layoutX="26.0" layoutY="128.0" prefHeight="392.0" prefWidth="765.0">

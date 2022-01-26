@@ -1,7 +1,11 @@
 package controller;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,6 +24,7 @@ import jooq.tables.pojos.RolleSt;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Rolle;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,11 +56,11 @@ public class RoleOverviewController {
 	@FXML
 	private TableColumn<Rolle, String> bearbeiterCol;
 	@FXML
-	private ComboBox<MedPersonal> mitarbeiter;
+	private SearchableComboBox<MedPersonal> mitarbeiter;
 	@FXML
-	private ComboBox<RolleSt> role;
+	private SearchableComboBox<RolleSt> role;
 	@FXML
-	private ComboBox<Operation> op;
+	private SearchableComboBox<Operation> op;
 
 
 	/**
@@ -90,7 +95,7 @@ public class RoleOverviewController {
 
 	/**
 	 * Launches when the Button Neue Rolle is pressed. It creates a new Rolle with the selected values.
-	 * @param event the event of pushing the Neue Rolle Button
+	 * @param event The event of pushing the Neue Rolle Button
 	 */
 	@FXML
 	void createNewRole(ActionEvent event) {
@@ -133,7 +138,7 @@ public class RoleOverviewController {
 	/**
 	 * Launches when the Button Speichern is pressed. It updates the selected role to the values that the user selects.
 	 * If no role is selected, an alert is shown that you need to select a role before you can edit one.
-	 * @param event the event of pushing the Speichern Button
+	 * @param event The event of pushing the Speichern Button
 	 */
 	@FXML
 	public void createRole(ActionEvent event){
@@ -168,7 +173,7 @@ public class RoleOverviewController {
 
 	/**
 	 * Collects all Roles from the Database and saves them in a observable Array List from Type Role pojo
-	 * @return all Roles
+	 * @return All Roles
 	 */
 	public static ObservableList<Rolle> roleView(){
 		RolleDao roleDao = new RolleDao(Main.configuration);
@@ -248,6 +253,17 @@ public class RoleOverviewController {
 		role.setButtonCell(cellFactory.call(null));
 		role.setCellFactory(cellFactory);
 		role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
+		role.setSelectionModel(new CustomSelectionModel<>(role));
+		role.valueProperty().addListener(new ChangeListener<RolleSt>() {
+			@Override
+			public void changed(ObservableValue<? extends RolleSt> observable, RolleSt oldValue, RolleSt newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						role.setValue(oldValue);
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -274,6 +290,17 @@ public class RoleOverviewController {
 		op.setButtonCell(cellFactory.call(null));
 		op.setCellFactory(cellFactory);
 		op.getItems().setAll(new OperationDao(Main.configuration).findAll());
+		op.setSelectionModel(new CustomSelectionModel<>(op));
+		op.valueProperty().addListener(new ChangeListener<Operation>() {
+			@Override
+			public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						op.setValue(oldValue);
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -304,6 +331,17 @@ public class RoleOverviewController {
 		var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
 				.collect(Collectors.toList());
 		mitarbeiter.getItems().setAll(result);
+		mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
+		mitarbeiter.valueProperty().addListener(new ChangeListener<MedPersonal>() {
+			@Override
+			public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						mitarbeiter.setValue(oldValue);
+					});
+				}
+			}
+		});
 	}
 
 }

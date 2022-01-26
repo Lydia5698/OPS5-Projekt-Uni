@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import ExternalFiles.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.controlsfx.control.SearchableComboBox?>
 
 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="827.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RoleOverviewController">
 	<children>
@@ -34,9 +34,9 @@
             <RowConstraints maxHeight="135.0" minHeight="10.0" prefHeight="135.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <ComboBox fx:id="mitarbeiter" GridPane.columnIndex="1" />
-            <ComboBox fx:id="role" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <ComboBox fx:id="op" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <SearchableComboBox fx:id="mitarbeiter" GridPane.columnIndex="1" />
+            <SearchableComboBox fx:id="role" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <SearchableComboBox fx:id="op" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Mitarbeiter" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Rolle" GridPane.rowIndex="2" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="OP" GridPane.rowIndex="1" />

@@ -63,12 +63,12 @@ public class DiagnosetypSt implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(); //"DiagnosetypSt ("
+        StringBuilder sb = new StringBuilder("DiagnosetypSt (");
 
-        sb.append(beschreibung);
-        //sb.append(", ").append(diagnosetyp);
+        sb.append(diagnosetyp);
+        sb.append(", ").append(beschreibung);
 
-        //sb.append(")");
+        sb.append(")");
         return sb.toString();
     }
 }

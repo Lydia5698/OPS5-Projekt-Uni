@@ -1,7 +1,11 @@
 package controller;
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +22,7 @@ import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 import org.jooq.meta.derby.sys.Sys;
 import org.jooq.tools.json.JSONArray;
 import org.jooq.tools.json.JSONObject;
@@ -41,11 +46,11 @@ import java.util.stream.Collectors;
 public class DiagnosisController {
 	
 	@FXML
-	private ComboBox<Operation> diagnosisOpId;
+	private SearchableComboBox<Operation> diagnosisOpId;
 	@FXML
-	private ComboBox<Icd10CodeSt> diagnosisIcdCode;
+	private SearchableComboBox<Icd10CodeSt> diagnosisIcdCode;
 	@FXML
-	private ComboBox<DiagnosetypSt> diagnosisType;
+	private SearchableComboBox<DiagnosetypSt> diagnosisType;
 	@FXML
 	private TextField diagnosisFreetext;	
 	@FXML
@@ -106,7 +111,7 @@ public class DiagnosisController {
 	/**
 	 * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
 	 * a Diagnosis. If the User isn't missing any necessary Values the Diagnose is edited and the Window closes
-	 * @param event the event of pushing the Speichern Button
+	 * @param event The event of pushing the Speichern Button
 	 */
 	@FXML
 	public void editDiagnosis(ActionEvent event){
@@ -137,7 +142,7 @@ public class DiagnosisController {
 	/**
 	 * Launches when the Button Neue Diagnose is pressed. It sets the flag false so that we know that the user wants to create
 	 * a new Diagnosis. If the User isn't missing any necessary Values the Diagnose is saved and the Window closes
-	 * @param event the event of pushing the Neue Diagnose Button
+	 * @param event The event of pushing the Neue Diagnose Button
 	 */
 	@FXML
 	void createNewDiagnosis(ActionEvent event) {
@@ -269,6 +274,17 @@ public class DiagnosisController {
 		diagnosisOpId.setButtonCell(cellFactory.call(null));
 		diagnosisOpId.setCellFactory(cellFactory);
 		diagnosisOpId.getItems().setAll(new OperationDao(Main.configuration).findAll());
+		diagnosisOpId.setSelectionModel(new CustomSelectionModel<>(diagnosisOpId));
+		diagnosisOpId.valueProperty().addListener(new ChangeListener<Operation>() {
+			@Override
+			public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						diagnosisOpId.setValue(oldValue);
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -294,6 +310,17 @@ public class DiagnosisController {
 		diagnosisIcdCode.setButtonCell(cellFactory.call(null));
 		diagnosisIcdCode.setCellFactory(cellFactory);
 		diagnosisIcdCode.getItems().setAll(new Icd10CodeStDao(Main.configuration).findAll());
+		diagnosisIcdCode.setSelectionModel(new CustomSelectionModel<>(diagnosisIcdCode));
+		diagnosisIcdCode.valueProperty().addListener(new ChangeListener<Icd10CodeSt>() {
+			@Override
+			public void changed(ObservableValue<? extends Icd10CodeSt> observable, Icd10CodeSt oldValue, Icd10CodeSt newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						diagnosisIcdCode.setValue(oldValue);
+					});
+				}
+			}
+		});
 	}
 
 	/**
@@ -319,6 +346,19 @@ public class DiagnosisController {
 		diagnosisType.setButtonCell(cellFactory.call(null));
 		diagnosisType.setCellFactory(cellFactory);
 		diagnosisType.getItems().setAll(new DiagnosetypStDao(Main.configuration).findAll());
+		diagnosisType.setSelectionModel(new CustomSelectionModel<>(diagnosisType));
+		diagnosisType.valueProperty().addListener(new ChangeListener<DiagnosetypSt>() {
+			@Override
+			public void changed(ObservableValue<? extends DiagnosetypSt> observable, DiagnosetypSt oldValue, DiagnosetypSt newValue) {
+				if(newValue == null){
+					Platform.runLater(()->{
+						diagnosisType.setValue(oldValue);
+					});
+				}
+			}
+		});
+
+
 	}
 
 	/**
@@ -332,15 +372,34 @@ public class DiagnosisController {
 			Icd10CodeSt icd10CodeSt = new Icd10CodeStDao(Main.configuration).fetchOneByIcd10Code(diagnose.getIcd10Code());
 			Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(diagnose.getOpId());
 			DiagnosetypSt diagnosetypSt = new DiagnosetypStDao(Main.configuration).fetchOneByDiagnosetyp(diagnose.getDiagnosetyp());
-			diagnosisIcdCode.setValue(icd10CodeSt);
-			diagnosisOpId.setValue(operation);
-			diagnosisType.setValue(diagnosetypSt);
+			Icd10CodeSt icd10CodeSt1 = new Icd10CodeSt(icd10CodeSt){
+				@Override
+				public String toString(){
+					return icd10CodeSt.getIcd10Code() + " " +
+							icd10CodeSt.getBeschreibung();
+				}
+			};
+			Operation operation1 = new Operation(operation){
+				@Override
+				public String toString(){
+					return operation.getOpId().toString();
+				}
+			};
+			DiagnosetypSt diagnosetypSt1 = new DiagnosetypSt(diagnosetypSt){
+				@Override
+				public String toString(){
+					return diagnosetypSt.getBeschreibung();
+				}
+			};
+			diagnosisIcdCode.setValue(icd10CodeSt1);
+			diagnosisOpId.setValue(operation1);
+			diagnosisType.setValue(diagnosetypSt1);
 		}
 	}
 
 	/**
 	 * Checks if all the necessary Values for the Diagnosis are selected
-	 * @return boolean if no Statement is missing
+	 * @return Boolean if no Statement is missing
 	 */
 	public boolean noMissingStatement(){
 
@@ -436,6 +495,12 @@ public class DiagnosisController {
 
 	}
 
+	/**
+	 * Finds the JSON object for the given icd-10 code
+	 * @param code ICD-10 Code to be found
+	 * @return JSON Object
+	 * @throws Exception
+	 */
 	private JSONObject getJsonForCode(String code) throws Exception {
 		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -446,6 +511,12 @@ public class DiagnosisController {
 				new InputStreamReader(responseStream, "UTF-8"));
 	}
 
+	/**
+	 * Searches for an result for the given ICD-10 code. To achieve this, various terminal codes are compared with the JSON file.
+	 * @param code Selected ICD-10 Code
+	 * @return JSON Object of the ICD-10 code, null if nothing was found
+	 * @throws Exception
+	 */
 	private JSONObject searchForResult(Icd10CodeSt code) throws Exception {
 		JSONObject result = getJsonForCode(code.getIcd10Code());
 		if(wasFound(result)){return result;}
@@ -461,6 +532,11 @@ public class DiagnosisController {
 		return null;
 	}
 
+	/**
+	 * Checks if the JSON file was found and has a content
+	 * @param json The JSON file to be checked
+	 * @return True if found, false if not
+	 */
 	private boolean wasFound(JSONObject json) {
 		JSONArray array = (JSONArray) json.get("parameter");
 		for (int i = 0; i < array.size(); i++) {
@@ -472,6 +548,12 @@ public class DiagnosisController {
 		return false;
 	}
 
+	/**
+	 * Finds the JSON entry with the Name name and returns the item
+	 * @param array With JSON Items
+	 * @param name Name of the item
+	 * @return The item if found else null
+	 */
 	private JSONObject findJsonByName(JSONArray array, String name) {
 		if (array==null) {return null;}
 		for (int i = 0; i < array.size(); i++) {

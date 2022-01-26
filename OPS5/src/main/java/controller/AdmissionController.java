@@ -1,5 +1,9 @@
 package controller;
 
+import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,6 +22,7 @@ import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -33,7 +38,7 @@ public class AdmissionController {
     private Parent root;
 
     @FXML
-    private ComboBox<Patient> selectPatient;
+    private SearchableComboBox<Patient> selectPatient;
 
     @FXML
     private OPController opController;
@@ -57,7 +62,7 @@ public class AdmissionController {
                         if (pat == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(pat.getName() + ", " + pat.getVorname() + ";  " + pat.getPatId());
+                            setText(pat.getName() + ", " + pat.getVorname() + " (" + pat.getPatId() + ")");
                         }
                     }
                 };
@@ -66,6 +71,17 @@ public class AdmissionController {
         selectPatient.setButtonCell(cellFactory.call(null));
         selectPatient.setCellFactory(cellFactory);
         selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
+        selectPatient.setSelectionModel(new CustomSelectionModel<>(selectPatient));
+        selectPatient.valueProperty().addListener(new ChangeListener<Patient>() {
+            @Override
+            public void changed(ObservableValue<? extends Patient> observable, Patient oldValue, Patient newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        selectPatient.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -142,7 +158,7 @@ public class AdmissionController {
     /**
      * Checks the user input for the operation for incorrect input
      *
-     * @return true if no false Statement
+     * @return True if no false Statement
      */
     private Boolean noFalseStatement() {
         Alert alert = new Alert(AlertType.ERROR);
@@ -280,7 +296,7 @@ public class AdmissionController {
     }
 
     /**
-     * after succussfully insertion of operation set all fields to default
+     * After succussfully insertion of operation set all fields to default
      */
     private void clearFields() {
         selectPatient.getSelectionModel().clearSelection();
@@ -291,7 +307,7 @@ public class AdmissionController {
      * Launches when the Button Speichern is pressed. It sets the flag true so that we know that the user wants to edit
      * the Operation. The Operation is edited and the Window closes
      *
-     * @param event the event of pushing the Speichern Button
+     * @param event The event of pushing the Speichern Button
      */
     @FXML
     public void saveEditOp(ActionEvent event) {
@@ -306,7 +322,7 @@ public class AdmissionController {
     /**
      * Sets the comboboxes in the Edit Op window to the values of the previously selected op to be edited.
      *
-     * @param opID the OpId to be processed
+     * @param opID The OpId to be processed
      */
     public void initializeComboboxen(int opID) {
         opController.initializeDefaultComboboxen(opID);
@@ -316,10 +332,9 @@ public class AdmissionController {
         Patient patient1 = new Patient(patient) {
             @Override
             public String toString() {
-                String sb = "" + patient.getName() + ", " +
+                return "" + patient.getName() + ", " +
                         patient.getVorname() + ", PatID: " +
                         patient.getPatId();
-                return sb;
             }
         };
         selectPatient.setValue(patient1);

@@ -254,7 +254,6 @@ public class OverviewController {
         paStorniert.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
         paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));
         paStrasse.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStrasse()));
-        paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));
         paPostleitzahl.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getPostleitzahl()));
         paTelefonnummer.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getTelefonnummer()));
 
@@ -403,7 +402,7 @@ public class OverviewController {
 
     /**
      * Collects all Patients from the Database and saves them in a observable Array List from Type Patient pojo
-     * @return all Patients
+     * @return All Patients
      */
     public static ObservableList<Patient> patientView(){
         //PatientDao patientDao = new PatientDao(Main.configuration);
@@ -421,7 +420,7 @@ public class OverviewController {
     /**
      * Collects all Cases from the Database and saves them in a observable Array List from Type Fall pojo
      * @param patientId Patient ID from the selected Patient in the Table view
-     * @return all cases by Patient ID
+     * @return All cases by Patient ID
      */
     public static ObservableList<Fall> fallView(int patientId){
         FallDao fallDao = new FallDao(Main.configuration);
@@ -431,7 +430,7 @@ public class OverviewController {
 
     /**
      * Collects the Medical staff from the Database and saves them in a observable Array List from Type MedPersonal pojo
-     * @return the Medical staff
+     * @return The Medical staff
      */
     public static ObservableList<MedPersonal> medPersonal(){
         MedPersonalDao medPersonalDao = new MedPersonalDao(Main.configuration);
@@ -443,7 +442,7 @@ public class OverviewController {
     /**
      * Collects all Operations from the Database and saves them in a observable Array List from Type Operation pojo
      * @param id Case ID from the selected Case in the Table view
-     * @return all Operations by Case
+     * @return All Operations by Case
      */
     public static ObservableList<Operation> operationView(Integer id){
         OperationDao operationDao = new OperationDao(Main.configuration);
@@ -460,7 +459,6 @@ public class OverviewController {
 
     /**
      * Deletes an selected Operation (sets storniert true) and updates this Operation
-     *
      */
     @FXML
     void storniereOP() {

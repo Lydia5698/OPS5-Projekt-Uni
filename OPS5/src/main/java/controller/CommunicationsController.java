@@ -1,6 +1,7 @@
 package controller;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.TableViewMessage;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
@@ -10,16 +11,21 @@ import connection.MessageParser;
 import connection.Server;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
+import jooq.tables.daos.DiagnoseDao;
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.OperationDao;
 import jooq.tables.daos.PatientDao;
+import jooq.tables.pojos.Diagnose;
 import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.Operation;
 import jooq.tables.pojos.Patient;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -37,7 +43,7 @@ public class CommunicationsController {
     @FXML
     private TextField communicationsPort;
     @FXML
-    private ComboBox<Operation> communicationsObject;
+    private SearchableComboBox<Operation> communicationsObject;
     @FXML
     private TableView<TableViewMessage> ts;
     @FXML
@@ -87,7 +93,7 @@ public class CommunicationsController {
     /**
      * This method returns the instance of the CommunicationController
      *
-     * @return the communicationcontroller
+     * @return The communicationcontroller
      */
     public static CommunicationsController getInstance() {
         return MainController.getInstance().getCommTabController();
@@ -118,12 +124,23 @@ public class CommunicationsController {
         communicationsObject.setButtonCell(cellFactory.call(null));
         communicationsObject.setCellFactory(cellFactory);
         communicationsObject.getItems().setAll(new OperationDao(Main.configuration).findAll());
+        communicationsObject.setSelectionModel(new CustomSelectionModel<>(communicationsObject));
+        communicationsObject.valueProperty().addListener(new ChangeListener<Operation>() {
+            @Override
+            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        communicationsObject.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
      * This method inserts the received message into the tableview as hl7 string
      *
-     * @param message the incomming message
+     * @param message The incomming message
      */
     public void insertReceivedMessage(Message message) {
         try {
@@ -139,7 +156,7 @@ public class CommunicationsController {
     }
 
     /**
-     * when the user pushes the button the selected patient/operation will be sent to the kis
+     * When the user pushes the button the selected patient/operation will be sent to the kis
      */
     @FXML
     public void send() {
@@ -180,8 +197,8 @@ public class CommunicationsController {
     /**
      * This method checks if the sent patient can be inserted into our database
      *
-     * @param patient the sent patient
-     * @return true if he can be inserted and false if not
+     * @param patient The sent patient
+     * @return True if he can be inserted and false if not
      */
     public boolean canInsertPatient(Patient patient) {
         //checking for values which can not be null (in this case it is the patients first and lastname)
@@ -192,10 +209,14 @@ public class CommunicationsController {
         return new PatientDao(Main.configuration).findById(patient.getPatId()) == null;
     }
 
+    public boolean isNewDiagnosis(Diagnose diagnose){
+        return new DiagnoseDao(Main.configuration).findById(diagnose.getDiagnoseId()) == null;
+    }
+
     /**
      * This method inserts if its possible the new Patient into our database
      *
-     * @param patient the sent patient
+     * @param patient The sent patient
      */
     public static void insertNewPatient(Patient patient) {
         PatientDao patientDao = new PatientDao(Main.configuration);
@@ -217,22 +238,26 @@ public class CommunicationsController {
     }
 
     /**
-     * Checks if a case can be inserted (has no invalid entries
+     * Checks if a case can be inserted (has no invalid entries)
      *
-     * @param fall the case
-     * @return true or false
+     * @param fall The case
+     * @return false if there is wrong information about the case
      */
     public boolean canInsertCase(Fall fall) {
         if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())) {
-            return false;
+            return true;
         }
-        return fall.getEntlassungsdatum() == null || !fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum());
+        return !(fall.getEntlassungsdatum() == null || !fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum()));
+    }
+
+    public boolean isNewCase(Fall fall){
+        return new FallDao(Main.configuration).findById(fall.getFallId()) == null;
     }
 
     /**
      * This method checks if the sent case can be inserted in our database and if yes , the case will be inserted
      *
-     * @param fall the sent case
+     * @param fall The sent case
      */
     public static void insertNewCase(Fall fall) {
         FallDao fallDao = new FallDao(Main.configuration);
@@ -242,9 +267,9 @@ public class CommunicationsController {
             alert.setTitle("Error");
             alert.setHeaderText("Fehlender Eintrag!");
 
-            //checking for invalid entrys concerning the dates
+            //checking for invalid entries concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
-            if (!getInstance().canInsertCase(fall)) {
+            if (getInstance().canInsertCase(fall)) {
                 alert.setContentText("Der Fall hat invalide Eingaben und kann nicht eingefügt werden");
                 alert.showAndWait();
             } else {

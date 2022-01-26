@@ -161,7 +161,7 @@ public class Diagnose extends TableImpl<DiagnoseRecord> {
 
     @Override
     public List<ForeignKey<DiagnoseRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.FK_DIAGNOSE_OPERATION1, Keys.FK_DIAGNOSE_DIAGNOSE_TYP_ST, Keys.FK_DIAGNOSE_ICD10_CODE_ST1, Keys.FK_DIAGNOSE_MED_PERSONAL1, Keys.FK_DIAGNOSE_MED_PERSONAL2);
+        return Arrays.asList(Keys.FK_DIAGNOSE_OPERATION1, Keys.FK_DIAGNOSE_DIAGNOSE_TYP_ST, Keys.FK_DIAGNOSE_ICD10_CODE_ST, Keys.FK_DIAGNOSE_MED_PERSONAL1, Keys.FK_DIAGNOSE_MED_PERSONAL2);
     }
 
     private transient Operation _operation;
@@ -186,7 +186,7 @@ public class Diagnose extends TableImpl<DiagnoseRecord> {
 
     public Icd10CodeSt icd10CodeSt() {
         if (_icd10CodeSt == null)
-            _icd10CodeSt = new Icd10CodeSt(this, Keys.FK_DIAGNOSE_ICD10_CODE_ST1);
+            _icd10CodeSt = new Icd10CodeSt(this, Keys.FK_DIAGNOSE_ICD10_CODE_ST);
 
         return _icd10CodeSt;
     }

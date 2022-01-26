@@ -1,5 +1,9 @@
 package controller;
 
+import ExternalFiles.CustomSelectionModel;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -27,6 +31,7 @@ import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Operation;
 import jooq.tables.daos.RolleDao;
 import jooq.tables.pojos.Rolle;
+import org.controlsfx.control.SearchableComboBox;
 
 /**
  * The RoleController is responsible for creating a new role.
@@ -34,11 +39,11 @@ import jooq.tables.pojos.Rolle;
 public class RoleController{
 
     @FXML
-    private ComboBox<MedPersonal> mitarbeiter;
+    private SearchableComboBox<MedPersonal> mitarbeiter;
     @FXML
-    private ComboBox<RolleSt> role;
+    private SearchableComboBox<RolleSt> role;
     @FXML
-    private ComboBox<Operation> op;
+    private SearchableComboBox<Operation> op;
 
     /**
      * This method is called when the window is created.
@@ -78,6 +83,17 @@ public class RoleController{
         role.setButtonCell(cellFactory.call(null));
         role.setCellFactory(cellFactory);
         role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
+        role.setSelectionModel(new CustomSelectionModel<>(role));
+        role.valueProperty().addListener(new ChangeListener<RolleSt>() {
+            @Override
+            public void changed(ObservableValue<? extends RolleSt> observable, RolleSt oldValue, RolleSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        role.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -104,6 +120,17 @@ public class RoleController{
         op.setButtonCell(cellFactory.call(null));
         op.setCellFactory(cellFactory);
         op.getItems().setAll(new OperationDao(Main.configuration).findAll());
+        op.setSelectionModel(new CustomSelectionModel<>(op));
+        op.valueProperty().addListener(new ChangeListener<Operation>() {
+            @Override
+            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        op.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -134,6 +161,17 @@ public class RoleController{
         var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
                 .collect(Collectors.toList());
         mitarbeiter.getItems().setAll(result);
+        mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
+        mitarbeiter.valueProperty().addListener(new ChangeListener<MedPersonal>() {
+            @Override
+            public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        mitarbeiter.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**

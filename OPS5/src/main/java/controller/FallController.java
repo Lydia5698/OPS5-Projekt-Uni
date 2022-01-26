@@ -1,7 +1,11 @@
 package controller;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,21 +20,25 @@ import jooq.tables.pojos.FallTypSt;
 import jooq.tables.pojos.Patient;
 import jooq.tables.pojos.StationSt;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 import org.jooq.exception.DataAccessException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+/**
+ * Takes care of the newly created cases
+ */
 public class FallController {
 
     @FXML
-    private ComboBox<Patient> patient;
+    private SearchableComboBox<Patient> patient;
 
     @FXML
-    private ComboBox<FallTypSt> falltyp;
+    private SearchableComboBox<FallTypSt> falltyp;
 
     @FXML
-    private ComboBox<StationSt> station;
+    private SearchableComboBox<StationSt> station;
 
     @FXML
     private DateTimePicker aufnahmedatum;
@@ -42,7 +50,7 @@ public class FallController {
     private Button speicherbutton;
 
     /**
-     * the comboboxes are filled with the entries of the database
+     * The comboboxes are filled with the entries of the database
      */
     @FXML
     public void initialize() {
@@ -54,24 +62,32 @@ public class FallController {
     }
 
     /**
-     * but all patients into the combobox to select one of them
-     * each patient is represented by its lastname and first name
-     * can't be null for insert a new case!!
+     * But all patients into the combobox to select one of them
+     * each patient is represented by its lastname and first name.
+     * Can't be null for insert a new case!!
      */
     private void setPatient() {
         Callback<ListView<Patient>, ListCell<Patient>> cellFactory = Converter.getPatient();
         patient.setButtonCell(cellFactory.call(null));
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
-
-        //patient.setEditable(true);
-        //TextFields.bindAutoCompletion(patient.getEditor(),patient.getItems());
+        patient.setSelectionModel(new CustomSelectionModel<>(patient));
+        patient.valueProperty().addListener(new ChangeListener<Patient>() {
+            @Override
+            public void changed(ObservableValue<? extends Patient> observable, Patient oldValue, Patient newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        patient.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
-     * but all casetypes into the combox to select one of them
-     * each type is represented by its description
-     * can be null
+     * But all casetypes into the combox to select one of them
+     * each type is represented by its description.
+     * Can be null
      */
     private void setFallTyp(){
         Callback<ListView<FallTypSt>, ListCell<FallTypSt>> cellFactory = new Callback<>() {
@@ -93,12 +109,23 @@ public class FallController {
         falltyp.setButtonCell(cellFactory.call(null));
         falltyp.setCellFactory(cellFactory);
         falltyp.getItems().setAll(new FallTypStDao(Main.configuration).findAll());
+        falltyp.setSelectionModel(new CustomSelectionModel<>(falltyp));
+        falltyp.valueProperty().addListener(new ChangeListener<FallTypSt>() {
+            @Override
+            public void changed(ObservableValue<? extends FallTypSt> observable, FallTypSt oldValue, FallTypSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        falltyp.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
-     * but all stations into the combox to select one of them
-     * each station is represented by its description
-     * can be null
+     * But all stations into the combox to select one of them
+     * each station is represented by its description.
+     * Can be null
      */
     private void setStation(){
         Callback<ListView<StationSt>, ListCell<StationSt>> cellFactory = new Callback<>() {
@@ -120,18 +147,23 @@ public class FallController {
         station.setButtonCell(cellFactory.call(null));
         station.setCellFactory(cellFactory);
         station.getItems().setAll(new StationStDao(Main.configuration).findAll());
-//
-//        station.setButtonCell(cellFactory.call(null));
-//        station.setCellFactory(cellFactory);
-//        station.setEditable(true);
-//        station.setVisibleRowCount(5);
-//        TextFields.bindAutoCompletion(station.getEditor(), station.getItems());
+        station.setSelectionModel(new CustomSelectionModel<>(station));
+        station.valueProperty().addListener(new ChangeListener<StationSt>() {
+            @Override
+            public void changed(ObservableValue<? extends StationSt> observable, StationSt oldValue, StationSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        station.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
      * After pressing the button, the entries are transferred to the attribute values and the
      * case is inserted into the database with the help of the DAO and the window is closed afterwards
-     * @param actionEvent is activated if the user pushes the button
+     * @param actionEvent Is activated if the user pushes the button
      */
     public void createFall(ActionEvent actionEvent) {
         try{
