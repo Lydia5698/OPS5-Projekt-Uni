@@ -1,9 +1,6 @@
 package controller;
 
-import ExternalFiles.CustomSelectionModel;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import ExternalFiles.Converter;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.OperationDao;
 import jooq.tables.daos.PatientDao;
@@ -52,36 +48,7 @@ public class AdmissionController {
      * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
      */
     public void setPatient() {
-        Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
-            @Override
-            public ListCell<Patient> call(ListView<Patient> patientListView) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(Patient pat, boolean empty) {
-                        super.updateItem(pat, empty);
-                        if (pat == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            setText(pat.getName() + ", " + pat.getVorname() + " (" + pat.getPatId() + ")");
-                        }
-                    }
-                };
-            }
-        };
-        selectPatient.setButtonCell(cellFactory.call(null));
-        selectPatient.setCellFactory(cellFactory);
-        selectPatient.getItems().setAll(new PatientDao(Main.configuration).findAll());
-        selectPatient.setSelectionModel(new CustomSelectionModel<>(selectPatient));
-        selectPatient.valueProperty().addListener(new ChangeListener<Patient>() {
-            @Override
-            public void changed(ObservableValue<? extends Patient> observable, Patient oldValue, Patient newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        selectPatient.setValue(oldValue);
-                    });
-                }
-            }
-        });
+        Converter.setPatient(selectPatient);
     }
 
     /**

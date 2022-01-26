@@ -1,5 +1,6 @@
 package controller;
 
+import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -20,7 +21,7 @@ public class LogInController {
 
     @FXML
     public void initialize() {
-        MainController.createEmployeeComboBox(mitarbeiter,1);
+        Converter.setMitarbeiter(mitarbeiter, true, 0);
     }
 
     /**

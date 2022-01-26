@@ -234,36 +234,7 @@ public class RoleOverviewController {
 	 * It sets all role types of the database as choosing options of the combobox.
 	 */
 	private void setRole() {
-		Callback<ListView<RolleSt>, ListCell<RolleSt>> cellFactory = new Callback<>() {
-			@Override
-			public ListCell<RolleSt> call(ListView<RolleSt> rolleListView) {
-				return new ListCell<>() {
-					@Override
-					protected void updateItem(RolleSt ro, boolean empty) {
-						super.updateItem(ro, empty);
-						if (ro == null || empty) {
-							setGraphic(null);
-						} else {
-							setText(ro.getBezeichnung());
-						}
-					}
-				};
-			}
-		};
-		role.setButtonCell(cellFactory.call(null));
-		role.setCellFactory(cellFactory);
-		role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
-		role.setSelectionModel(new CustomSelectionModel<>(role));
-		role.valueProperty().addListener(new ChangeListener<RolleSt>() {
-			@Override
-			public void changed(ObservableValue<? extends RolleSt> observable, RolleSt oldValue, RolleSt newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						role.setValue(oldValue);
-					});
-				}
-			}
-		});
+		Converter.setRolle(role);
 	}
 
 	/**
@@ -271,36 +242,7 @@ public class RoleOverviewController {
 	 * It sets all operations of the database as choosing options of the combobox.
 	 */
 	private void setOp() {
-		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
-			@Override
-			public ListCell<Operation> call(ListView<Operation> opListView) {
-				return new ListCell<>() {
-					@Override
-					protected void updateItem(Operation oper, boolean empty) {
-						super.updateItem(oper, empty);
-						if (oper == null || empty) {
-							setGraphic(null);
-						} else {
-							setText("OP: " + oper.getOpId() + ", Fall: " + oper.getFallId() + ", Datum: " + oper.getBeginn());
-						}
-					}
-				};
-			}
-		};
-		op.setButtonCell(cellFactory.call(null));
-		op.setCellFactory(cellFactory);
-		op.getItems().setAll(new OperationDao(Main.configuration).findAll());
-		op.setSelectionModel(new CustomSelectionModel<>(op));
-		op.valueProperty().addListener(new ChangeListener<Operation>() {
-			@Override
-			public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						op.setValue(oldValue);
-					});
-				}
-			}
-		});
+		Converter.setOperation(op, "role");
 	}
 
 	/**
@@ -308,40 +250,7 @@ public class RoleOverviewController {
 	 * It sets all medical users of the database as choosing options of the combobox.
 	 */
 	private void setMitarbeiter() {
-		Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
-			@Override
-			public ListCell<MedPersonal> call(ListView<MedPersonal> userListView) {
-				return new ListCell<>() {
-					@Override
-					protected void updateItem(MedPersonal user, boolean empty) {
-						super.updateItem(user, empty);
-						if (user == null || empty) {
-							setGraphic(null);
-						} else {
-							setText(user.getNachnameVorname() + " " + user.getPersId());
-						}
-					}
-				};
-			}
-		};
-		mitarbeiter.setButtonCell(cellFactory.call(null));
-		mitarbeiter.setCellFactory(cellFactory);
-		List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
-		medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
-		var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
-				.collect(Collectors.toList());
-		mitarbeiter.getItems().setAll(result);
-		mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
-		mitarbeiter.valueProperty().addListener(new ChangeListener<MedPersonal>() {
-			@Override
-			public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						mitarbeiter.setValue(oldValue);
-					});
-				}
-			}
-		});
+		Converter.setMitarbeiter(mitarbeiter, false, 0);
 	}
 
 }

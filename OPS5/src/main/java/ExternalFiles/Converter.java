@@ -1,16 +1,19 @@
 package ExternalFiles;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
-import jooq.tables.daos.FallDao;
-import jooq.tables.daos.MedPersonalDao;
-import jooq.tables.daos.PatientDao;
-import jooq.tables.pojos.Fall;
-import jooq.tables.pojos.MedPersonal;
-import jooq.tables.pojos.Operation;
-import jooq.tables.pojos.Patient;
+import jooq.tables.daos.*;
+import jooq.tables.pojos.*;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class that has static methods for convert different values
@@ -165,7 +168,7 @@ public class Converter {
      * Creates a callback from all patients which prints only the last and first name of each patient
      * @return The callback
      */
-    public static Callback<ListView<Patient>, ListCell<Patient>> getPatient() {
+    public static void setPatient(SearchableComboBox<Patient> patient) {
         Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
             @Override
             public ListCell<Patient> call(ListView<Patient> patientListView) {
@@ -176,20 +179,32 @@ public class Converter {
                         if (pat == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(pat.getName() + ", " + pat.getVorname());
+                            setText(pat.getName() + ", " + pat.getVorname() + " (" + pat.getPatId() + ")");
                         }
                     }
                 };
             }
         };
-        return cellFactory;
+        patient.setButtonCell(cellFactory.call(null));
+        patient.setCellFactory(cellFactory);
+        patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
+        patient.setSelectionModel(new CustomSelectionModel<>(patient));
+        patient.valueProperty().addListener(new ChangeListener<Patient>() {
+            @Override
+            public void changed(ObservableValue<? extends Patient> observable, Patient oldValue, Patient newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        patient.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
     /**
      * Creates a callback from all Operations which prints only the OP-ID of each Operation
-     * @return the Callback
      */
-    public static Callback<ListView<Operation>, ListCell<Operation>> getOperation(){
+    public static void setOperation(SearchableComboBox<Operation> op, String type){
         Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
             @Override
             public ListCell<Operation> call(ListView<Operation> medPersonalListView) {
@@ -200,13 +215,118 @@ public class Converter {
                         if (operation == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(operation.getOpId().toString());
+                            switch (type) {
+                                case "diagnosisController":
+                                case "procedureController":
+                                    setText(operation.getOpId().toString());
+                                    break;
+                                case "role":
+                                    setText("OP: " + operation.getOpId() + ", Fall: " + operation.getFallId() + ", Datum: " + operation.getBeginn());
+                                    break;
+                                case "communication":
+                                    setText("OP-ID: " + operation.getOpId() + ", " + "Fall-ID: " + operation.getFallId() + "(" + Converter.fallIdToPatientsNameConverter(operation.getFallId()) + ")");
+                                    break;
+                            }
                         }
                     }
                 };
             }
         };
-        return cellFactory;
+        op.setButtonCell(cellFactory.call(null));
+        op.setCellFactory(cellFactory);
+        op.getItems().setAll(new OperationDao(Main.configuration).findAll());
+        op.setSelectionModel(new CustomSelectionModel<>(op));
+        op.valueProperty().addListener(new ChangeListener<Operation>() {
+            @Override
+            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        op.setValue(oldValue);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * sets the values for the medpersonal
+     * @param mitarbeiter the combobox of the medpersonal
+     * @param select true if a specific value has to be selected
+     * @param i the index of the selected item
+     */
+    public static void setMitarbeiter(SearchableComboBox<MedPersonal> mitarbeiter, boolean select, int i){
+        Callback<ListView<MedPersonal>, ListCell<MedPersonal>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<MedPersonal> call(ListView<MedPersonal> userListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(MedPersonal user, boolean empty) {
+                        super.updateItem(user, empty);
+                        if (user == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(user.getPersId() + " : " + user.getNachnameVorname());
+                        }
+                    }
+                };
+            }
+        };
+        mitarbeiter.setButtonCell(cellFactory.call(null));
+        mitarbeiter.setCellFactory(cellFactory);
+        List<MedPersonal> medPersonalList = new MedPersonalDao(Main.configuration).findAll();
+        medPersonalList.sort(Comparator.comparing(MedPersonal::getNachnameVorname));
+        var result = medPersonalList.stream().filter(medPersonal -> !medPersonal.getPersId().equals("00000000")) //KIS rausfiltern
+                .collect(Collectors.toList());
+        mitarbeiter.getItems().setAll(result);
+        mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
+        if(select){mitarbeiter.getSelectionModel().select(i);}
+        mitarbeiter.valueProperty().addListener(new ChangeListener<MedPersonal>() {
+            @Override
+            public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        mitarbeiter.setValue(oldValue);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * Sets the values for the role so only the bezeichnung is shown
+     * @param role the combobox of the role
+     */
+    public static void setRolle(SearchableComboBox<RolleSt> role){
+        Callback<ListView<RolleSt>, ListCell<RolleSt>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<RolleSt> call(ListView<RolleSt> rolleListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(RolleSt ro, boolean empty) {
+                        super.updateItem(ro, empty);
+                        if (ro == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(ro.getBezeichnung());
+                        }
+                    }
+                };
+            }
+        };
+        role.setButtonCell(cellFactory.call(null));
+        role.setCellFactory(cellFactory);
+        role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
+        role.setSelectionModel(new CustomSelectionModel<>(role));
+        role.valueProperty().addListener(new ChangeListener<RolleSt>() {
+            @Override
+            public void changed(ObservableValue<? extends RolleSt> observable, RolleSt oldValue, RolleSt newValue) {
+                if(newValue == null){
+                    Platform.runLater(()->{
+                        role.setValue(oldValue);
+                    });
+                }
+            }
+        });
     }
 
 }
