@@ -32,9 +32,9 @@ public class RoleOverviewController {
 	@FXML
 	private TableColumn<Rolle, Integer> opCol;
 	@FXML
-	private TableColumn<Rolle, LocalDateTime> erstellzeitCol;
+	private TableColumn<Rolle, String> erstellzeitCol;
 	@FXML
-	private TableColumn<Rolle, LocalDateTime> bearbeiterzeitCol;
+	private TableColumn<Rolle, String> bearbeiterzeitCol;
 	@FXML
 	private TableColumn<Rolle, Boolean> storniertCol;
 	@FXML
@@ -70,8 +70,8 @@ public class RoleOverviewController {
 		opCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
 		bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
 		roleCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.roleConverter(features.getValue().getRolleSt())));
-		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
-		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
+		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
+		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
 		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
 		userCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getMedPersonalPersId()));
 		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
@@ -161,7 +161,6 @@ public class RoleOverviewController {
 
 	/**
 	 * Collects all Roles from the Database and saves them in a observable Array List from Type Role pojo
-	 * @return All Roles
 	 */
 	public void roleView(int opID){
 		RolleDao roleDao = new RolleDao(Main.configuration);

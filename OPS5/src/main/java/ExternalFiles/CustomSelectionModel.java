@@ -6,12 +6,12 @@ import javafx.scene.control.SingleSelectionModel;
 import jooq.tables.pojos.*;
 
 /**
- * This class is the selectionmodel for the comboxes to fix the mistakes of the singleselectionmodel
+ * This class is the selection model for the combobox to fix the mistakes of the single selection model
  * @param <T>
  */
 public class CustomSelectionModel<T> extends SingleSelectionModel<T> {
 
-    private ComboBox<T> comboBox;
+    private final ComboBox<T> comboBox;
 
     public CustomSelectionModel(ComboBox<T> comboBox) {
         this.comboBox = comboBox;
@@ -40,10 +40,6 @@ public class CustomSelectionModel<T> extends SingleSelectionModel<T> {
                     }
                 } else if (value instanceof Icd10CodeSt) {
                     if (((Icd10CodeSt) value).getIcd10Code().equals(((Icd10CodeSt) obj).getIcd10Code())) {
-                        select(i);
-                    }
-                } else if (value instanceof Patient) {
-                    if (((Patient) value).getPatId().equals(((Patient) obj).getPatId())) {
                         select(i);
                     }
                 } else if (value instanceof StationSt) {

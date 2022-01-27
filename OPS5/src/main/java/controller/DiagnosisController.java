@@ -56,13 +56,13 @@ public class DiagnosisController {
 	private TableColumn<Diagnose, String> textCol;
 
 	@FXML
-	private TableColumn<Diagnose, LocalDateTime> dateCol;
+	private TableColumn<Diagnose, String> dateCol;
 
 	@FXML
-	private TableColumn<Diagnose, LocalDateTime> erstellzeitCol;
+	private TableColumn<Diagnose, String> erstellzeitCol;
 
 	@FXML
-	private TableColumn<Diagnose, LocalDateTime> bearbeiterzeitCol;
+	private TableColumn<Diagnose, String> bearbeiterzeitCol;
 
 	@FXML
 	private TableColumn<Diagnose, Boolean> storniertCol;
@@ -180,9 +180,9 @@ public class DiagnosisController {
 		// columns Diagnosis
 		diagIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getDiagnoseId()));
 		textCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getKlartextDiagnose()));
-		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getDatum()));
-		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
-		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getDatum())));
+		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
+		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
 		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
 		opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
 		diagnosetypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.diagnoseTypConverter(features.getValue().getDiagnosetyp())));

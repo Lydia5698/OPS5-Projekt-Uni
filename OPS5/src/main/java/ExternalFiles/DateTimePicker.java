@@ -1,7 +1,3 @@
-/** This java class was copied from TornadoFX Controls
- * https://github.com/edvin/tornadofx-controls/blob/master/src/main/java/tornadofx/control/DateTimePicker.java
- */
-
 package ExternalFiles;
 
 import javafx.beans.property.ObjectProperty;
@@ -16,6 +12,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * This java class was copied from TornadoFX Controls
+ * https://github.com/edvin/tornadofx-controls/blob/master/src/main/java/tornadofx/control/DateTimePicker.java
  * A DateTimePicker with configurable datetime format where both date and time can be changed
  * via the text field and the date can additionally be changed via the JavaFX default date picker.
  */
@@ -24,8 +22,8 @@ public class DateTimePicker extends DatePicker{
     public static final String DefaultFormat = "yyyy-MM-dd HH:mm";
 
     private DateTimeFormatter formatter;
-    private ObjectProperty<LocalDateTime> dateTimeValue = new SimpleObjectProperty<>(LocalDateTime.now());
-    private ObjectProperty<String> format = new SimpleObjectProperty<String>() {
+    private final ObjectProperty<LocalDateTime> dateTimeValue = new SimpleObjectProperty<>(LocalDateTime.now());
+    private final ObjectProperty<String> format = new SimpleObjectProperty<>() {
         public void set(String newValue) {
             super.set(newValue);
             formatter = DateTimeFormatter.ofPattern(newValue);
@@ -44,7 +42,7 @@ public class DateTimePicker extends DatePicker{
         // the following line is inserted afterwards to fix the problem that the user input is really used
         getEditor().setTextFormatter(new TextFormatter<>(getConverter()));
 
-        // Syncronize changes to the underlying date value back to the dateTimeValue
+        // Synchronize changes to the underlying date value back to the dateTimeValue
         valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 dateTimeValue.set(null);
@@ -58,7 +56,7 @@ public class DateTimePicker extends DatePicker{
             }
         });
 
-        // Syncronize changes to dateTimeValue back to the underlying date value
+        // Synchronize changes to dateTimeValue back to the underlying date value
         dateTimeValue.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 LocalDate dateValue = newValue.toLocalDate();

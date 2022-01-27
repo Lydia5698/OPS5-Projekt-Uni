@@ -41,9 +41,9 @@ public class ProcedureController {
     @FXML
     private TableColumn<Prozedur, Boolean> storniertCol;
     @FXML
-    private TableColumn<Prozedur, LocalDateTime> erstelltzeitCol;
+    private TableColumn<Prozedur, String> erstelltzeitCol;
     @FXML
-    private TableColumn<Prozedur, LocalDateTime> bearbeiterzeitCol;
+    private TableColumn<Prozedur, String> bearbeiterzeitCol;
     @FXML
     private TableColumn<Prozedur, Integer> opIDCol;
     @FXML
@@ -145,8 +145,8 @@ public class ProcedureController {
         prozCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getProzId()));
         anmerkungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getAnmerkung()));
         storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
-        erstelltzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
-        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+        erstelltzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
+        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
         opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
         opsCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpsCode()));
         bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));

@@ -5,20 +5,19 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class TableViewMessage {
 
-    private StringProperty hl7Message;
-    private ObjectProperty<LocalDateTime> dateOfMessage;
-    private StringProperty ackMessage;
+    private final StringProperty hl7Message;
+    private final ObjectProperty<LocalDateTime> dateOfMessage;
+    private final StringProperty ackMessage;
 
     /**
      * Creates a tableview object which can be inserted into the table view
      * @param hl7Message the hl7 message which is in the first column
-     * @param date the date of the messagreceiving
-     * @param ack "ja" if the message gots an ack and else "nein"
+     * @param date the date of the message receiving
+     * @param ack "ja" if the message got an ack and else "nein"
      */
     public TableViewMessage(String hl7Message, LocalDateTime date, String ack){
         this.hl7Message = new SimpleStringProperty(hl7Message);
