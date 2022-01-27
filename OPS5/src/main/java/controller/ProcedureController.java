@@ -158,21 +158,20 @@ public class ProcedureController {
      */
     private void insertNewProcedure() {
         Integer prozID = null;
-        boolean storniert = false;
         Integer opID = procedureOpID.getValue().getOpId();
         String opsCodeValue = procedureOpsCode.getValue().getOpsCode();
         String anmerkungText = procedureAnmerkung.getText();
-        LocalDateTime erstellZeit = null;
-        LocalDateTime bearbeiterZeit = null;
-        String bearbeiter = null;
-        String ersteller = null;
+        LocalDateTime erstellZeit;
+        LocalDateTime bearbeiterZeit;
+        String bearbeiter;
+        String ersteller;
 
         // Edit Procedure
         if (flagEditProzedure) {
             prozID = onEditProzedur();
             bearbeiterZeit = LocalDateTime.now();
             bearbeiter = MainController.getUserId();
-            Prozedur prozedur = new Prozedur(prozID, anmerkungText, storniert, erstellZeit, bearbeiterZeit, opID, opsCodeValue, bearbeiter, ersteller);
+            Prozedur prozedur = new Prozedur(prozID, anmerkungText, false, null, bearbeiterZeit, opID, opsCodeValue, bearbeiter, null);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.update(prozedur);
 
@@ -181,7 +180,7 @@ public class ProcedureController {
         else {
             erstellZeit = LocalDateTime.now();
             ersteller = MainController.getUserId();
-            Prozedur prozedur = new Prozedur(prozID, anmerkungText, storniert, erstellZeit, bearbeiterZeit, opID, opsCodeValue, bearbeiter, ersteller);
+            Prozedur prozedur = new Prozedur(prozID, anmerkungText, false, erstellZeit, null, opID, opsCodeValue, null, ersteller);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.insert(prozedur);
         }

@@ -105,9 +105,9 @@ public class RoleOverviewController {
 					null, //bearbeiter
 					role.getSelectionModel().getSelectedItem().getRolle(), //rolleSt
 					null, //bearbeiterZeit
-					new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
+					new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //ersteller Zeit
 					MainController.getUserId(), //ersteller
-					mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonalPersId
+					mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonalPersonal-ID
 					false //storniert
 			);
 			RolleDao roleDao = new RolleDao(Main.configuration);
@@ -135,9 +135,9 @@ public class RoleOverviewController {
 					MainController.getUserId(), //bearbeiter
 					role.getSelectionModel().getSelectedItem().getRolle(), //rolleSt
 					LocalDateTime.now(), //bearbeiterZeit
-					selectedRole.getErstellZeit(), //erstellZeit
+					selectedRole.getErstellZeit(), //ersteller Zeit
 					selectedRole.getErsteller(), //ersteller
-					mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonalPersId
+					mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonal Personal-ID
 					selectedRole.getStorniert() //storniert
 			);
 			RolleDao roleDao = new RolleDao(Main.configuration);

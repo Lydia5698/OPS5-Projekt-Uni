@@ -68,7 +68,7 @@ public class FallController {
     }
 
     /**
-     * But all casetypes into the combobox to select one of them
+     * But all case types into the combobox to select one of them
      * each type is represented by its description.
      * Can be null
      */

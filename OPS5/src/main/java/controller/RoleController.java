@@ -94,9 +94,9 @@ public class RoleController{
                     null, //bearbeiter
                     role.getSelectionModel().getSelectedItem().getRolle(), //rolleSt
                     null, //bearbeiterZeit
-                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstell Zeit
+                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //ersteller Zeit
                     MainController.getUserId(), //ersteller
-                    mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonalPersId
+                    mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonal Personal-ID
                     false //storniert
             );
             RolleDao roleDao = new RolleDao(Main.configuration);

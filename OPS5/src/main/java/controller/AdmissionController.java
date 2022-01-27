@@ -87,7 +87,7 @@ public class AdmissionController {
                     opController.getTowelAfter(), //bauchtücherPost -> hat immer einen Wert
                     opController.getCutTime(), //schnittzeit
                     opController.getSewTime(), //nahtzeit
-                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstell Zeit
+                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //ersteller Zeit
                     null, //bearbeiterZeit
                     false, //storniert
                     opController.getOpCaseId(), //fallId
@@ -181,7 +181,7 @@ public class AdmissionController {
                     opController.getTowelAfter(), //bauchtücherPost -> hat immer einen Wert
                     opController.getCutTime(), //schnittzeit
                     opController.getSewTime(), //nahtzeit
-                    null, //erstell Zeit
+                    null, //ersteller Zeit
                     LocalDateTime.now(), //bearbeiterZeit
                     false, //storniert
                     opController.getOpCaseId(), //fallId

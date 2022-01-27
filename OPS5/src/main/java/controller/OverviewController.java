@@ -14,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;

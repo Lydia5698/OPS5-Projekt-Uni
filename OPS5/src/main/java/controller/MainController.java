@@ -76,7 +76,7 @@ public class MainController {
     }
 
     /**
-     * Show all employees in a combobox by their Pers-ID and their name
+     * Show all employees in a combobox by their Personal-ID and their name
      */
     private void setEmployeeId() {
         Converter.setMitarbeiter(employeeId, true, 0);
@@ -85,7 +85,7 @@ public class MainController {
     /**
      * Returns the person which is currently logged in
      *
-     * @return Pers-ID from the user
+     * @return Personal-ID from the user
      */
     public static String getUserId() {
         return getInstance().employeeId.getValue().getPersId();

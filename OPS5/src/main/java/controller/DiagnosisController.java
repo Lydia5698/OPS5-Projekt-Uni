@@ -196,16 +196,15 @@ public class DiagnosisController {
 	 */
 	private void insertNewDiagnose() {
 		Integer diagID = null;
-		boolean storniert = false;
 		Integer opID = diagnosisOpId.getValue().getOpId();
 		String icdCode = diagnosisIcdCode.getValue().getIcd10Code();
 		Integer diagTyp = diagnosisType.getValue().getDiagnosetyp();
 		String freitext = diagnosisFreetext.getText();
 		LocalDateTime datum;
-		String ersteller = null;
-		LocalDateTime erstellZeit = null;
-		String bearbeiter = null;
-		LocalDateTime bearbeiterZeit = null;
+		String ersteller;
+		LocalDateTime erstellZeit;
+		String bearbeiter;
+		LocalDateTime bearbeiterZeit;
 
 		// Edits Diagnosis
 		if(flagEditDiagnose){
@@ -214,7 +213,7 @@ public class DiagnosisController {
 			bearbeiterZeit = LocalDateTime.now();
 			datum = dateDiagnosis.getDateTimeValue();
 
-			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
+			Diagnose diagnose = new Diagnose(diagID,freitext,datum, null,bearbeiterZeit, false,opID,diagTyp,icdCode, null,bearbeiter);
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.update(diagnose);
 		}
@@ -224,7 +223,7 @@ public class DiagnosisController {
 			erstellZeit = LocalDateTime.now();
 			datum = LocalDateTime.now();
 
-			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
+			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit, null, false,opID,diagTyp,icdCode,ersteller, null);
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.insert(diagnose);
 		}
