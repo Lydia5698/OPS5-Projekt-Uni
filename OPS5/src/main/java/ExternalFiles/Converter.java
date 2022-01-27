@@ -123,7 +123,7 @@ public class Converter {
 
     /**
      * Converts a sex char into the word
-     * @param s S ist the char of the sex
+     * @param s S is the char of the sex
      * @return String of the sex
      */
     public static String geschlechtConverter(String s){
