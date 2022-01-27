@@ -294,7 +294,7 @@ public class OPController{
         cutTime.getEditor().clear();
         sewTime.getEditor().clear();
 
-        System.out.println("Initialize OP-Tab!");
+        Main.logger.info("Initialize OP-Tab!");
 	}
 
     /**

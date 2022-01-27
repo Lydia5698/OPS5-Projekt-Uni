@@ -12,6 +12,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jooq.tables.pojos.MedPersonal;
+import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
@@ -98,7 +99,7 @@ public class MainController {
      */
     public void log_out(ActionEvent actionEvent) {
         employeeId.getSelectionModel().clearSelection();
-        System.out.println("New Login Window!");
+        Main.logger.info("New Login Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneLogIn.fxml"));

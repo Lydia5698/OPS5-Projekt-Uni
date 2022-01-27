@@ -37,7 +37,7 @@ public class RoleController{
      */
     @FXML
     public void initialize() {
-        System.out.println("Initialize Role-Tab!");
+        Main.logger.info("Initialize Role-Tab!");
         setRole();
         setOp();
         setMitarbeiter();
@@ -77,14 +77,17 @@ public class RoleController{
         alert.setTitle("Error");
         alert.setHeaderText("Fehlende Einträge!");
         if(mitarbeiter.getValue()==null){
+            Main.logger.warning("Fehlende Einträge: Es muss ein Mitarbeiter ausgewählt werden.");
             alert.setContentText("Es muss ein Mitarbeiter ausgewählt werden!");
             alert.showAndWait();
         }
         else if(op.getValue()==null){
+            Main.logger.warning("Fehlende Einträge: Es muss eine Op ausgewählt werden.");
             alert.setContentText("Es muss eine Op ausgewählt werden!");
             alert.showAndWait();
         }
         else if(role.getValue()==null){
+            Main.logger.warning("Fehlende Einträge: Es muss eine Rolle ausgewählt werden.");
             alert.setContentText("Es muss eine Rolle ausgewählt werden!");
             alert.showAndWait();
         }
@@ -101,6 +104,7 @@ public class RoleController{
             );
             RolleDao roleDao = new RolleDao(Main.configuration);
             roleDao.insert(insertRole);
+            Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
             Alert confirm = new Alert(AlertType.INFORMATION);
             confirm.setTitle("Information");
             confirm.setHeaderText("Erfolgreich eingefügt");
@@ -110,7 +114,6 @@ public class RoleController{
             Stage thisStage = (Stage) source.getScene().getWindow();
             thisStage.close();
         }
-        System.out.println("Creating role!");
     }
 
 }

@@ -63,9 +63,10 @@ public class CommunicationsController {
 
             communicationsIpAddress.setText(InetAddress.getLocalHost().getHostAddress());
             communicationsPort.setText(String.valueOf(Main.port));
-            System.out.println("Initialize Communications-Tab!");
+            Main.logger.info("Initialize Communications-Tab!");
         } catch (UnknownHostException e) {
             Platform.runLater(() -> {
+                Main.logger.warning("Die Adresse kann nicht zu einer IP Adresse gecastet werden.");
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Achtung");
                 alert.setHeaderText("Adresse");
@@ -117,6 +118,7 @@ public class CommunicationsController {
             ts.getItems().add(new TableViewMessage(message.encode(), LocalDateTime.now(), "ja"));
         } catch (HL7Exception e) {
             Platform.runLater(() -> {
+                Main.logger.warning("Die Nachricht kann nicht in einen String umgewandelt werden.");
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Achtung");
                 alert.setHeaderText("Nachricht");
@@ -132,12 +134,12 @@ public class CommunicationsController {
      */
     @FXML
     public void send() {
-        System.out.println("Sending something!");
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-
+        Main.logger.info("Sending something!");
 
         if (communicationsObject.getValue() == null) {
+            Main.logger.warning("Es muss eine Operation ausgewählt werden, die verschickt werden soll.");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
             alert.setHeaderText("Keine Operation ausgewählt!");
             alert.setContentText("Es muss eine Operation ausgewählt werden, die verschickt werden soll!");
             alert.showAndWait();
@@ -194,16 +196,16 @@ public class CommunicationsController {
         PatientDao patientDao = new PatientDao(Main.configuration);
         //checking for values which can not be null (in this case it is the patients first and lastname)
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
             if (!getInstance().canInsertPatient(patient)) {
+                Main.logger.warning("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden.");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
                 alert.setHeaderText("Patient kann nicht eingefügt werden!");
                 alert.setContentText("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden!");
                 alert.showAndWait();
             } else {
-                System.out.println(patient.getTelefonnummer());
                 patientDao.insert(patient);
-                System.out.println("Creating sent patient!");
+                Main.logger.info("Creating sent patient!");
             }
         });
 
@@ -235,14 +237,15 @@ public class CommunicationsController {
         FallDao fallDao = new FallDao(Main.configuration);
         //checking for values which can not be null (in this case it is only the patient)
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Fehlender Eintrag!");
 
             //checking for invalid entries concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
             if (getInstance().canInsertCase(fall)) {
-                alert.setContentText("Der Fall hat invalide Eingaben und kann nicht eingefügt werden");
+                Main.logger.warning("Der Fall hat invalide Eingaben und kann nicht eingefügt werden.");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Fehlender Eintrag!");
+                alert.setContentText("Der Fall hat invalide Eingaben und kann nicht eingefügt werden.");
                 alert.showAndWait();
             } else {
                 //if the aufnahmedatum is null set it to the current date and time
@@ -250,7 +253,7 @@ public class CommunicationsController {
                     fall.setAufnahmedatum(LocalDateTime.now());
                 }
                 fallDao.insert(fall);
-                System.out.println("Creating sent case!");
+                Main.logger.info("Creating sent case!");
             }
         });
 

@@ -95,7 +95,7 @@ public class DiagnosisController {
 	@FXML
 	public void initialize() {
 
-		System.out.println("Initialize Diagnosis-Tab!");
+		Main.logger.info("Initialize Diagnosis-Tab!");
 		initializeColumns();
 		setDiagnosisOpId();
 		setDiagnosisIcdCode();
@@ -109,20 +109,22 @@ public class DiagnosisController {
 	 */
 	@FXML
 	public void editDiagnosis(ActionEvent event){
-		System.out.println("Create diagnosis!");
+		Main.logger.info("Create diagnosis!");
 		flagEditDiagnose = true;
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
+			Main.logger.warning("Fehlende Diagnose: Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Fehlende Diagnose");
-			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
+			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
 			alert.showAndWait();
 		}
 		else if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
+			Main.logger.warning("Fehlender Diagnose-Code: Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Fehlender Diagnose-Code");
-			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
+			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			alert.showAndWait();
 
 		}
@@ -158,6 +160,7 @@ public class DiagnosisController {
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
 		List<Diagnose> diagnose = diagnoseDao.findAll();
 		if(opID == 0){
+			Main.logger.info("Es werden zurzeit alle Diagnosen angezeigt. Bitte wähle eine Operation aus, um eine spezifische Diagnose zu sehen.");
 			Alert confirm = new Alert(Alert.AlertType.INFORMATION);
 			confirm.setTitle("Information");
 			confirm.setHeaderText("Alle Diagnosen");
@@ -227,6 +230,7 @@ public class DiagnosisController {
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.insert(diagnose);
 		}
+		Main.logger.info("Der DAtensatz wurde in die Datenbank eingefügt.");
 		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
 		confirm.setTitle("Information");
 		confirm.setHeaderText("Erfolgreich eingefügt");
@@ -366,6 +370,7 @@ public class DiagnosisController {
 		alert.setTitle("Error");
 
 		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
+			Main.logger.warning("Fehlender Diagnose-Code: Bitte wählen Sie einen Diagnose-Code aus.");
 			alert.setHeaderText("Fehlender Diagnose-Code ");
 			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
 			alert.showAndWait();
@@ -373,6 +378,7 @@ public class DiagnosisController {
 		}
 
 		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
+			Main.logger.warning("Falscher Diagnose-Code: Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			alert.setHeaderText("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
 			alert.showAndWait();
@@ -380,6 +386,7 @@ public class DiagnosisController {
 		}
 
 		if(diagnosisType.getSelectionModel().isEmpty()){
+			Main.logger.warning("Fehlender Diagnosetyp: Bitte wählen Sie einen Diagnosetyp aus.");
 			alert.setHeaderText("Fehlender Diagnosetyp");
 			alert.setContentText("Bitte wählen Sie einen Diagnosetyp aus");
 			alert.showAndWait();
@@ -388,6 +395,7 @@ public class DiagnosisController {
 
 
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
+			Main.logger.warning("Fehlende Diagnose: Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
 			alert.setHeaderText("Fehlende Diagnose");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
 			alert.showAndWait();
@@ -408,14 +416,16 @@ public class DiagnosisController {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("Information");
 		if(code==null) {
+			Main.logger.info("Für weitere Informationen muss ein ICD-10 Code ausgewählt werden.");
 			alert.setHeaderText("Kein Code ausgewählt.");
-			alert.setContentText("Für weitere Informationen muss ein ICD-10 Code ausgewählt werden");
+			alert.setContentText("Für weitere Informationen muss ein ICD-10 Code ausgewählt werden.");
 			alert.showAndWait();
 			return;
 		}
 		try {
 			JSONObject result = searchForResult(code);
 			if(result==null) {
+				Main.logger.info("Es konnte keine Information zu Ihrer Anfrage gefunden werden.");
 				alert.setHeaderText("Kein Ergebnis gefunden");
 				alert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
 				alert.showAndWait();
@@ -437,7 +447,7 @@ public class DiagnosisController {
 	 */
 	@FXML
 	public void openWebView(String url) {
-		System.out.println("New Patient Window!");
+		Main.logger.info("New Patient Window!");
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader();
 			fxmlLoader.setLocation(getClass().getResource("/fxml/WebView.fxml"));

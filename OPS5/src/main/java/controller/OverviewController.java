@@ -51,7 +51,7 @@ public class OverviewController {
     private TableColumn<Fall, String> entlassungCol;
 
     @FXML
-    private TableColumn<Fall, String  > erstellzeitCol;
+    private TableColumn<Fall, String> erstellzeitCol;
 
     @FXML
     private TableColumn<Fall, String> bearbeiterzeitCol;
@@ -189,7 +189,7 @@ public class OverviewController {
      */
     @FXML
 	public void initialize() {
-        System.out.println("Initialize OPlist-Tab!");
+        Main.logger.info("Initialize OPlist-Tab!");
 
         btnRole.setVisible(false);
         initializeColumns();
@@ -398,6 +398,7 @@ public class OverviewController {
             opListOperation.setItems(operationView(onEditCase()));
         }
         else{
+            Main.logger.warning("Fehlende Operation: Bitte wählen Sie eine Operation zum Stornieren aus.");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Fehlende Operation");
@@ -492,7 +493,7 @@ public class OverviewController {
      */
     @FXML
     void showRoles(){
-        System.out.println("Show and edit Role Window!");
+        Main.logger.info("Show and edit Role Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRoleOverview.fxml"));

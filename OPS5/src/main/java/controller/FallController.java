@@ -55,7 +55,7 @@ public class FallController {
         setFallTyp();
         setStation();
         entlassungsdatum.getEditor().clear();
-        System.out.println("Initialize Fall-Tab!");
+        Main.logger.info("Initialize Fall-Tab!");
     }
 
     /**
@@ -155,18 +155,21 @@ public class FallController {
             alert.setTitle("Error");
             alert.setHeaderText("Fehlender Eintrag!");
             if (fall.getPatId() == null) {
+                Main.logger.warning("Fehlender Eintrag: Es wurde kein Patient ausgewählt.");
                 alert.setContentText("Es wurde kein Patient ausgewählt!");
                 alert.showAndWait();
             }
             //checking for invalid entries concerning the dates
             //Entlassungsdatum ist vor dem Aufnahmedatum
             else if(fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())){
+                        Main.logger.warning("Falscher Eintrag: Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum.");
                         alert.setHeaderText("Falscher Eintrag!");
                         alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
                         alert.showAndWait();
             }
             //Entlassungsdatum ist vor dem Aufnahmedatum
             else if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum())){
+                Main.logger.warning("Falscher Eintrag: Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum.");
                 alert.setHeaderText("Falscher Eintrag!");
                 alert.setContentText("Das gewählte Entlassungsdatum liegt vor dem Aufnahmedatum!");
                 alert.showAndWait();
@@ -177,8 +180,8 @@ public class FallController {
                     fall.setAufnahmedatum(LocalDateTime.now());
                 }
                 fallDao.insert(fall);
-                System.out.println("Creating case!");
 
+                Main.logger.info("Der Fall wurde in die Datenbank eingefügt.");
                 Alert confirm = new Alert(Alert.AlertType.INFORMATION);
                 confirm.setTitle("Information");
                 confirm.setHeaderText("Erfolgreich eingefügt");

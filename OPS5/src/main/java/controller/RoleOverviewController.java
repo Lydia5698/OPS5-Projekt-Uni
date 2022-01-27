@@ -54,7 +54,7 @@ public class RoleOverviewController {
 	 */
 	@FXML
 	public void initialize() {
-		System.out.println("Initialize Rolle-Tab!");
+		Main.logger.info("Initialize Rolle-Tab!");
 		initializeColumns();
 		setRole();
 		setOp();
@@ -83,19 +83,22 @@ public class RoleOverviewController {
 	 */
 	@FXML
 	void createNewRole() {
-		System.out.println("Create new role!");
+		Main.logger.info("Create new role!");
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
 		alert.setHeaderText("Fehlende Einträge!");
 		if(mitarbeiter.getValue()==null){
+			Main.logger.warning("Fehlende Einträge: Es muss ein Mitarbeiter ausgewählt werden.");
 			alert.setContentText("Es muss ein Mitarbeiter ausgewählt werden!");
 			alert.showAndWait();
 		}
 		else if(op.getValue()==null){
+			Main.logger.warning("Fehlende Einträge: Es muss eine Op ausgewählt werden.");
 			alert.setContentText("Es muss eine Op ausgewählt werden!");
 			alert.showAndWait();
 		}
 		else if(role.getValue()==null){
+			Main.logger.warning("Fehlende Einträge: Es muss eine Rolle ausgewählt werden.");
 			alert.setContentText("Es muss eine Rolle ausgewählt werden!");
 			alert.showAndWait();
 		}
@@ -112,6 +115,7 @@ public class RoleOverviewController {
 			);
 			RolleDao roleDao = new RolleDao(Main.configuration);
 			roleDao.insert(insertRole);
+			Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setTitle("Information");
 			confirm.setHeaderText("Erfolgreich eingefügt");
@@ -127,7 +131,7 @@ public class RoleOverviewController {
 	 */
 	@FXML
 	public void createRole(){
-		System.out.println("Create role!");
+		Main.logger.info("Create role!");
 		if (roleTable.getSelectionModel().getSelectedItem() != null) {
 			Rolle selectedRole = roleTable.getSelectionModel().getSelectedItem();
 			Rolle updateRole = new Rolle(
@@ -142,6 +146,7 @@ public class RoleOverviewController {
 			);
 			RolleDao roleDao = new RolleDao(Main.configuration);
 			roleDao.update(updateRole);
+			Main.logger.info("Der Datensatz wurde geupdated.");
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setTitle("Information");
 			confirm.setHeaderText("Erfolgreich eingefügt");
@@ -150,6 +155,7 @@ public class RoleOverviewController {
 			confirm.showAndWait();
 		}
 		else{
+			Main.logger.warning("Fehlende Auswahl: Es muss eine Rolle zum Bearbeiten ausgewählt werden.");
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Fehlende Auswahl!");
@@ -178,7 +184,7 @@ public class RoleOverviewController {
 		roleTable.setOnMouseClicked((MouseEvent event) -> {
 			if (event.getClickCount() > 0) {
 				if (roleTable.getSelectionModel().getSelectedItem() != null) {
-					System.out.println("Role clicked!");
+					Main.logger.info("Role clicked!");
 					Rolle editRole = roleTable.getSelectionModel().getSelectedItem();
 					MedPersonal medPersX = new MedPersonalDao(Main.configuration).fetchOneByPersId(editRole.getMedPersonalPersId());
 					MedPersonal medPers = new MedPersonal(medPersX) {
