@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.FallTypStDao;
-import jooq.tables.daos.PatientDao;
 import jooq.tables.daos.StationStDao;
 import jooq.tables.pojos.Fall;
 import jooq.tables.pojos.FallTypSt;
@@ -67,16 +66,7 @@ public class FallController {
      * Can't be null for insert a new case!!
      */
     private void setPatient() {
-        Callback<ListView<Patient>, ListCell<Patient>> cellFactory = Converter.getPatient();
-        patient.setButtonCell(cellFactory.call(null));
-        patient.setCellFactory(cellFactory);
-        patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
-        patient.setSelectionModel(new CustomSelectionModel<>(patient));
-        patient.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue == null){
-                Platform.runLater(()-> patient.setValue(oldValue));
-            }
-        });
+        Converter.setPatient(patient);
     }
 
     /**

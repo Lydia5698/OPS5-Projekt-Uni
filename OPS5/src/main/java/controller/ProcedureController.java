@@ -272,31 +272,7 @@ public class ProcedureController {
      * Gets all the Operation IDs and saves them in the procedureOpID Combobox
      */
     private void setProcedureOpID() {
-        Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
-            @Override
-            public ListCell<Operation> call(ListView<Operation> medPersonalListView) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(Operation operation, boolean empty) {
-                        super.updateItem(operation, empty);
-                        if (operation == null || empty) {
-                            setGraphic(null);
-                        } else {
-                            setText(operation.getOpId().toString());
-                        }
-                    }
-                };
-            }
-        };
-        procedureOpID.setButtonCell(cellFactory.call(null));
-        procedureOpID.setCellFactory(cellFactory);
-        procedureOpID.getItems().setAll(new OperationDao(Main.configuration).findAll());
-        procedureOpID.setSelectionModel(new CustomSelectionModel<>(procedureOpID));
-        procedureOpID.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                Platform.runLater(() -> procedureOpID.setValue(oldValue));
-            }
-        });
+        Converter.setOperation(procedureOpID, "procedureController");
     }
 
     /**

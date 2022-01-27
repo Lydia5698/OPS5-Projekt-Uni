@@ -262,31 +262,7 @@ public class DiagnosisController {
 	 * Gets all the Operation IDs and saves them in the diagnosisOpId Combobox
 	 */
 	private void setDiagnosisOpId(){
-		Callback<ListView<Operation>, ListCell<Operation>> cellFactory = new Callback<>() {
-			@Override
-			public ListCell<Operation> call(ListView<Operation> medPersonalListView) {
-				return new ListCell<>() {
-					@Override
-					protected void updateItem(Operation operation, boolean empty) {
-						super.updateItem(operation, empty);
-						if (operation == null || empty) {
-							setGraphic(null);
-						} else {
-							setText(operation.getOpId().toString());
-						}
-					}
-				};
-			}
-		};
-		diagnosisOpId.setButtonCell(cellFactory.call(null));
-		diagnosisOpId.setCellFactory(cellFactory);
-		diagnosisOpId.getItems().setAll(new OperationDao(Main.configuration).findAll());
-		diagnosisOpId.setSelectionModel(new CustomSelectionModel<>(diagnosisOpId));
-		diagnosisOpId.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if(newValue == null){
-				Platform.runLater(()-> diagnosisOpId.setValue(oldValue));
-			}
-		});
+		Converter.setOperation(diagnosisOpId, "diagnosisController");
 	}
 
 	/**
