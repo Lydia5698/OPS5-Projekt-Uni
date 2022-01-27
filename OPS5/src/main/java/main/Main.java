@@ -81,6 +81,7 @@ public class Main extends Application{
         primaryStage.setTitle("eHealth Praktikum GUI");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+        MainController.getInstance().pressButton();
 	}
 	
 	@Override

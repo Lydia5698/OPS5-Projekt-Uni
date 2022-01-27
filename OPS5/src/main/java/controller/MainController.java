@@ -1,12 +1,7 @@
 package controller;
 
 import ExternalFiles.Converter;
-import ExternalFiles.CustomSelectionModel;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -16,16 +11,10 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Callback;
-import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.pojos.MedPersonal;
-import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MainController {
 
@@ -41,7 +30,7 @@ public class MainController {
     @FXML
     private SearchableComboBox<MedPersonal> employeeId;
     @FXML
-    private Button btnLogout;
+    private Button btnLogIn;
     // Controllers
     @FXML
     private AdmissionController admissionController;
@@ -143,6 +132,14 @@ public class MainController {
 
     public CommunicationsController getCommTabController() {
         return commTabController;
+    }
+
+    /**
+     * Is only used once at the beginning of the application so a medpersonal have to log in first before he can
+     * serve the gui
+     */
+    public void pressButton(){
+        btnLogIn.fire();
     }
 
 }
