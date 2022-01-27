@@ -195,7 +195,7 @@ public class OverviewController {
      */
     @FXML
 	public void initialize() {
-        System.out.println("Initialize OPlist-Tab!");
+        Main.logger.info("Initialize OPlist-Tab!");
 
         btnRole.setVisible(false);
         initializeColumns();
@@ -339,7 +339,7 @@ public class OverviewController {
      */
     @FXML
    	public void createAndShowDiagnosisWindow() {
-       	System.out.println("New Patient Window!");
+        Main.logger.info("New Patient Window!");
        	try {
        		FXMLLoader fxmlLoader = new FXMLLoader();
                fxmlLoader.setLocation(getClass().getResource("/fxml/PaneDiagnosis.fxml"));
@@ -361,7 +361,7 @@ public class OverviewController {
      */
     @FXML
     public void createAndShowOperationWindow() {
-        System.out.println("New Patient Window!");
+        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOpEdit.fxml"));
@@ -383,7 +383,7 @@ public class OverviewController {
      */
     @FXML
    	public void createAndShowProcedureWindow() {
-       	System.out.println("New Patient Window!");
+        Main.logger.info("New Patient Window!");
        	try {
        		FXMLLoader fxmlLoader = new FXMLLoader();
                fxmlLoader.setLocation(getClass().getResource("/fxml/PaneProcedure.fxml"));
@@ -470,9 +470,10 @@ public class OverviewController {
             opListOperation.setItems(operationView(onEditCase()));
         }
         else{
+            Main.logger.warning("Fehlende Operation: Bitte wählen Sie eine Operation zum Stornieren aus.");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fehlende Operation");
-            alert.setContentText("Bitte wählen Sie eine Operation zum stornieren aus");
+            alert.setContentText("Bitte wählen Sie eine Operation zum stornieren aus.");
             alert.show();
         }
     }
@@ -498,7 +499,7 @@ public class OverviewController {
      */
     @FXML
     void showRoles(){
-        System.out.println("Show and edit Role Window!");
+        Main.logger.info("Show and edit Role Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRoleOverview.fxml"));

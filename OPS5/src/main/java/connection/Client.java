@@ -36,6 +36,7 @@ public class Client {
             initiator.setTimeout(7, TimeUnit.SECONDS);
         } catch(HL7Exception e){
             Platform.runLater(()->{
+                Main.logger.severe("Es kann keine Verbindung zu einem Server aufgebaut werden.");
                 Alert alertConnection = new Alert(Alert.AlertType.WARNING);
                 alertConnection.setContentText("Es kann keine Verbindung aufgebaut werden.");
                 alertConnection.showAndWait();
@@ -61,6 +62,7 @@ public class Client {
             catch(TimeoutException ignored){ } // if a timeout occures send the message again
             catch(HL7Exception | LLPException | IOException e){
                 Platform.runLater(()->{
+                    Main.logger.warning("Die Nachricht kann nicht gesendet werden.");
                     Alert alertConnection = new Alert(Alert.AlertType.WARNING);
                     alertConnection.setContentText("Die Nachricht kann nicht gesendet werden.");
                     alertConnection.showAndWait();

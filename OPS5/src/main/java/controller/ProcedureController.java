@@ -77,7 +77,7 @@ public class ProcedureController {
     @FXML
     public void initialize() {
 
-        System.out.println("Initialize Procedure-Tab!");
+        Main.logger.info("Initialize Procedure-Tab!");
         initializeColumns();
         setProcedureOpID();
         setProcedureOpsCode();
@@ -93,13 +93,14 @@ public class ProcedureController {
     public void editProcedure(ActionEvent event) {
         flagEditProzedure = true;
         if (procedureTable.getSelectionModel().isEmpty() && flagEditProzedure) {
+            Main.logger.info("Fehlende Prozedur: Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Fehlende Prozedur");
-            alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
+            alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
             alert.show();
 
         } else {
-            System.out.println("Create procedure!");
+            Main.logger.info("Create procedure!");
             insertNewProcedure();
             Node source = (Node) event.getSource();
             Stage thisStage = (Stage) source.getScene().getWindow();
@@ -131,6 +132,7 @@ public class ProcedureController {
         ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
         List<Prozedur> prozedur = prozedurDao.findAll();
         if (opID == 0) {
+            Main.logger.info("Es werden zurzeit alle Prozeduren angezeigt. Bitte wähle eine Operation aus, um eine spezifische Prozedur zu sehen.");
             Alert confirm = new Alert(Alert.AlertType.INFORMATION);
             confirm.setContentText("Es werden zurzeit alle Prozeduren angezeigt. Bitte wähle eine Operation aus, um eine spezifische Prozedur zu sehen.");
             confirm.showAndWait();
@@ -193,6 +195,7 @@ public class ProcedureController {
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.insert(prozedur);
         }
+        Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
         Alert confirm = new Alert(Alert.AlertType.INFORMATION);
         confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
         confirm.showAndWait();
@@ -222,25 +225,28 @@ public class ProcedureController {
      */
     public boolean noMissingStatement() {
         if (procedureOpID.getSelectionModel().isEmpty()) {
+            Main.logger.warning("Fehlende OP-ID: Bitte wählen Sie eine Operations-ID aus.");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fehlende OP-ID");
-            alert.setContentText("Bitte wählen Sie eine Operations-ID aus");
+            alert.setContentText("Bitte wählen Sie eine Operations-ID aus.");
             alert.show();
             return false;
         }
 
         if (procedureOpsCode.getSelectionModel().isEmpty()) {
+            Main.logger.warning("Fehlender OPS-Code: Bitte wählen Sie einen OPS-Code aus.");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fehlender OPS-Code");
-            alert.setContentText("Bitte wählen Sie einen OPS-Code aus");
+            alert.setContentText("Bitte wählen Sie einen OPS-Code aus.");
             alert.show();
             return false;
         }
 
         if (procedureTable.getSelectionModel().isEmpty() && flagEditProzedure) {
+            Main.logger.warning("Fehlende Prozedur: Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fehlende Prozedur");
-            alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
+            alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
             alert.show();
             return false;
         }
