@@ -1,36 +1,22 @@
 package controller;
 
 import ExternalFiles.Converter;
-import ExternalFiles.CustomSelectionModel;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.util.Callback;
-import jooq.tables.daos.RolleDao;
-import jooq.tables.daos.RolleStDao;
-import jooq.tables.daos.OperationDao;
-import jooq.tables.daos.MedPersonalDao;
-import jooq.tables.pojos.MedPersonal;
-import jooq.tables.pojos.RolleSt;
-import jooq.tables.pojos.Operation;
-import jooq.tables.pojos.Rolle;
+import jooq.tables.daos.*;
+import jooq.tables.pojos.*;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.Comparator;
 import java.sql.Timestamp;
+
 
 /**
  * This Controller displays the Roles. You can create a new one or edit an existing.
@@ -70,7 +56,6 @@ public class RoleOverviewController {
 	public void initialize() {
 		System.out.println("Initialize Rolle-Tab!");
 		initializeColumns();
-		roleTable.setItems(roleView());
 		setRole();
 		setOp();
 		setMitarbeiter();
@@ -95,10 +80,9 @@ public class RoleOverviewController {
 
 	/**
 	 * Launches when the Button Neue Rolle is pressed. It creates a new Rolle with the selected values.
-	 * @param event The event of pushing the Neue Rolle Button
 	 */
 	@FXML
-	void createNewRole(ActionEvent event) {
+	void createNewRole() {
 		System.out.println("Create new role!");
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
@@ -140,10 +124,9 @@ public class RoleOverviewController {
 	/**
 	 * Launches when the Button Speichern is pressed. It updates the selected role to the values that the user selects.
 	 * If no role is selected, an alert is shown that you need to select a role before you can edit one.
-	 * @param event The event of pushing the Speichern Button
 	 */
 	@FXML
-	public void createRole(ActionEvent event){
+	public void createRole(){
 		System.out.println("Create role!");
 		if (roleTable.getSelectionModel().getSelectedItem() != null) {
 			Rolle selectedRole = roleTable.getSelectionModel().getSelectedItem();
@@ -180,10 +163,10 @@ public class RoleOverviewController {
 	 * Collects all Roles from the Database and saves them in a observable Array List from Type Role pojo
 	 * @return All Roles
 	 */
-	public static ObservableList<Rolle> roleView(){
+	public void roleView(int opID){
 		RolleDao roleDao = new RolleDao(Main.configuration);
-		List<Rolle> role = roleDao.findAll();
-		return FXCollections.observableArrayList(role);
+		List<Rolle> role = roleDao.fetchByOpId(opID);
+		roleTable.setItems(FXCollections.observableArrayList(role));
 	}
 
 
@@ -228,7 +211,6 @@ public class RoleOverviewController {
 			}
 		});
 	}
-
 
 	/**
 	 * This method is called when initialising the window.

@@ -1,7 +1,6 @@
 package controller;
 
 import ExternalFiles.Converter;
-import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.TableViewMessage;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
@@ -9,16 +8,14 @@ import ca.uhn.hl7v2.model.v251.message.ACK;
 import connection.Client;
 import connection.MessageParser;
 import connection.Server;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.util.Callback;
+
 import jooq.tables.daos.DiagnoseDao;
 import jooq.tables.daos.FallDao;
-import jooq.tables.daos.OperationDao;
 import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.Diagnose;
 import jooq.tables.pojos.Fall;
@@ -95,15 +92,15 @@ public class CommunicationsController {
     /**
      * This method returns the instance of the CommunicationController
      *
-     * @return The communicationcontroller
+     * @return The communication controller
      */
     public static CommunicationsController getInstance() {
         return MainController.getInstance().getCommTabController();
     }
 
     /**
-     * This method sets all Objects which can be sended to the kis depending on the type
-     * if the patients are choosen the patient combobox is visible and the operation combobox is set to invisible
+     * This method sets all Objects which can be sent to the kis depending on the type
+     * if the patients are chosen the patient combobox is visible and the operation combobox is set to invisible
      * and the same for operation
      */
     private void setCommunicationsObjectBox() {
@@ -113,7 +110,7 @@ public class CommunicationsController {
     /**
      * This method inserts the received message into the tableview as hl7 string
      *
-     * @param message The incomming message
+     * @param message The incoming message
      */
     public void insertReceivedMessage(Message message) {
         try {

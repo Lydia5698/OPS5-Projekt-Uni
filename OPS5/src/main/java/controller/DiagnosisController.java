@@ -4,10 +4,7 @@ import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,23 +20,19 @@ import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
-import org.jooq.meta.derby.sys.Sys;
 import org.jooq.tools.json.JSONArray;
 import org.jooq.tools.json.JSONObject;
 import org.jooq.tools.json.JSONParser;
 
-import java.awt.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * This Controller displays the Diagnosis. You can create a new one or edit an existent
@@ -97,7 +90,7 @@ public class DiagnosisController {
 
 	/**
 	 * This Methode initialize the TableView for the existing Diagnosis and shows the Op-IDs, ICD-10 codes and
-	 * the Diagnosis Type in the Comboboxes
+	 * the Diagnosis Type in the Combobox
 	 */
 	@FXML
 	public void initialize() {
@@ -468,7 +461,7 @@ public class DiagnosisController {
 	 * @throws Exception
 	 */
 	private JSONObject getJsonForCode(String code) throws Exception {
-		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
+		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=https://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code=" +code+ "&system=https://fhir.de/CodeSystem/bfarm/icd-10-gm");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestProperty("accept", "application/json");
 		InputStream responseStream = connection.getInputStream();

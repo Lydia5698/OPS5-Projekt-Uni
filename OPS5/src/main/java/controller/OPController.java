@@ -1,8 +1,7 @@
 package controller;
 import ExternalFiles.CustomSelectionModel;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -39,9 +38,9 @@ public class OPController{
     @FXML
     private DateTimePicker sewTime;
     @FXML
-    private Spinner<Integer> towelsBefore = new Spinner<>(0, 100, 0);
+    private final Spinner<Integer> towelsBefore = new Spinner<>(0, 100, 0);
     @FXML
-    private Spinner<Integer> towelsAfter = new Spinner<>(0, 100, 0);
+    private final Spinner<Integer> towelsAfter = new Spinner<>(0, 100, 0);
 
     /**
      * This method returns the integer of the selected integer
@@ -53,12 +52,6 @@ public class OPController{
         }
         return null;
     }
-
-    public void setOpCaseId(Fall fall){
-        opCaseId.getSelectionModel().select(fall);
-    }
-
-
 
     /**
      * This method returns the time and date of the beginning of the operation.
@@ -161,7 +154,7 @@ public class OPController{
     /**
      * Sets the values for the combobox of the cases.
      * This method is called when the window gets initialized and every time, a new patient is selected.
-     * It then displayes all cases of the selected patient.
+     * It then displays all cases of the selected patient.
      * @param patId Of the selected patient.
      */
     public void setCase(Integer patId){
@@ -289,7 +282,7 @@ public class OPController{
 
     /**
      * This method is called when the window is initialized.
-     * It calls the methods for initializing the comboboxes.
+     * It calls the methods for initializing the combobox.
      */
     @FXML
 	public void initialize() {
@@ -320,10 +313,10 @@ public class OPController{
     }
 
     /**
-     * Sets the comboboxes in the Edit Op window to the values of the previously selected op to be edited.
+     * Sets the combobox in the Edit Op window to the values of the previously selected op to be edited.
      * @param opID The OpId to be processed
      */
-    public void initializeDefaultComboboxen(int opID){
+    public void initializeDefaultCombobox(int opID){
         Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
         Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
         Fall fall1 = new Fall(fall){
@@ -366,7 +359,8 @@ public class OPController{
      */
 	public void initializeDefaultDateTimePicker(int opID){
         Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
-        opDateBegin.setDateTimeValue(operation.getBeginn()); //todo beginn wird immer automatisch überschrieben immer momentane zeit
+        opDateBegin.getEditor().clear();
+        opDateBegin.setDateTimeValue(operation.getBeginn());
         opDateEnd.setDateTimeValue(operation.getEnde());
         cutTime.setDateTimeValue(operation.getSchnittzeit());
         sewTime.setDateTimeValue(operation.getNahtzeit());

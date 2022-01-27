@@ -184,7 +184,7 @@ public class OverviewController {
 
     private static Integer opId;
 
-    private static Boolean storiniertShown =  false;
+    private static Boolean storniertShown =  false;
 
     private Parent root;
 
@@ -335,72 +335,6 @@ public class OverviewController {
     }
 
     /**
-     * Shows the Diagnosis Window where you can edit or create a new Diagnosis
-     */
-    @FXML
-   	public void createAndShowDiagnosisWindow() {
-       	System.out.println("New Patient Window!");
-       	try {
-       		FXMLLoader fxmlLoader = new FXMLLoader();
-               fxmlLoader.setLocation(getClass().getResource("/fxml/PaneDiagnosis.fxml"));
-               Parent root = fxmlLoader.load();
-               Stage stage = new Stage();
-               stage.setTitle("Diagnosen");
-               stage.setScene(new Scene(root));
-               DiagnosisController controller = fxmlLoader.getController();
-               controller.diagnoseView(onEditOperation());
-               stage.show();
-       	}catch (IOException e) {
-       		e.printStackTrace();
-       	}
-       	
-    }
-
-    /**
-     * Shows the Operation Window where you can edit a Operation
-     */
-    @FXML
-    public void createAndShowOperationWindow() {
-        System.out.println("New Patient Window!");
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOpEdit.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Operation Bearbeiten");
-            stage.setScene(new Scene(root));
-            AdmissionController controller = fxmlLoader.getController();
-            controller.initializeComboboxen(onEditOperation());
-            stage.show();
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Shows the Procedure Window where you can edit or create a new Procedure
-     */
-    @FXML
-   	public void createAndShowProcedureWindow() {
-       	System.out.println("New Patient Window!");
-       	try {
-       		FXMLLoader fxmlLoader = new FXMLLoader();
-               fxmlLoader.setLocation(getClass().getResource("/fxml/PaneProcedure.fxml"));
-               Parent root = fxmlLoader.load();
-               Stage stage = new Stage();
-               stage.setTitle("Prozeduren");
-               stage.setScene(new Scene(root));
-               ProcedureController controller = fxmlLoader.getController();
-               controller.prozedurView(onEditOperation());
-               stage.show();
-       	}catch (IOException e) {
-       		e.printStackTrace();
-       	}
-       	
-    }
-
-    /**
      * Collects all Patients from the Database and saves them in a observable Array List from Type Patient pojo
      * @return All Patients
      */
@@ -448,7 +382,7 @@ public class OverviewController {
         OperationDao operationDao = new OperationDao(Main.configuration);
         List<Operation> operation = operationDao.fetchByFallId(id);
         Predicate<Operation> byStorniert = operation1 -> !operation1.getStorniert();
-        if(getStoriniertShown()){
+        if(getStorniertShown()){
             byStorniert = Operation::getStorniert;
         }
         var result = operation.stream().filter(byStorniert)
@@ -493,6 +427,71 @@ public class OverviewController {
             opListOperation.setItems(operationView(caseId));
         }
     }
+    /**
+     * Shows the Diagnosis Window where you can edit or create a new Diagnosis
+     */
+    @FXML
+    public void createAndShowDiagnosisWindow() {
+        System.out.println("New Patient Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneDiagnosis.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Diagnosen");
+            stage.setScene(new Scene(root));
+            DiagnosisController controller = fxmlLoader.getController();
+            controller.diagnoseView(onEditOperation());
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Shows the Operation Window where you can edit a Operation
+     */
+    @FXML
+    public void createAndShowOperationWindow() {
+        System.out.println("New Patient Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOpEdit.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Operation Bearbeiten");
+            stage.setScene(new Scene(root));
+            AdmissionController controller = fxmlLoader.getController();
+            controller.initializeCombobox(onEditOperation());
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Shows the Procedure Window where you can edit or create a new Procedure
+     */
+    @FXML
+    public void createAndShowProcedureWindow() {
+        System.out.println("New Patient Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneProcedure.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Prozeduren");
+            stage.setScene(new Scene(root));
+            ProcedureController controller = fxmlLoader.getController();
+            controller.prozedurView(onEditOperation());
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      * Opens a new window where the roles are displayed. These can then be edited
@@ -507,6 +506,8 @@ public class OverviewController {
             Stage stage = new Stage();
             stage.setTitle("Rolle");
             stage.setScene(new Scene(root));
+            RoleOverviewController controller = fxmlLoader.getController();
+            controller.roleView(onEditOperation());
             stage.show();
         }catch (IOException e) {
             e.printStackTrace();
@@ -517,12 +518,12 @@ public class OverviewController {
         return opId;
     }
 
-    public static Boolean getStoriniertShown() {
-        return storiniertShown;
+    public static Boolean getStorniertShown() {
+        return storniertShown;
     }
 
-    public void setStorniertShown(Boolean storiniertShown) {
-        OverviewController.storiniertShown = storiniertShown;
+    public void setStorniertShown(Boolean storniertShown) {
+        OverviewController.storniertShown = storniertShown;
     }
 
 

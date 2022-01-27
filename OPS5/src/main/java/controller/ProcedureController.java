@@ -61,7 +61,7 @@ public class ProcedureController {
 
     /**
      * This Methode initialize the TableView for the existing Procedures and shows the Op-IDs and the OPs codes
-     * in the Comboboxes
+     * in the Combobox
      */
     @FXML
     public void initialize() {

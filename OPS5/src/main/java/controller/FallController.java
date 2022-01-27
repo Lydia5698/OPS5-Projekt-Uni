@@ -4,13 +4,11 @@ import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.FallTypStDao;
 import jooq.tables.daos.StationStDao;
@@ -49,7 +47,7 @@ public class FallController {
     private Button speicherbutton;
 
     /**
-     * The comboboxes are filled with the entries of the database
+     * The combobox are filled with the entries of the database
      */
     @FXML
     public void initialize() {
@@ -70,7 +68,7 @@ public class FallController {
     }
 
     /**
-     * But all casetypes into the combox to select one of them
+     * But all casetypes into the combobox to select one of them
      * each type is represented by its description.
      * Can be null
      */
@@ -103,7 +101,7 @@ public class FallController {
     }
 
     /**
-     * But all stations into the combox to select one of them
+     * But all stations into the combobox to select one of them
      * each station is represented by its description.
      * Can be null
      */
@@ -138,9 +136,8 @@ public class FallController {
     /**
      * After pressing the button, the entries are transferred to the attribute values and the
      * case is inserted into the database with the help of the DAO and the window is closed afterwards
-     * @param actionEvent Is activated if the user pushes the button
      */
-    public void createFall(ActionEvent actionEvent) {
+    public void createFall() {
         try{
             FallDao fallDao = new FallDao(Main.configuration);
             Fall fall = new Fall();

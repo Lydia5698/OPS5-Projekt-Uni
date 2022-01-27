@@ -2,7 +2,6 @@ package controller;
 
 import ExternalFiles.Converter;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -11,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+
 import jooq.tables.daos.FallDao;
 import jooq.tables.daos.OperationDao;
 import jooq.tables.daos.PatientDao;
@@ -38,9 +38,6 @@ public class AdmissionController {
 
     @FXML
     private OPController opController;
-
-    @FXML
-    private Button saveBtn;
 
     private Integer opId = null;
 
@@ -86,11 +83,11 @@ public class AdmissionController {
                     null, //opId -> automatisch mit AutoIncrement gesetzt
                     opController.getOpDateBegin(), //beginn
                     opController.getOpDateEnd(), //ende
-                    opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
-                    opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
+                    opController.getTowelBefore(), //bauchtücherPrä -> hat immer einen Wert
+                    opController.getTowelAfter(), //bauchtücherPost -> hat immer einen Wert
                     opController.getCutTime(), //schnittzeit
                     opController.getSewTime(), //nahtzeit
-                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
+                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstell Zeit
                     null, //bearbeiterZeit
                     false, //storniert
                     opController.getOpCaseId(), //fallId
@@ -180,11 +177,11 @@ public class AdmissionController {
                     opId, //opId -> the operation to be edited
                     opController.getOpDateBegin(), //beginn
                     opController.getOpDateEnd(), //ende
-                    opController.getTowelBefore(), //bauchtuecherPrae -> hat immer einen Wert
-                    opController.getTowelAfter(), //bauchtuecherPost -> hat immer einen Wert
+                    opController.getTowelBefore(), //bauchtücherPrä -> hat immer einen Wert
+                    opController.getTowelAfter(), //bauchtücherPost -> hat immer einen Wert
                     opController.getCutTime(), //schnittzeit
                     opController.getSewTime(), //nahtzeit
-                    null, //erstellZeit
+                    null, //erstell Zeit
                     LocalDateTime.now(), //bearbeiterZeit
                     false, //storniert
                     opController.getOpCaseId(), //fallId
@@ -252,7 +249,7 @@ public class AdmissionController {
     }
 
 
-    public void createAndShowNewFallWindow(ActionEvent actionEvent) {
+    public void createAndShowNewFallWindow() {
         System.out.println("New Fall Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
@@ -268,7 +265,7 @@ public class AdmissionController {
     }
 
     /**
-     * After succussfully insertion of operation set all fields to default
+     * After successfully insertion of operation set all fields to default
      */
     private void clearFields() {
         selectPatient.getSelectionModel().clearSelection();
@@ -291,12 +288,12 @@ public class AdmissionController {
     }
 
     /**
-     * Sets the comboboxes in the Edit Op window to the values of the previously selected op to be edited.
+     * Sets the combobox in the Edit Op window to the values of the previously selected op to be edited.
      *
      * @param opID The OpId to be processed
      */
-    public void initializeComboboxen(int opID) {
-        opController.initializeDefaultComboboxen(opID);
+    public void initializeCombobox(int opID) {
+        opController.initializeDefaultCombobox(opID);
         opController.initializeDefaultDateTimePicker(opID);
         Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(opID);
         Fall fall = new FallDao(Main.configuration).fetchOneByFallId(operation.getFallId());
