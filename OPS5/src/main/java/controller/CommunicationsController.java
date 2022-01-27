@@ -4,6 +4,7 @@ import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.TableViewMessage;
 import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.llp.MllpConstants;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.ACK;
 import connection.Client;
@@ -58,6 +59,7 @@ public class CommunicationsController {
     @FXML
     public void initialize() {
         try {
+            System.setProperty(MllpConstants.CHARSET_KEY, "ISO-8859-1");
             startServer();
             setCommunicationsObjectBox();
             hl7Message.setCellValueFactory(param -> param.getValue().hl7MessageProperty());
@@ -222,7 +224,7 @@ public class CommunicationsController {
         if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())) {
             return true;
         }
-        return !(fall.getEntlassungsdatum() == null || !fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum()));
+        return !(fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum()));
     }
 
     public boolean isNewCase(Fall fall){

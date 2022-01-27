@@ -8,7 +8,9 @@ import controller.CommunicationsController;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import jooq.tables.daos.DiagnoseDao;
+import jooq.tables.daos.FallDao;
 import jooq.tables.daos.OperationDao;
+import jooq.tables.daos.PatientDao;
 import jooq.tables.pojos.*;
 import main.Main;
 
@@ -56,17 +58,32 @@ public class Server {
                 Patient patient = MessageParser.parseA01Patient(message);
                 //only insert the patient if it is a new patient
                 if(CommunicationsController.getInstance().isNewPatient(patient)){
+                    patient.setErsteller("00000000");
+                    patient.setErstellZeit(LocalDateTime.now());
                     CommunicationsController.insertNewPatient(patient);
                     System.out.println("Neuer Patient eingefügt");
-                } //valider Patient
+                }
+                else{
+                    patient.setBearbeiter("00000000");
+                    patient.setBearbeiterZeit(LocalDateTime.now());
+                    new PatientDao(Main.configuration).update(patient);
+                    System.out.println("Patient bekannt und bearbeitet");
+                }
                 if(CommunicationsController.getInstance().canInsertPatient(patient)){
                     Fall fall = MessageParser.parseA01Case(message);
                     //wenn es ein valider Fall ist
                     if(CommunicationsController.getInstance().canInsertCase(fall)){
                         //wenn es ein neuer Fall ist wird er eingefügt
                         if(CommunicationsController.getInstance().isNewCase(fall)){
+                            fall.setErsteller("00000000");
+                            fall.setErstellZeit(LocalDateTime.now());
                             CommunicationsController.insertNewCase(fall);
                             System.out.println("Neuer Fall eingefügt");
+                        }
+                        else{
+                            fall.setBearbeiter("00000000");
+                            fall.setBearbeiterZeit(LocalDateTime.now());
+                            new FallDao(Main.configuration).update(fall);
                         }
                         if(MessageParser.a01WithDiagnosis(message)){
                             List<Diagnose> diagnoseList = MessageParser.parseA01Diagnose(message);
@@ -93,7 +110,14 @@ public class Server {
                                         int newestOperation = new OperationDao(Main.configuration).fetchByFallId().size();
                                         diagnose.setOpId(new OperationDao(Main.configuration).fetchByFallId().get(newestOperation).getOpId());
                                     }
+                                    diagnose.setErsteller("00000000");
+                                    diagnose.setErstellZeit(LocalDateTime.now());
                                     new DiagnoseDao(Main.configuration).insert(diagnose);
+                                }
+                                else{
+                                    diagnose.setBearbeiter("00000000");
+                                    diagnose.setBearbeiterZeit(LocalDateTime.now());
+                                    new DiagnoseDao(Main.configuration).update(diagnose);
                                 }
                             }
                         }
