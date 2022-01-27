@@ -109,7 +109,7 @@ public class MainController {
      */
     public void log_out(ActionEvent actionEvent) {
         employeeId.getSelectionModel().clearSelection();
-        System.out.println("New Login Window!");
+        Main.logger.info("New Login Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneLogIn.fxml"));

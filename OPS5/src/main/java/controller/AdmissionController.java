@@ -66,7 +66,7 @@ public class AdmissionController {
         });
         setPatient();
 
-        System.out.println("Initialize Admission-Tab!");
+        Main.logger.info("Initialize Admission-Tab!");
     }
 
     /**
@@ -76,9 +76,10 @@ public class AdmissionController {
      */
     @FXML
     public void create() {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Error");
         if (opController.getOpCaseId() == null) {
+            Main.logger.warning("Fehlende Einträge: Es muss ein Fall ausgewählt werden.");
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
             alert.setHeaderText("Fehlende Einträge!");
             alert.setContentText("Es muss ein Fall ausgewählt werden!");
             alert.showAndWait();
@@ -108,18 +109,20 @@ public class AdmissionController {
 
             //Bauchtücher nicht gleich
             if (opController.getTowelAfter() != opController.getTowelBefore()) {
+                Main.logger.warning("Die Anzahl der Bauchtücher nach der OP stimmt nicht mit der Anzahl vor der Operation überein.");
                 Alert alert1 = new Alert(AlertType.WARNING);
                 alert1.setHeaderText("ACHTUNG Bauchtücher");
                 alert1.setContentText("Die Anzahl der Bauchtücher nach der OP stimmt nicht mit der Anzahl vor der Operation überein!");
                 alert1.showAndWait();
             }
 
+            Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
             Alert confirm = new Alert(AlertType.INFORMATION);
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
             clearFields();
         }
-        System.out.println("Creating OP!");
+        Main.logger.info("Creating OP!");
     }
 
     /**
@@ -131,36 +134,42 @@ public class AdmissionController {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Error");
         if (opController.getOpDateEnd() != null && opController.getOpDateBegin() != null && opController.getOpDateEnd().isBefore(opController.getOpDateBegin())) {
+            Main.logger.warning("Das OP-Ende kann nicht vor dem OP-Start sein.");
             alert.setHeaderText("Falscher Eintrag!");
             alert.setContentText("Das Op-Ende kann nicht vor dem Op-Start sein!");
             alert.showAndWait();
             return false;
         }//Schnittzeit vor Op-Beginn
         else if (opController.getOpDateBegin() != null && opController.getCutTime() != null && opController.getOpDateBegin().isAfter(opController.getCutTime())) {
+            Main.logger.warning("Die Schnittzeit kann nicht vor dem OP-Start sein.");
             alert.setHeaderText("Falscher Eintrag!");
             alert.setContentText("Die Schnittzeit kann nicht vor dem Op-Start sein!");
             alert.showAndWait();
             return false;
         }//Schnittzeit nach Op-Ende
         else if (opController.getOpDateEnd() != null && opController.getCutTime() != null && opController.getOpDateEnd().isBefore(opController.getCutTime())) {
+            Main.logger.warning("Die Schnittzeit kann nicht nach dem OP-Ende sein.");
             alert.setHeaderText("Falscher Eintrag!");
             alert.setContentText("Die Schnittzeit kann nicht nach dem Op-Ende sein!");
             alert.showAndWait();
             return false;
         }//Nahtzeit vor Op-Beginn
         else if (opController.getOpDateBegin() != null && opController.getSewTime() != null && opController.getOpDateBegin().isAfter(opController.getSewTime())) {
+            Main.logger.warning("Die Nahtzeit kann nicht vor dem OP-Start sein.");
             alert.setHeaderText("Falscher Eintrag!");
             alert.setContentText("Die Nahtzeit kann nicht vor dem Op-Start sein!");
             alert.showAndWait();
             return false;
         }//Nahtzeit vor Schnittzeit
         else if (opController.getCutTime() != null && opController.getSewTime() != null && opController.getCutTime().isAfter(opController.getSewTime())) {
+            Main.logger.warning("Die Nahtzeit kann nicht vor der Schnittzeit sein.");
             alert.setHeaderText("Falscher Eintrag!");
             alert.setContentText("Die Nahtzeit kann nicht vor der Schnittzeit sein!");
             alert.showAndWait();
             return false;
         }//Nahtzeit nach Op-Ende
         else if (opController.getOpDateEnd() != null && opController.getSewTime() != null && opController.getOpDateEnd().isBefore(opController.getSewTime())) {
+            Main.logger.warning("Die Nahtzeit kann nicht nach dem OP-Ende sein.");
             alert.setHeaderText("Falscher Eintrag!");
             alert.setContentText("Die Nahtzeit kann nicht nach dem Op-Ende sein!");
             alert.showAndWait();
@@ -197,11 +206,13 @@ public class AdmissionController {
             operationDao.update(operation);
 
 
+            Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
             Alert confirm = new Alert(AlertType.INFORMATION);
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
 
             if (!opController.getTowelBefore().equals(opController.getTowelAfter())) {
+                Main.logger.warning("Die Bauchtücher vor und nach der Operation haben eine unterschiedliche Anzahl.");
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.setContentText("Die Bauchtücher vor und nach der Operation haben eine unterschiedliche Anzahl!");
                 alert.show();
@@ -215,7 +226,7 @@ public class AdmissionController {
      */
     @FXML
     public void createRole() {
-        System.out.println("Creating Role in new window!");
+        Main.logger.info("Creating Role in new window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRole.fxml"));
@@ -231,7 +242,7 @@ public class AdmissionController {
 
     @FXML
     public void createAndShowNewPatientWindow() {
-        System.out.println("New Patient Window!");
+        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PanePatient.fxml"));
@@ -248,7 +259,7 @@ public class AdmissionController {
 
 
     public void createAndShowNewFallWindow(ActionEvent actionEvent) {
-        System.out.println("New Fall Window!");
+        Main.logger.info("New Fall Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneFall.fxml"));
