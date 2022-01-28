@@ -88,7 +88,14 @@ public class ProcedureController {
             alert.setHeaderText("Fehlende Prozedur");
             alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
             alert.showAndWait();
-
+        }
+        else if(procedureAnmerkung.getText() != null && procedureAnmerkung.getText().matches(Main.blockedCharsForHL7)){
+                Main.logger.warning("Falscher Eintrag: Die Sonderzeichen sind für HL7 reserviert.");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Falscher Eintrag");
+                alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
+                alert.show();
         } else {
             Main.logger.info("Create procedure!");
             insertNewProcedure();
@@ -239,6 +246,13 @@ public class ProcedureController {
             Main.logger.warning("Fehlende Prozedur: Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
             alert.setHeaderText("Fehlende Prozedur");
             alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
+            alert.show();
+            return false;
+        }
+        if(procedureAnmerkung.getText() != null && procedureAnmerkung.getText().matches(Main.blockedCharsForHL7)){
+            Main.logger.warning("Falscher Eintrag: Die Sonderzeichen sind für HL7 reserviert.");
+            alert.setHeaderText("Falscher Eintrag");
+            alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
             alert.show();
             return false;
         }
