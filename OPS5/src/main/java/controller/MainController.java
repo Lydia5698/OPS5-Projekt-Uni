@@ -31,7 +31,7 @@ public class MainController {
     @FXML
     private SearchableComboBox<MedPersonal> employeeId;
     @FXML
-    private Button btnLogout;
+    private Button btnLogIn;
     // Controllers
     @FXML
     private AdmissionController admissionController;
@@ -133,6 +133,14 @@ public class MainController {
 
     public CommunicationsController getCommTabController() {
         return commTabController;
+    }
+
+    /**
+     * Is only used once at the beginning of the application so a medpersonal have to log in first before he can
+     * serve the gui
+     */
+    public void pressButton(){
+        btnLogIn.fire();
     }
 
 }

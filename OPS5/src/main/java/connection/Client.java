@@ -76,7 +76,7 @@ public class Client {
      * closes the connection when the process is finished
      */
     public void closeClient(){
-        connection.close();
+        if(connection != null){connection.close();}
     }
 
 }

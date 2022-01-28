@@ -76,6 +76,8 @@ public class Main extends Application{
 
     public static Configuration configuration = new DefaultConfiguration().set(connection).set(SQLDialect.MARIADB);
 
+    public static String blockedCharsForHL7 = ".*[&~\\\\^]+.*";
+
     public Main() throws HL7Exception, InterruptedException {
     }
 
@@ -95,6 +97,7 @@ public class Main extends Application{
         primaryStage.setTitle("eHealth Praktikum GUI");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+        MainController.getInstance().pressButton();
 	}
 	
 	@Override

@@ -126,7 +126,14 @@ public class DiagnosisController {
 			alert.setHeaderText("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			alert.showAndWait();
-
+		} 
+		else if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)) {
+			Main.logger.warning("Falscher Eintrag: Sonderzeichen sind für die HL7 Nachrichten blockiert.");
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Fehler");
+			alert.setHeaderText("Falscher Eintrag");
+			alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
+			alert.show();
 		}
 		else{
 			insertNewDiagnose();
@@ -230,13 +237,12 @@ public class DiagnosisController {
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.insert(diagnose);
 		}
-		Main.logger.info("Der DAtensatz wurde in die Datenbank eingefügt.");
+		Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
 		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
 		confirm.setTitle("Information");
 		confirm.setHeaderText("Erfolgreich eingefügt");
 		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 		confirm.showAndWait();
-
 	}
 
 	/**
@@ -369,6 +375,14 @@ public class DiagnosisController {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle("Error");
 
+		if(diagnosisOpId.getSelectionModel().isEmpty()){
+			Main.logger.warning("Fehlende OP: Bitte wählen Sie eine OP aus.");
+			alert.setHeaderText("Fehlender Op");
+			alert.setContentText("Bitte wählen Sie eine OP aus.");
+			alert.show();
+			return false;
+		}
+		
 		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
 			Main.logger.warning("Fehlender Diagnose-Code: Bitte wählen Sie einen Diagnose-Code aus.");
 			alert.setHeaderText("Fehlender Diagnose-Code ");
@@ -392,13 +406,18 @@ public class DiagnosisController {
 			alert.showAndWait();
 			return false;
 		}
-
-
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
 			Main.logger.warning("Fehlende Diagnose: Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
 			alert.setHeaderText("Fehlende Diagnose");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
 			alert.showAndWait();
+			return false;
+		}
+		if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)){
+			Main.logger.warning("Falscher Eintrag: Die Sonderzeichen sind für HL7 blockiert.");
+			alert.setHeaderText("Falscher Eintrag");
+			alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
+			alert.show();
 			return false;
 		}
 		return true;
