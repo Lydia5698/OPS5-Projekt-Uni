@@ -167,6 +167,9 @@ public class CommunicationsController {
                     }
                 } finally {
                     client.closeClient();
+                    //interuppt thread when the client has been closed
+                    Thread.currentThread().interrupt();
+                    Main.logger.info("Thread des Clients wurde unterbrochen, da der Client geschlossen wurde");
                 }
             });
             thread.setDaemon(true);
