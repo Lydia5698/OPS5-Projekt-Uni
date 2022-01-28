@@ -123,12 +123,17 @@ public class DiagnosisController {
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
 			alert.show();
 		}
-		else if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
+		else if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")) {
 			Alert alert = new Alert(Alert.AlertType.INFORMATION);
 			alert.setTitle("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
 			alert.show();
-
+		} else if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)){
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Fehler");
+				alert.setHeaderText("Falscher Eintrag");
+				alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
+				alert.show();
 		}
 		else{
 			insertNewDiagnose();
@@ -230,9 +235,9 @@ public class DiagnosisController {
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.insert(diagnose);
 		}
-		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-		confirm.showAndWait();
+			Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+			confirm.showAndWait();
 
 	}
 
@@ -373,11 +378,17 @@ public class DiagnosisController {
 	 * @return Boolean if no Statement is missing
 	 */
 	public boolean noMissingStatement(){
-
+		if(diagnosisOpId.getSelectionModel().isEmpty()){
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Fehlender Op");
+			alert.setContentText("Bitte wählen Sie eine OP aus.");
+			alert.show();
+			return false;
+		}
 		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlender Diagnose-Code ");
-			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
+			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus.");
 			alert.show();
 			return false;
 		}
@@ -397,12 +408,18 @@ public class DiagnosisController {
 			alert.show();
 			return false;
 		}
-
-
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehlende Diagnose");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
+			alert.show();
+			return false;
+		}
+		if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)){
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Fehler");
+			alert.setHeaderText("Falscher Eintrag");
+			alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
 			alert.show();
 			return false;
 		}

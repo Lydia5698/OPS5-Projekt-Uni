@@ -17,7 +17,7 @@ import java.time.LocalDate;
 /**
  * The controller inserts emergency patients
  */
-public class PatientController{
+public class PatientController {
 
     @FXML
     private TextField patientFirstname;
@@ -63,16 +63,15 @@ public class PatientController{
     private Button speichern;
 
 
-
-
     @FXML
-	public void initialize() {
-    	System.out.println("Initialize Patient-Tab!");
-	}
+    public void initialize() {
+        System.out.println("Initialize Patient-Tab!");
+    }
 
     /**
      * After pressing the button, the entries from the text fields are transferred to the attribute values and the
      * patient is inserted into the database with the help of the DAO and the window is closed afterwards
+     *
      * @param event Event which is fired when the button is pushed
      */
     @FXML
@@ -87,11 +86,21 @@ public class PatientController{
             patient.setBlutgruppe(getBlutgruppe());
             patient.setGeschlecht(getGeschlecht());
             patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-            if(!patientStreet.getText().equals("")){patient.setStrasse(patientStreet.getText());}
-            if(!patientPostcode.getText().equals("")){patient.setPostleitzahl(patientPostcode.getText());}
-            if(!patientBirthplace.getText().equals("")){patient.setGeburtsort(patientBirthplace.getText());}
-            if(!patientCellphone.getText().equals("")){patient.setTelefonnummer(patientCellphone.getText());}
-            if(MainController.getUserId() != null){patient.setErsteller(MainController.getUserId());}
+            if (!patientStreet.getText().equals("")) {
+                patient.setStrasse(patientStreet.getText());
+            }
+            if (!patientPostcode.getText().equals("")) {
+                patient.setPostleitzahl(patientPostcode.getText());
+            }
+            if (!patientBirthplace.getText().equals("")) {
+                patient.setGeburtsort(patientBirthplace.getText());
+            }
+            if (!patientCellphone.getText().equals("")) {
+                patient.setTelefonnummer(patientCellphone.getText());
+            }
+            if (MainController.getUserId() != null) {
+                patient.setErsteller(MainController.getUserId());
+            }
             patient.setStorniert(false);
 
             //checking for values which can not be null (in this case it is the patients first and lastname)
@@ -106,13 +115,18 @@ public class PatientController{
                 alert.setContentText("Der Nachname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
             }
-            //invalid birthdate
-            else if(patientBirthdate.getValue() != null && patientBirthdate.getValue().isAfter(LocalDate.now())){
-                    alert.setHeaderText("Falscher Eintrag!");
-                    alert.setContentText("Das gewählte Geburtsdatum liegt in der Zukunft!");
-                    alert.showAndWait();
+            //checking if special char are used which are reserved for the hl7 message like &,^,\,~
+            else if (usingReservedChars(patient)) {
+                alert.setHeaderText("Falsche Einträge!");
+                alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
+                alert.showAndWait();
             }
-            else {
+            //invalid birthdate
+            else if (patientBirthdate.getValue() != null && patientBirthdate.getValue().isAfter(LocalDate.now())) {
+                alert.setHeaderText("Falscher Eintrag!");
+                alert.setContentText("Das gewählte Geburtsdatum liegt in der Zukunft!");
+                alert.showAndWait();
+            } else {
                 patientDao.insert(patient);
                 System.out.println("Creating patient!");
 
@@ -124,16 +138,16 @@ public class PatientController{
                 Stage stage = (Stage) speichern.getScene().getWindow();
                 stage.close();
             }
-        }
-        catch(DataAccessException e){
+        } catch (DataAccessException e) {
             e.printStackTrace();
         }
         MainController.getInstance().getAdmissionController().setPatient();
-	}
+    }
 
 
     /**
      * This method converts the selected toggle into a string
+     *
      * @return String of the selected blutgruppe
      */
     private String getBlutgruppe() {
@@ -146,14 +160,47 @@ public class PatientController{
 
     /**
      * This method converts the selected toggle into a sex
+     *
      * @return String of the selected sex
      */
-    private String getGeschlecht(){
-        if(sex_group.getSelectedToggle() == null){return null;}
-        String sG = ((RadioButton)sex_group.getSelectedToggle()).getText();
-        if(sG.equals("weiblich")){return "w";}
-        else if(sG.equals("männlich")){return "m";}
-        else{return "d";}
+    private String getGeschlecht() {
+        if (sex_group.getSelectedToggle() == null) {
+            return null;
+        }
+        String sG = ((RadioButton) sex_group.getSelectedToggle()).getText();
+        if (sG.equals("weiblich")) {
+            return "w";
+        } else if (sG.equals("männlich")) {
+            return "m";
+        } else {
+            return "d";
+        }
     }
-}
 
+    /**
+     * Checks if a blocked char is used in a testfield
+     * @return true if a reserved char is used
+     */
+    private boolean usingReservedChars(Patient patient) {
+        if (patient.getName().matches(Main.blockedCharsForHL7)) {
+            return true;
+        }
+        if (patient.getVorname().matches(Main.blockedCharsForHL7)) {
+            return true;
+        }
+        if (patient.getGeburtsort() != null && patient.getGeburtsort().matches(Main.blockedCharsForHL7)) {
+            return true;
+        }
+        if (patient.getStrasse() != null && patient.getStrasse().matches(Main.blockedCharsForHL7)) {
+            return true;
+        }
+        if (patient.getPostleitzahl() != null && patient.getPostleitzahl().matches(Main.blockedCharsForHL7)) {
+            return true;
+        }
+        if (patient.getTelefonnummer() != null && patient.getTelefonnummer().matches(Main.blockedCharsForHL7)) {
+            return true;
+        }
+        return false;
+    }
+
+}
