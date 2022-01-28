@@ -1,10 +1,8 @@
 package controller;
 
 import ExternalFiles.Converter;
-import ExternalFiles.CustomSelectionModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import jooq.tables.pojos.MedPersonal;
 import org.controlsfx.control.SearchableComboBox;

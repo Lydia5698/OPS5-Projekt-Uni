@@ -4,8 +4,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.web.WebView;
 
-import java.net.URL;
-
 /**
  * Displays the Pub Med article
  */
@@ -33,18 +31,14 @@ public class WebViewController {
      * Goes to the previous page in the browser
      */
     public void goBack() {
-        Platform.runLater(() -> {
-            pubMedView.getEngine().executeScript("history.back()");
-        });
+        Platform.runLater(() -> pubMedView.getEngine().executeScript("history.back()"));
     }
 
     /**
      * Goes to the next page in the browser
      */
     public void goForward() {
-        Platform.runLater(() -> {
-            pubMedView.getEngine().executeScript("history.forward()");
-        });
+        Platform.runLater(() -> pubMedView.getEngine().executeScript("history.forward()"));
     }
 
 

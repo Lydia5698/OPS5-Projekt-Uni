@@ -4,8 +4,6 @@ import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,8 +12,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import jooq.tables.daos.*;
-import jooq.tables.pojos.*;
+import jooq.tables.daos.OperationDao;
+import jooq.tables.daos.OpsCodeStDao;
+import jooq.tables.daos.ProzedurDao;
+import jooq.tables.pojos.Operation;
+import jooq.tables.pojos.OpsCodeSt;
+import jooq.tables.pojos.Prozedur;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
@@ -29,55 +31,42 @@ import java.util.stream.Collectors;
  */
 public class ProcedureController {
 
+    boolean flagEditProzedure = false;
     @FXML
     private TableView<Prozedur> procedureTable;
-
     @FXML
     private TableColumn<Prozedur, Integer> prozCol;
-
     @FXML
     private TableColumn<Prozedur, String> anmerkungCol;
-
     @FXML
     private TableColumn<Prozedur, Boolean> storniertCol;
-
     @FXML
-    private TableColumn<Prozedur, LocalDateTime> erstelltzeitCol;
-
+    private TableColumn<Prozedur, String> erstelltzeitCol;
     @FXML
-    private TableColumn<Prozedur, LocalDateTime> bearbeiterzeitCol;
-
+    private TableColumn<Prozedur, String> bearbeiterzeitCol;
     @FXML
     private TableColumn<Prozedur, Integer> opIDCol;
-
     @FXML
     private TableColumn<Prozedur, String> opsCol;
-
     @FXML
     private TableColumn<Prozedur, String> bearbeiterCol;
-
     @FXML
     private TableColumn<Prozedur, String> erstellerCol;
-
     @FXML
     private SearchableComboBox<Operation> procedureOpID;
-
     @FXML
     private SearchableComboBox<OpsCodeSt> procedureOpsCode;
-
     @FXML
     private TextField procedureAnmerkung;
 
-    boolean flagEditProzedure = false;
-
     /**
      * This Methode initialize the TableView for the existing Procedures and shows the Op-IDs and the OPs codes
-     * in the Comboboxes
+     * in the Combobox
      */
     @FXML
     public void initialize() {
 
-        System.out.println("Initialize Procedure-Tab!");
+        Main.logger.info("Initialize Procedure-Tab!");
         initializeColumns();
         setProcedureOpID();
         setProcedureOpsCode();
@@ -93,13 +82,15 @@ public class ProcedureController {
     public void editProcedure(ActionEvent event) {
         flagEditProzedure = true;
         if (procedureTable.getSelectionModel().isEmpty() && flagEditProzedure) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Fehlende Prozedur");
-            alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
-            alert.show();
+            Main.logger.info("Fehlende Prozedur: Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Fehlende Prozedur");
+            alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
+            alert.showAndWait();
 
         } else {
-            System.out.println("Create procedure!");
+            Main.logger.info("Create procedure!");
             insertNewProcedure();
             Node source = (Node) event.getSource();
             Stage thisStage = (Stage) source.getScene().getWindow();
@@ -131,7 +122,10 @@ public class ProcedureController {
         ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
         List<Prozedur> prozedur = prozedurDao.findAll();
         if (opID == 0) {
+            Main.logger.info("Es werden zurzeit alle Prozeduren angezeigt. Bitte wähle eine Operation aus, um eine spezifische Prozedur zu sehen.");
             Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+            confirm.setTitle("Information");
+            confirm.setHeaderText("Alle Prozeduren");
             confirm.setContentText("Es werden zurzeit alle Prozeduren angezeigt. Bitte wähle eine Operation aus, um eine spezifische Prozedur zu sehen.");
             confirm.showAndWait();
             procedureTable.setItems(FXCollections.observableArrayList(prozedur));
@@ -153,8 +147,8 @@ public class ProcedureController {
         prozCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getProzId()));
         anmerkungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getAnmerkung()));
         storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
-        erstelltzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
-        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+        erstelltzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
+        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
         opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
         opsCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpsCode()));
         bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
@@ -166,21 +160,20 @@ public class ProcedureController {
      */
     private void insertNewProcedure() {
         Integer prozID = null;
-        boolean storniert = false;
         Integer opID = procedureOpID.getValue().getOpId();
         String opsCodeValue = procedureOpsCode.getValue().getOpsCode();
         String anmerkungText = procedureAnmerkung.getText();
-        LocalDateTime erstellZeit = null;
-        LocalDateTime bearbeiterZeit = null;
-        String bearbeiter = null;
-        String ersteller = null;
+        LocalDateTime erstellZeit;
+        LocalDateTime bearbeiterZeit;
+        String bearbeiter;
+        String ersteller;
 
         // Edit Procedure
         if (flagEditProzedure) {
             prozID = onEditProzedur();
             bearbeiterZeit = LocalDateTime.now();
             bearbeiter = MainController.getUserId();
-            Prozedur prozedur = new Prozedur(prozID, anmerkungText, storniert, erstellZeit, bearbeiterZeit, opID, opsCodeValue, bearbeiter, ersteller);
+            Prozedur prozedur = new Prozedur(prozID, anmerkungText, false, null, bearbeiterZeit, opID, opsCodeValue, bearbeiter, null);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.update(prozedur);
 
@@ -189,11 +182,14 @@ public class ProcedureController {
         else {
             erstellZeit = LocalDateTime.now();
             ersteller = MainController.getUserId();
-            Prozedur prozedur = new Prozedur(prozID, anmerkungText, storniert, erstellZeit, bearbeiterZeit, opID, opsCodeValue, bearbeiter, ersteller);
+            Prozedur prozedur = new Prozedur(prozID, anmerkungText, false, erstellZeit, null, opID, opsCodeValue, null, ersteller);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.insert(prozedur);
         }
+        Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
         Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+        confirm.setTitle("Information");
+        confirm.setHeaderText("Erfolgreich eingefügt");
         confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
         confirm.showAndWait();
 
@@ -221,25 +217,27 @@ public class ProcedureController {
      * @return Boolean if no Statement is missing
      */
     public boolean noMissingStatement() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
         if (procedureOpID.getSelectionModel().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Fehlende OP-ID");
+            Main.logger.warning("Fehlende OP-ID: Bitte wählen Sie eine Operations-ID aus.");
+            alert.setHeaderText("Fehlende OP-ID");
             alert.setContentText("Bitte wählen Sie eine Operations-ID aus");
             alert.show();
             return false;
         }
 
         if (procedureOpsCode.getSelectionModel().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Fehlender OPS-Code");
+            Main.logger.warning("Fehlender OPS-Code: Bitte wählen Sie einen OPS-Code aus.");
+            alert.setHeaderText("Fehlender OPS-Code");
             alert.setContentText("Bitte wählen Sie einen OPS-Code aus");
             alert.show();
             return false;
         }
 
         if (procedureTable.getSelectionModel().isEmpty() && flagEditProzedure) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Fehlende Prozedur");
+            Main.logger.warning("Fehlende Prozedur: Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus.");
+            alert.setHeaderText("Fehlende Prozedur");
             alert.setContentText("Bitte wählen Sie die zu bearbeitende Prozedur in der Tabelle aus");
             alert.show();
             return false;
@@ -256,19 +254,17 @@ public class ProcedureController {
             Prozedur prozedur = procedureTable.getSelectionModel().getSelectedItem();
             OpsCodeSt opsCodeSt = new OpsCodeStDao(Main.configuration).fetchOneByOpsCode(prozedur.getOpsCode());
             Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(prozedur.getOpId());
-            OpsCodeSt opsCodeSt1 = new OpsCodeSt(opsCodeSt){
+            OpsCodeSt opsCodeSt1 = new OpsCodeSt(opsCodeSt) {
                 @Override
-                public String toString(){
-                    String sb =  opsCodeSt.getOpsCode() + " " +
+                public String toString() {
+                    return opsCodeSt.getOpsCode() + " " +
                             opsCodeSt.getBeschreibung();
-                    return sb;
                 }
             };
-            Operation operation1 = new Operation(operation){
+            Operation operation1 = new Operation(operation) {
                 @Override
-                public String toString(){
-                    String sb =  operation.getOpId().toString();
-                    return sb;
+                public String toString() {
+                    return operation.getOpId().toString();
                 }
             };
             procedureOpsCode.setValue(opsCodeSt1);
@@ -308,14 +304,9 @@ public class ProcedureController {
         procedureOpsCode.setCellFactory(cellFactory);
         procedureOpsCode.getItems().setAll(new OpsCodeStDao(Main.configuration).findAll());
         procedureOpsCode.setSelectionModel(new CustomSelectionModel<>(procedureOpsCode));
-        procedureOpsCode.valueProperty().addListener(new ChangeListener<OpsCodeSt>() {
-            @Override
-            public void changed(ObservableValue<? extends OpsCodeSt> observable, OpsCodeSt oldValue, OpsCodeSt newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        procedureOpsCode.setValue(oldValue);
-                    });
-                }
+        procedureOpsCode.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                Platform.runLater(() -> procedureOpsCode.setValue(oldValue));
             }
         });
 

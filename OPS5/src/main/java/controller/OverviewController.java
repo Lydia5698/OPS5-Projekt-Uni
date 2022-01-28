@@ -13,19 +13,13 @@ import javafx.stage.Stage;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-
-
 
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -51,16 +45,16 @@ public class OverviewController {
     private TableColumn<Fall, Integer> fallIDCol;
 
     @FXML
-    private TableColumn<Fall, LocalDateTime> aufnahmeCol;
+    private TableColumn<Fall, String> aufnahmeCol;
 
     @FXML
-    private TableColumn<Fall, LocalDateTime> entlassungCol;
+    private TableColumn<Fall, String> entlassungCol;
 
     @FXML
-    private TableColumn<Fall, LocalDateTime> erstellzeitCol;
+    private TableColumn<Fall, String> erstellzeitCol;
 
     @FXML
-    private TableColumn<Fall, LocalDateTime> bearbeiterzeitCol;
+    private TableColumn<Fall, String> bearbeiterzeitCol;
 
     @FXML
     private TableColumn<Fall, Boolean> storniertCol;
@@ -87,10 +81,10 @@ public class OverviewController {
     private TableColumn<Operation, Integer> opIDCol;
 
     @FXML
-    private TableColumn<Operation, LocalDateTime> beginnCol;
+    private TableColumn<Operation, String> beginnCol;
 
     @FXML
-    private TableColumn<Operation, LocalDateTime> endeCol;
+    private TableColumn<Operation, String> endeCol;
 
     @FXML
     private TableColumn<Operation, Integer> bauchtuecherPraeCol;
@@ -99,16 +93,16 @@ public class OverviewController {
     private TableColumn<Operation, Integer> bauchtuecherPostCol;
 
     @FXML
-    private TableColumn<Operation, LocalDateTime> schnittzeitCol;
+    private TableColumn<Operation, String> schnittzeitCol;
 
     @FXML
-    private TableColumn<Operation, LocalDateTime> nahtzeitCol;
+    private TableColumn<Operation, String> nahtzeitCol;
 
     @FXML
-    private TableColumn<Operation, LocalDateTime> erstellzeitOPCol;
+    private TableColumn<Operation, String> erstellzeitOPCol;
 
     @FXML
-    private TableColumn<Operation, LocalDateTime> bearbeiterzeitOPCol;
+    private TableColumn<Operation, String> bearbeiterzeitOPCol;
 
     @FXML
     private TableColumn<Operation, Boolean> storniertOPCol;
@@ -153,13 +147,13 @@ public class OverviewController {
     private TableColumn<Patient, String> paBearbeiter;
 
     @FXML
-    private TableColumn<Patient, LocalDateTime> paBearbeiterzeit;
+    private TableColumn<Patient, String> paBearbeiterzeit;
 
     @FXML
     private TableColumn<Patient, String> paErsteller;
 
     @FXML
-    private TableColumn<Patient, LocalDateTime> paErstellzeit;
+    private TableColumn<Patient, String> paErstellzeit;
 
     @FXML
     private TableColumn<Patient, Boolean> paStorniert;
@@ -184,7 +178,7 @@ public class OverviewController {
 
     private static Integer opId;
 
-    private static Boolean storiniertShown =  false;
+    private static Boolean storniertShown =  false;
 
     private Parent root;
 
@@ -195,7 +189,7 @@ public class OverviewController {
      */
     @FXML
 	public void initialize() {
-        System.out.println("Initialize OPlist-Tab!");
+        Main.logger.info("Initialize OPlist-Tab!");
 
         btnRole.setVisible(false);
         initializeColumns();
@@ -248,9 +242,9 @@ public class OverviewController {
         paBlutgruppe.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBlutgruppe()));
         paGeschlecht.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.geschlechtConverter(features.getValue().getGeschlecht())));
         paBearbeiter.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
-        paBearbeiterzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+        paBearbeiterzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
         paErsteller.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
-        paErstellzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
+        paErstellzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
         paStorniert.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
         paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));
         paStrasse.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStrasse()));
@@ -259,10 +253,10 @@ public class OverviewController {
 
         // columns Case
         fallIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
-        aufnahmeCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getAufnahmedatum()));
-        entlassungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getEntlassungsdatum()));
-        erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
-        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+        aufnahmeCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getAufnahmedatum())));
+        entlassungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getEntlassungsdatum())));
+        erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
+        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
         storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
         patientenIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.patientConverter(features.getValue().getPatId())));
         stationCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStationSt()));
@@ -272,14 +266,14 @@ public class OverviewController {
 
         // columns Operation
         opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
-        beginnCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBeginn()));
-        endeCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getEnde()));
+        beginnCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBeginn())));
+        endeCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getEnde())));
         bauchtuecherPraeCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBauchtuecherPrae()));
         bauchtuecherPostCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBauchtuecherPost()));
-        schnittzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getSchnittzeit()));
-        nahtzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getNahtzeit()));
-        erstellzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
-        bearbeiterzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+        schnittzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getSchnittzeit())));
+        nahtzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getNahtzeit())));
+        erstellzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
+        bearbeiterzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
         storniertOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
         fallIdOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
         opSaalCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpSaal()));
@@ -335,72 +329,6 @@ public class OverviewController {
     }
 
     /**
-     * Shows the Diagnosis Window where you can edit or create a new Diagnosis
-     */
-    @FXML
-   	public void createAndShowDiagnosisWindow() {
-       	System.out.println("New Patient Window!");
-       	try {
-       		FXMLLoader fxmlLoader = new FXMLLoader();
-               fxmlLoader.setLocation(getClass().getResource("/fxml/PaneDiagnosis.fxml"));
-               Parent root = fxmlLoader.load();
-               Stage stage = new Stage();
-               stage.setTitle("Diagnosen");
-               stage.setScene(new Scene(root));
-               DiagnosisController controller = fxmlLoader.getController();
-               controller.diagnoseView(onEditOperation());
-               stage.show();
-       	}catch (IOException e) {
-       		e.printStackTrace();
-       	}
-       	
-    }
-
-    /**
-     * Shows the Operation Window where you can edit a Operation
-     */
-    @FXML
-    public void createAndShowOperationWindow() {
-        System.out.println("New Patient Window!");
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOpEdit.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Operation Bearbeiten");
-            stage.setScene(new Scene(root));
-            AdmissionController controller = fxmlLoader.getController();
-            controller.initializeComboboxen(onEditOperation());
-            stage.show();
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Shows the Procedure Window where you can edit or create a new Procedure
-     */
-    @FXML
-   	public void createAndShowProcedureWindow() {
-       	System.out.println("New Patient Window!");
-       	try {
-       		FXMLLoader fxmlLoader = new FXMLLoader();
-               fxmlLoader.setLocation(getClass().getResource("/fxml/PaneProcedure.fxml"));
-               Parent root = fxmlLoader.load();
-               Stage stage = new Stage();
-               stage.setTitle("Prozeduren");
-               stage.setScene(new Scene(root));
-               ProcedureController controller = fxmlLoader.getController();
-               controller.prozedurView(onEditOperation());
-               stage.show();
-       	}catch (IOException e) {
-       		e.printStackTrace();
-       	}
-       	
-    }
-
-    /**
      * Collects all Patients from the Database and saves them in a observable Array List from Type Patient pojo
      * @return All Patients
      */
@@ -448,7 +376,7 @@ public class OverviewController {
         OperationDao operationDao = new OperationDao(Main.configuration);
         List<Operation> operation = operationDao.fetchByFallId(id);
         Predicate<Operation> byStorniert = operation1 -> !operation1.getStorniert();
-        if(getStoriniertShown()){
+        if(getStorniertShown()){
             byStorniert = Operation::getStorniert;
         }
         var result = operation.stream().filter(byStorniert)
@@ -470,10 +398,12 @@ public class OverviewController {
             opListOperation.setItems(operationView(onEditCase()));
         }
         else{
+            Main.logger.warning("Fehlende Operation: Bitte wählen Sie eine Operation zum Stornieren aus.");
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Fehlende Operation");
+            alert.setTitle("Error");
+            alert.setHeaderText("Fehlende Operation");
             alert.setContentText("Bitte wählen Sie eine Operation zum stornieren aus");
-            alert.show();
+            alert.showAndWait();
         }
     }
 
@@ -492,13 +422,78 @@ public class OverviewController {
             opListOperation.setItems(operationView(caseId));
         }
     }
+    /**
+     * Shows the Diagnosis Window where you can edit or create a new Diagnosis
+     */
+    @FXML
+    public void createAndShowDiagnosisWindow() {
+        System.out.println("New Patient Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneDiagnosis.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Diagnosen");
+            stage.setScene(new Scene(root));
+            DiagnosisController controller = fxmlLoader.getController();
+            controller.diagnoseView(onEditOperation());
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Shows the Operation Window where you can edit a Operation
+     */
+    @FXML
+    public void createAndShowOperationWindow() {
+        System.out.println("New Patient Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOpEdit.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Operation Bearbeiten");
+            stage.setScene(new Scene(root));
+            AdmissionController controller = fxmlLoader.getController();
+            controller.initializeCombobox(onEditOperation());
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Shows the Procedure Window where you can edit or create a new Procedure
+     */
+    @FXML
+    public void createAndShowProcedureWindow() {
+        System.out.println("New Patient Window!");
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource("/fxml/PaneProcedure.fxml"));
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Prozeduren");
+            stage.setScene(new Scene(root));
+            ProcedureController controller = fxmlLoader.getController();
+            controller.prozedurView(onEditOperation());
+            stage.show();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      * Opens a new window where the roles are displayed. These can then be edited
      */
     @FXML
     void showRoles(){
-        System.out.println("Show and edit Role Window!");
+        Main.logger.info("Show and edit Role Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRoleOverview.fxml"));
@@ -506,6 +501,8 @@ public class OverviewController {
             Stage stage = new Stage();
             stage.setTitle("Rolle");
             stage.setScene(new Scene(root));
+            RoleOverviewController controller = fxmlLoader.getController();
+            controller.roleView(onEditOperation());
             stage.show();
         }catch (IOException e) {
             e.printStackTrace();
@@ -516,12 +513,12 @@ public class OverviewController {
         return opId;
     }
 
-    public static Boolean getStoriniertShown() {
-        return storiniertShown;
+    public static Boolean getStorniertShown() {
+        return storniertShown;
     }
 
-    public void setStorniertShown(Boolean storiniertShown) {
-        OverviewController.storiniertShown = storiniertShown;
+    public void setStorniertShown(Boolean storniertShown) {
+        OverviewController.storniertShown = storniertShown;
     }
 
 

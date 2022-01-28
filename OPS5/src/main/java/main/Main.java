@@ -23,8 +23,22 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.ConsoleHandler;
 
 public class Main extends Application{
+
+    /**
+     * Create the logger instance for output in the terminal.
+     */
+   public static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+   static{
+       logger.setLevel(Level.INFO);
+       logger.setUseParentHandlers(false);
+       ConsoleHandler handler = new ConsoleHandler();
+       logger.addHandler(handler);
+   }
 
    private Parent root;
    public static String userName = "pmiw21g05";
@@ -51,7 +65,7 @@ public class Main extends Application{
         try {
             connection = DriverManager.getConnection(url, userName, password);
         } catch (SQLException throwables) {
-            System.out.println("Es kann keine Verbindung zur Datenbank aufgebaut werden, deshalb wird das Programm nicht gestartet.");
+            logger.severe("Es kann keine Verbindung zur Datenbank aufgebaut werden, deshalb wird das Programm nicht gestartet.");
         }
     }
 

@@ -109,8 +109,9 @@ public class MessageParser {
              }
         } catch(HL7Exception e){
                 Platform.runLater(()->{
+                    Main.logger.warning("Die Nachricht kann nicht umgewandelt werden.");
                     Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setContentText("Die Nachricht kann nicht umgewandelt werden");
+                    alert.setContentText("Die Nachricht kann nicht umgewandelt werden.");
                     alert.showAndWait();
                 });
                 return null;
@@ -142,6 +143,7 @@ public class MessageParser {
         try{bar05.initQuickstart("BAR","P05", "P");}
         catch(Exception e){
             Platform.runLater(()->{
+                Main.logger.warning("Es kann keine Nachricht erstellt werden.");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Es kann keine Nachricht erstellt werden.");
                 alert.showAndWait();
@@ -218,6 +220,7 @@ public class MessageParser {
             }
         } catch(HL7Exception e){
             Platform.runLater(()->{
+                Main.logger.warning("Es kann keine Nachricht aus den eingegebenen Daten geparsed werden.");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Es kann keine Nachricht aus den eingegebenen Daten geparsed werden.");
                 alert.showAndWait();
@@ -236,6 +239,7 @@ public class MessageParser {
             return pipeParser.encode(message);
         } catch (HL7Exception e) {
             Platform.runLater(() -> {
+                Main.logger.warning("Die Nachricht kann nicht geparsed werden.");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Die Nachricht kann nicht geparsed werden.");
                 alert.showAndWait();

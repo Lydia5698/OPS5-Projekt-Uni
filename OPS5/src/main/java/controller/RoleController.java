@@ -1,34 +1,19 @@
 package controller;
 
 import ExternalFiles.Converter;
-import ExternalFiles.CustomSelectionModel;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ListCell;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import main.Main;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.sql.Timestamp;
 
-
 import jooq.tables.pojos.RolleSt;
-import jooq.tables.daos.RolleStDao;
-import jooq.tables.daos.MedPersonalDao;
 import jooq.tables.pojos.MedPersonal;
-import jooq.tables.daos.OperationDao;
 import jooq.tables.pojos.Operation;
 import jooq.tables.daos.RolleDao;
 import jooq.tables.pojos.Rolle;
@@ -48,16 +33,14 @@ public class RoleController{
 
     /**
      * This method is called when the window is created.
-     * It calls the methods for setting the values of the comboboxes
+     * It calls the methods for setting the values of the combobox
      */
     @FXML
     public void initialize() {
-        System.out.println("Initialize Role-Tab!");
-
+        Main.logger.info("Initialize Role-Tab!");
         setRole();
         setOp();
         setMitarbeiter();
-
     }
 
     /**
@@ -70,7 +53,7 @@ public class RoleController{
 
     /**
      * This method is called when initialising the window.
-     * It sets all operaitions of the database as choosing options of the combobox.
+     * It sets all operations of the database as choosing options of the combobox.
      */
     private void setOp() {
         Converter.setOperation(op, "role");
@@ -94,14 +77,17 @@ public class RoleController{
         alert.setTitle("Error");
         alert.setHeaderText("Fehlende Einträge!");
         if(mitarbeiter.getValue()==null){
+            Main.logger.warning("Fehlende Einträge: Es muss ein Mitarbeiter ausgewählt werden.");
             alert.setContentText("Es muss ein Mitarbeiter ausgewählt werden!");
             alert.showAndWait();
         }
         else if(op.getValue()==null){
+            Main.logger.warning("Fehlende Einträge: Es muss eine Op ausgewählt werden.");
             alert.setContentText("Es muss eine Op ausgewählt werden!");
             alert.showAndWait();
         }
         else if(role.getValue()==null){
+            Main.logger.warning("Fehlende Einträge: Es muss eine Rolle ausgewählt werden.");
             alert.setContentText("Es muss eine Rolle ausgewählt werden!");
             alert.showAndWait();
         }
@@ -111,21 +97,23 @@ public class RoleController{
                     null, //bearbeiter
                     role.getSelectionModel().getSelectedItem().getRolle(), //rolleSt
                     null, //bearbeiterZeit
-                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //erstellZeit
+                    new Timestamp(System.currentTimeMillis()).toLocalDateTime(), //ersteller Zeit
                     MainController.getUserId(), //ersteller
-                    mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonalPersId
+                    mitarbeiter.getSelectionModel().getSelectedItem().getPersId(), //medPersonal Personal-ID
                     false //storniert
             );
             RolleDao roleDao = new RolleDao(Main.configuration);
             roleDao.insert(insertRole);
+            Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
             Alert confirm = new Alert(AlertType.INFORMATION);
+            confirm.setTitle("Information");
+            confirm.setHeaderText("Erfolgreich eingefügt");
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
             Node source = (Node) event.getSource();
             Stage thisStage = (Stage) source.getScene().getWindow();
             thisStage.close();
         }
-        System.out.println("Creating role!");
     }
 
 }

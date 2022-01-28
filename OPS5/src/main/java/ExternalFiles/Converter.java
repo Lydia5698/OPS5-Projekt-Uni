@@ -1,8 +1,6 @@
 package ExternalFiles;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
@@ -11,6 +9,9 @@ import jooq.tables.pojos.*;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class Converter {
     public static String patientConverter(Integer i){
         PatientDao patientDao = new PatientDao(Main.configuration);
         Patient patient = patientDao.findById(i);
+        assert patient != null;
         return patient.getName() + ", " + patient.getVorname();
     }
 
@@ -50,16 +52,18 @@ public class Converter {
     public static String fallIdToPatientsNameConverter(Integer i){
         FallDao fallDao = new FallDao(Main.configuration);
         Fall fall = fallDao.findById(i);
+        assert fall != null;
         Integer patId = fall.getPatId();
         PatientDao patientDao = new PatientDao(Main.configuration);
         Patient patient = patientDao.findById(patId);
+        assert patient != null;
         return patient.getName() + ", " + patient.getVorname();
     }
 
 
     /**
-     * Converts the mersonals id into its name
-     * @param s String of the id from medpersonal
+     * Converts the med Personals id into its name
+     * @param s String of the id from med Personal
      * @return String of its first and last name
      */
     public static String medPersonalConverter(String s){
@@ -67,12 +71,21 @@ public class Converter {
         else{
             MedPersonalDao medPersonalDao = new MedPersonalDao(Main.configuration);
             MedPersonal medPersonal = medPersonalDao.findById(s);
+            assert medPersonal != null;
             return  medPersonal.getNachnameVorname();
         }
     }
 
+    public static String dateTimeConverter(LocalDateTime localDateTime){
+        if(localDateTime == null){return null;}
+        else{
+            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+            return localDateTime.format(formatter);
+        }
+    }
+
     /**
-     * Converts an optype to its integer to the description
+     * Converts an op type to its integer to the description
      * @param i Integer from op type
      * @return String of the description
      */
@@ -92,14 +105,14 @@ public class Converter {
         if(i == null){return null;}
         else if(i == 1){return "balancierte Narkose";}
         else if(i == 2){return "Inhalationsnarkose";}
-        else if(i == 3){return "Intravenösnarkose";}
+        else if(i == 3){return "Intravenös Narkose";}
         else if(i == 4){return "keine Narkose";}
         else{return "örtliche Narkose";}
     }
 
     /**
      * Converts a diagnosis type to its string
-     * @param i Integer from the diagnis
+     * @param i Integer from the diagnosis
      * @return The string from the description of the diagnosis type
      */
     public static String diagnoseTypConverter(Integer i){
@@ -110,7 +123,7 @@ public class Converter {
 
     /**
      * Converts a sex char into the word
-     * @param s S ist the char of the sex
+     * @param s S is the char of the sex
      * @return String of the sex
      */
     public static String geschlechtConverter(String s){
@@ -166,7 +179,6 @@ public class Converter {
 
     /**
      * Creates a callback from all patients which prints only the last and first name of each patient
-     * @return The callback
      */
     public static void setPatient(SearchableComboBox<Patient> patient) {
         Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
@@ -189,14 +201,9 @@ public class Converter {
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
         patient.setSelectionModel(new CustomSelectionModel<>(patient));
-        patient.valueProperty().addListener(new ChangeListener<Patient>() {
-            @Override
-            public void changed(ObservableValue<? extends Patient> observable, Patient oldValue, Patient newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        patient.setValue(oldValue);
-                    });
-                }
+        patient.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == null){
+                Platform.runLater(()-> patient.setValue(oldValue));
             }
         });
     }
@@ -236,21 +243,16 @@ public class Converter {
         op.setCellFactory(cellFactory);
         op.getItems().setAll(new OperationDao(Main.configuration).findAll());
         op.setSelectionModel(new CustomSelectionModel<>(op));
-        op.valueProperty().addListener(new ChangeListener<Operation>() {
-            @Override
-            public void changed(ObservableValue<? extends Operation> observable, Operation oldValue, Operation newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        op.setValue(oldValue);
-                    });
-                }
+        op.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == null){
+                Platform.runLater(()-> op.setValue(oldValue));
             }
         });
     }
 
     /**
-     * sets the values for the medpersonal
-     * @param mitarbeiter the combobox of the medpersonal
+     * sets the values for the med personal
+     * @param mitarbeiter the combobox of the med personal
      * @param select true if a specific value has to be selected
      * @param i the index of the selected item
      */
@@ -280,14 +282,9 @@ public class Converter {
         mitarbeiter.getItems().setAll(result);
         mitarbeiter.setSelectionModel(new CustomSelectionModel<>(mitarbeiter));
         if(select){mitarbeiter.getSelectionModel().select(i);}
-        mitarbeiter.valueProperty().addListener(new ChangeListener<MedPersonal>() {
-            @Override
-            public void changed(ObservableValue<? extends MedPersonal> observable, MedPersonal oldValue, MedPersonal newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        mitarbeiter.setValue(oldValue);
-                    });
-                }
+        mitarbeiter.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == null){
+                Platform.runLater(()-> mitarbeiter.setValue(oldValue));
             }
         });
     }
@@ -317,14 +314,9 @@ public class Converter {
         role.setCellFactory(cellFactory);
         role.getItems().setAll(new RolleStDao(Main.configuration).findAll());
         role.setSelectionModel(new CustomSelectionModel<>(role));
-        role.valueProperty().addListener(new ChangeListener<RolleSt>() {
-            @Override
-            public void changed(ObservableValue<? extends RolleSt> observable, RolleSt oldValue, RolleSt newValue) {
-                if(newValue == null){
-                    Platform.runLater(()->{
-                        role.setValue(oldValue);
-                    });
-                }
+        role.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == null){
+                Platform.runLater(()-> role.setValue(oldValue));
             }
         });
     }

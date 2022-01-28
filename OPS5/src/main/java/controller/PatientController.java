@@ -64,9 +64,9 @@ public class PatientController {
 
 
     @FXML
-    public void initialize() {
-        System.out.println("Initialize Patient-Tab!");
-    }
+	public void initialize() {
+        Main.logger.info("Initialize Patient-Tab!");
+	}
 
     /**
      * After pressing the button, the entries from the text fields are transferred to the attribute values and the
@@ -107,30 +107,37 @@ public class PatientController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             if (patient.getVorname().equals("")) {
+                Main.logger.warning("Fehlende Einträge: Der Vorname des Patienten muss eingefügt werden.");
                 alert.setHeaderText("Fehlende Einträge!");
                 alert.setContentText("Der Vorname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
-            } else if (patient.getName().equals("")) {
+            } 
+            else if (patient.getName().equals("")) {
+                Main.logger.warning("Fehlende Einträge: Der Nachname des Patienten muss eingefügt werden.");
                 alert.setHeaderText("Fehlende Einträge!");
                 alert.setContentText("Der Nachname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
             }
             //checking if special char are used which are reserved for the hl7 message like &,^,\,~
             else if (usingReservedChars(patient)) {
+                Main.logger.warning("Falscher Eintrag: Die Sonderzeichen sind für HL7 blockiert.");
                 alert.setHeaderText("Falsche Einträge!");
                 alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
                 alert.showAndWait();
-            }
             //invalid birthdate
-            else if (patientBirthdate.getValue() != null && patientBirthdate.getValue().isAfter(LocalDate.now())) {
-                alert.setHeaderText("Falscher Eintrag!");
-                alert.setContentText("Das gewählte Geburtsdatum liegt in der Zukunft!");
-                alert.showAndWait();
-            } else {
+            else if(patientBirthdate.getValue() != null && patientBirthdate.getValue().isAfter(LocalDate.now())){
+                    Main.logger.warning("Falscher Eintrag: Das gewählte Geburtsdatum liegt in der Zukunft.");
+                    alert.setHeaderText("Falscher Eintrag!");
+                    alert.setContentText("Das gewählte Geburtsdatum liegt in der Zukunft!");
+                    alert.showAndWait();
+            } 
+            else {
                 patientDao.insert(patient);
-                System.out.println("Creating patient!");
+                Main.logger.info("Der Patient wurde in die Datenbank eingefügt.");
 
                 Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+                confirm.setTitle("Information");
+                confirm.setHeaderText("Erfolgreich eingefügt");
                 confirm.setContentText("Der Patient wurde in die Datenbank eingefügt.");
                 confirm.showAndWait();
 

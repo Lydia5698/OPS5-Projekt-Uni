@@ -4,10 +4,7 @@ import ExternalFiles.CustomSelectionModel;
 import ExternalFiles.DateTimePicker;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,22 +20,19 @@ import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
-import org.jooq.meta.derby.sys.Sys;
 import org.jooq.tools.json.JSONArray;
 import org.jooq.tools.json.JSONObject;
 import org.jooq.tools.json.JSONParser;
 
-import java.awt.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * This Controller displays the Diagnosis. You can create a new one or edit an existent
@@ -62,13 +56,13 @@ public class DiagnosisController {
 	private TableColumn<Diagnose, String> textCol;
 
 	@FXML
-	private TableColumn<Diagnose, LocalDateTime> dateCol;
+	private TableColumn<Diagnose, String> dateCol;
 
 	@FXML
-	private TableColumn<Diagnose, LocalDateTime> erstellzeitCol;
+	private TableColumn<Diagnose, String> erstellzeitCol;
 
 	@FXML
-	private TableColumn<Diagnose, LocalDateTime> bearbeiterzeitCol;
+	private TableColumn<Diagnose, String> bearbeiterzeitCol;
 
 	@FXML
 	private TableColumn<Diagnose, Boolean> storniertCol;
@@ -96,12 +90,12 @@ public class DiagnosisController {
 
 	/**
 	 * This Methode initialize the TableView for the existing Diagnosis and shows the Op-IDs, ICD-10 codes and
-	 * the Diagnosis Type in the Comboboxes
+	 * the Diagnosis Type in the Combobox
 	 */
 	@FXML
 	public void initialize() {
 
-		System.out.println("Initialize Diagnosis-Tab!");
+		Main.logger.info("Initialize Diagnosis-Tab!");
 		initializeColumns();
 		setDiagnosisOpId();
 		setDiagnosisIcdCode();
@@ -115,26 +109,31 @@ public class DiagnosisController {
 	 */
 	@FXML
 	public void editDiagnosis(ActionEvent event){
-		System.out.println("Create diagnosis!");
+		Main.logger.info("Create diagnosis!");
 		flagEditDiagnose = true;
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle("Fehlende Diagnose");
-			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
-			alert.show();
+			Main.logger.warning("Fehlende Diagnose: Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Fehlende Diagnose");
+			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
+			alert.showAndWait();
 		}
-		else if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")) {
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle("Fehlender Diagnose-Code");
-			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
+		else if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
+			Main.logger.warning("Fehlender Diagnose-Code: Bitte wählen Sie einen endständigen Diagnose-Code aus.");
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Fehlender Diagnose-Code");
+			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus.");
+			alert.showAndWait();
+		} 
+		else if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)){
+			Main.logger.warning("Falscher Eintrag: Sonderzeichen sind für die HL7 Nachrichten blockiert.");
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Fehler");
+			alert.setHeaderText("Falscher Eintrag");
+			alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
 			alert.show();
-		} else if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)){
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Fehler");
-				alert.setHeaderText("Falscher Eintrag");
-				alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
-				alert.show();
-		}
 		else{
 			insertNewDiagnose();
 			Node source = (Node) event.getSource();
@@ -167,7 +166,10 @@ public class DiagnosisController {
 		DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration); // Patient->Fall->OP->Diagnose
 		List<Diagnose> diagnose = diagnoseDao.findAll();
 		if(opID == 0){
+			Main.logger.info("Es werden zurzeit alle Diagnosen angezeigt. Bitte wähle eine Operation aus, um eine spezifische Diagnose zu sehen.");
 			Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+			confirm.setTitle("Information");
+			confirm.setHeaderText("Alle Diagnosen");
 			confirm.setContentText("Es werden zurzeit alle Diagnosen angezeigt. Bitte wähle eine Operation aus, um eine spezifische Diagnose zu sehen.");
 			confirm.showAndWait();
 			diagnosisTable.setItems(FXCollections.observableArrayList(diagnose));
@@ -187,9 +189,9 @@ public class DiagnosisController {
 		// columns Diagnosis
 		diagIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getDiagnoseId()));
 		textCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getKlartextDiagnose()));
-		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getDatum()));
-		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getErstellZeit()));
-		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getBearbeiterZeit()));
+		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getDatum())));
+		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
+		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
 		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
 		opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
 		diagnosetypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.diagnoseTypConverter(features.getValue().getDiagnosetyp())));
@@ -203,16 +205,15 @@ public class DiagnosisController {
 	 */
 	private void insertNewDiagnose() {
 		Integer diagID = null;
-		boolean storniert = false;
 		Integer opID = diagnosisOpId.getValue().getOpId();
 		String icdCode = diagnosisIcdCode.getValue().getIcd10Code();
 		Integer diagTyp = diagnosisType.getValue().getDiagnosetyp();
 		String freitext = diagnosisFreetext.getText();
 		LocalDateTime datum;
-		String ersteller = null;
-		LocalDateTime erstellZeit = null;
-		String bearbeiter = null;
-		LocalDateTime bearbeiterZeit = null;
+		String ersteller;
+		LocalDateTime erstellZeit;
+		String bearbeiter;
+		LocalDateTime bearbeiterZeit;
 
 		// Edits Diagnosis
 		if(flagEditDiagnose){
@@ -221,7 +222,7 @@ public class DiagnosisController {
 			bearbeiterZeit = LocalDateTime.now();
 			datum = dateDiagnosis.getDateTimeValue();
 
-			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
+			Diagnose diagnose = new Diagnose(diagID,freitext,datum, null,bearbeiterZeit, false,opID,diagTyp,icdCode, null,bearbeiter);
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.update(diagnose);
 		}
@@ -231,14 +232,16 @@ public class DiagnosisController {
 			erstellZeit = LocalDateTime.now();
 			datum = LocalDateTime.now();
 
-			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit,bearbeiterZeit,storniert,opID,diagTyp,icdCode,ersteller,bearbeiter);
+			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit, null, false,opID,diagTyp,icdCode,ersteller, null);
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.insert(diagnose);
 		}
-			Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-			confirm.showAndWait();
-
+		Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
+		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+		confirm.setTitle("Information");
+		confirm.setHeaderText("Erfolgreich eingefügt");
+		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+		confirm.showAndWait();
 	}
 
 	/**
@@ -287,14 +290,9 @@ public class DiagnosisController {
 		diagnosisIcdCode.setCellFactory(cellFactory);
 		diagnosisIcdCode.getItems().setAll(new Icd10CodeStDao(Main.configuration).findAll());
 		diagnosisIcdCode.setSelectionModel(new CustomSelectionModel<>(diagnosisIcdCode));
-		diagnosisIcdCode.valueProperty().addListener(new ChangeListener<Icd10CodeSt>() {
-			@Override
-			public void changed(ObservableValue<? extends Icd10CodeSt> observable, Icd10CodeSt oldValue, Icd10CodeSt newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						diagnosisIcdCode.setValue(oldValue);
-					});
-				}
+		diagnosisIcdCode.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if(newValue == null){
+				Platform.runLater(()-> diagnosisIcdCode.setValue(oldValue));
 			}
 		});
 	}
@@ -323,14 +321,9 @@ public class DiagnosisController {
 		diagnosisType.setCellFactory(cellFactory);
 		diagnosisType.getItems().setAll(new DiagnosetypStDao(Main.configuration).findAll());
 		diagnosisType.setSelectionModel(new CustomSelectionModel<>(diagnosisType));
-		diagnosisType.valueProperty().addListener(new ChangeListener<DiagnosetypSt>() {
-			@Override
-			public void changed(ObservableValue<? extends DiagnosetypSt> observable, DiagnosetypSt oldValue, DiagnosetypSt newValue) {
-				if(newValue == null){
-					Platform.runLater(()->{
-						diagnosisType.setValue(oldValue);
-					});
-				}
+		diagnosisType.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if(newValue == null){
+				Platform.runLater(()-> diagnosisType.setValue(oldValue));
 			}
 		});
 
@@ -378,46 +371,49 @@ public class DiagnosisController {
 	 * @return Boolean if no Statement is missing
 	 */
 	public boolean noMissingStatement(){
+		Alert alert = new Alert(Alert.AlertType.ERROR);
+		alert.setTitle("Error");
+
 		if(diagnosisOpId.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlender Op");
+			Main.logger.warning("Fehlende OP: Bitte wählen Sie eine OP aus.");
+			alert.setHeaderText("Fehlender Op");
 			alert.setContentText("Bitte wählen Sie eine OP aus.");
 			alert.show();
 			return false;
 		}
+		
 		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlender Diagnose-Code ");
-			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus.");
-			alert.show();
+			Main.logger.warning("Fehlender Diagnose-Code: Bitte wählen Sie einen Diagnose-Code aus.");
+			alert.setHeaderText("Fehlender Diagnose-Code ");
+			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
+			alert.showAndWait();
 			return false;
 		}
 
 		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlender Diagnose-Code");
+			Main.logger.warning("Falscher Diagnose-Code: Bitte wählen Sie einen endständigen Diagnose-Code aus.");
+			alert.setHeaderText("Fehlender Diagnose-Code");
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
-			alert.show();
+			alert.showAndWait();
 			return false;
 		}
 
 		if(diagnosisType.getSelectionModel().isEmpty()){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlender Diagnosetyp");
+			Main.logger.warning("Fehlender Diagnosetyp: Bitte wählen Sie einen Diagnosetyp aus.");
+			alert.setHeaderText("Fehlender Diagnosetyp");
 			alert.setContentText("Bitte wählen Sie einen Diagnosetyp aus");
-			alert.show();
+			alert.showAndWait();
 			return false;
 		}
 		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehlende Diagnose");
+			Main.logger.warning("Fehlende Diagnose: Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
+			alert.setHeaderText("Fehlende Diagnose");
 			alert.setContentText("Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus");
-			alert.show();
+			alert.showAndWait();
 			return false;
 		}
 		if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)){
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Fehler");
+			Main.logger.warning("Falscher Eintrag: Die Sonderzeichen sind für HL7 blockiert.");
 			alert.setHeaderText("Falscher Eintrag");
 			alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
 			alert.show();
@@ -435,20 +431,22 @@ public class DiagnosisController {
 	@FXML
 	public void showInfo() {
 		Icd10CodeSt code = diagnosisIcdCode.getValue();
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Information");
 		if(code==null) {
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			Main.logger.info("Für weitere Informationen muss ein ICD-10 Code ausgewählt werden.");
 			alert.setHeaderText("Kein Code ausgewählt.");
-			alert.setContentText("Für weitere Informationen muss ein ICD-10 Code ausgewählt werden");
+			alert.setContentText("Für weitere Informationen muss ein ICD-10 Code ausgewählt werden.");
 			alert.showAndWait();
 			return;
 		}
 		try {
 			JSONObject result = searchForResult(code);
 			if(result==null) {
-				Alert infoalert = new Alert(Alert.AlertType.INFORMATION);
-				infoalert.setHeaderText("Kein Ergebnis gefunden");
-				infoalert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
-				infoalert.show();
+				Main.logger.info("Es konnte keine Information zu Ihrer Anfrage gefunden werden.");
+				alert.setHeaderText("Kein Ergebnis gefunden");
+				alert.setContentText("Es konnte keine Information zu Ihrer Anfrage gefunden werden!");
+				alert.showAndWait();
 			} else {
 				JSONObject match = findJsonByName((JSONArray) result.get("parameter"), "match");
 				JSONObject concept = findJsonByName((JSONArray) match.get("part"), "concept");
@@ -467,7 +465,7 @@ public class DiagnosisController {
 	 */
 	@FXML
 	public void openWebView(String url) {
-		System.out.println("New Patient Window!");
+		Main.logger.info("New Patient Window!");
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader();
 			fxmlLoader.setLocation(getClass().getResource("/fxml/WebView.fxml"));
@@ -490,13 +488,13 @@ public class DiagnosisController {
 	 * @throws Exception
 	 */
 	private JSONObject getJsonForCode(String code) throws Exception {
-		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
+		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=https://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code=" +code+ "&system=https://fhir.de/CodeSystem/bfarm/icd-10-gm");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestProperty("accept", "application/json");
 		InputStream responseStream = connection.getInputStream();
 		JSONParser jsonParser = new JSONParser();
 		return (JSONObject)jsonParser.parse(
-				new InputStreamReader(responseStream, "UTF-8"));
+				new InputStreamReader(responseStream, StandardCharsets.UTF_8));
 	}
 
 	/**
@@ -527,9 +525,9 @@ public class DiagnosisController {
 	 */
 	private boolean wasFound(JSONObject json) {
 		JSONArray array = (JSONArray) json.get("parameter");
-		for (int i = 0; i < array.size(); i++) {
-			JSONObject item = (JSONObject) array.get(i);
-			if(item.get("name").equals("result") && (Boolean) item.get("valueBoolean")) {
+		for (Object o : array) {
+			JSONObject item = (JSONObject) o;
+			if (item.get("name").equals("result") && (Boolean) item.get("valueBoolean")) {
 				return true;
 			}
 		}
@@ -544,9 +542,9 @@ public class DiagnosisController {
 	 */
 	private JSONObject findJsonByName(JSONArray array, String name) {
 		if (array==null) {return null;}
-		for (int i = 0; i < array.size(); i++) {
-			JSONObject item = (JSONObject) array.get(i);
-			if(item.get("name").equals(name)) {
+		for (Object o : array) {
+			JSONObject item = (JSONObject) o;
+			if (item.get("name").equals(name)) {
 				return item;
 			}
 		}

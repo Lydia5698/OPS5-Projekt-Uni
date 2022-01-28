@@ -42,6 +42,7 @@ public class Server {
 
                     Platform.runLater(()->{
                         //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
+                        Main.logger.info("Das KIS hat eine Nachricht gesendet.");
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Es wurde etwas geschickt");
                         alert.setHeaderText("Das KIS hat eine Nachricht gesendet");
@@ -50,6 +51,7 @@ public class Server {
                     });
                 } catch(HL7Exception e){
                     Platform.runLater(()->{
+                        Main.logger.warning("Die Nachricht konnte nicht gelesen werden.");
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setContentText("Die Nachricht konnte nicht gelesen werden.");
                         alert.showAndWait();
@@ -130,6 +132,7 @@ public class Server {
                     return message.generateACK();
                 } catch (IOException | HL7Exception e) {
                     Platform.runLater(()->{
+                        Main.logger.warning("Es kann keine ACK-Nachricht erstellt werden.");
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setContentText("Es kann keine ACK-Nachricht erstellt werden!");
                         alert.showAndWait();
@@ -152,6 +155,7 @@ public class Server {
 
                     Platform.runLater(()->{
                         //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
+                        Main.logger.info("Testnachricht von dem OPS empfangen.");
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Es wurde etwas geschickt");
                         alert.setHeaderText("Testnachricht von dem OPS");
@@ -160,6 +164,7 @@ public class Server {
                     });
                 }catch(HL7Exception e){
                     Platform.runLater(()->{
+                        Main.logger.warning("Die Nachricht kann nicht gelesen werden.");
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setContentText("Die Nachricht kann nicht gelesen werden!");
                         alert.showAndWait();
@@ -169,6 +174,7 @@ public class Server {
                     return message.generateACK();
                 } catch (IOException | HL7Exception e) {
                     Platform.runLater(()->{
+                        Main.logger.warning("Es kann keine ACK-Nachricht erstellt werden.");
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setContentText("Es kann keine ACK-Nachricht erstellt werden!");
                         alert.showAndWait();
@@ -198,6 +204,7 @@ public class Server {
         //handles this problem
         hapiServer.setExceptionHandler((s, map, s1, e) -> {
             Platform.runLater(()->{
+                Main.logger.warning("Es ist ein Fehler beim Versenden aufgetreten.");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Es ist ein Fehler beim Versenden aufgetreten.");
                 alert.showAndWait();
@@ -210,6 +217,7 @@ public class Server {
             hapiServer.startAndWait();
         } catch(InterruptedException e){
             Platform.runLater(()->{
+                Main.logger.severe("Der Server wurde unterbrochen und hört auf keine Nachrichten mehr.");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Der Server wurde unterbrochen und hört auf keine Nachrichten mehr.");
                 alert.showAndWait();
