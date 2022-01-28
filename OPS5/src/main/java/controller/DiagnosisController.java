@@ -127,13 +127,14 @@ public class DiagnosisController {
 			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			alert.showAndWait();
 		} 
-		else if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)){
+		else if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().matches(Main.blockedCharsForHL7)) {
 			Main.logger.warning("Falscher Eintrag: Sonderzeichen sind für die HL7 Nachrichten blockiert.");
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Fehler");
 			alert.setHeaderText("Falscher Eintrag");
 			alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
 			alert.show();
+		}
 		else{
 			insertNewDiagnose();
 			Node source = (Node) event.getSource();

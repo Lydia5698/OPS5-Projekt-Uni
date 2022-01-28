@@ -124,7 +124,7 @@ public class PatientController {
                 alert.setHeaderText("Falsche Einträge!");
                 alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
                 alert.showAndWait();
-            //invalid birthdate
+            } //invalid birthdate
             else if(patientBirthdate.getValue() != null && patientBirthdate.getValue().isAfter(LocalDate.now())){
                     Main.logger.warning("Falscher Eintrag: Das gewählte Geburtsdatum liegt in der Zukunft.");
                     alert.setHeaderText("Falscher Eintrag!");
