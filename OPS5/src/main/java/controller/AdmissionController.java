@@ -44,7 +44,7 @@ public class AdmissionController {
      * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
      */
     public void setPatient() {
-        Converter.setPatient(selectPatient);
+        Converter.setPatient(selectPatient, false);
     }
 
     /**

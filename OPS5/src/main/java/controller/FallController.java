@@ -64,7 +64,7 @@ public class FallController {
      * Can't be null for insert a new case!!
      */
     private void setPatient() {
-        Converter.setPatient(patient);
+        Converter.setPatient(patient, true);
     }
 
     /**

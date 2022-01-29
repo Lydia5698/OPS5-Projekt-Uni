@@ -180,7 +180,7 @@ public class Converter {
     /**
      * Creates a callback from all patients which prints only the last and first name of each patient
      */
-    public static void setPatient(SearchableComboBox<Patient> patient) {
+    public static void setPatient(SearchableComboBox<Patient> patient, boolean withChangelistener) {
         Callback<ListView<Patient>, ListCell<Patient>> cellFactory = new Callback<>() {
             @Override
             public ListCell<Patient> call(ListView<Patient> patientListView) {
@@ -201,11 +201,13 @@ public class Converter {
         patient.setCellFactory(cellFactory);
         patient.getItems().setAll(new PatientDao(Main.configuration).findAll());
         patient.setSelectionModel(new CustomSelectionModel<>(patient));
-        patient.valueProperty().addListener((observable, oldValue, newValue) -> {
+        if(withChangelistener){
+            patient.valueProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue == null){
                 Platform.runLater(()-> patient.setValue(oldValue));
             }
-        });
+            });
+        }
     }
 
     /**

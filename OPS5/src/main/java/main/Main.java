@@ -3,9 +3,6 @@ package main;
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
-import ca.uhn.hl7v2.parser.PipeParser;
-import connection.Client;
-import connection.Server;
 import controller.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -34,6 +31,7 @@ public class Main extends Application{
      */
    public static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
    static{
+       System.setProperty("java.util.logging.SimpleFormatter.format","%4$s: %5$s [%1$tc]%n");
        logger.setLevel(Level.INFO);
        logger.setUseParentHandlers(false);
        ConsoleHandler handler = new ConsoleHandler();
