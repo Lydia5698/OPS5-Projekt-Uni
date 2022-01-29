@@ -63,13 +63,13 @@ public class Server {
                     patient.setErsteller("00000000");
                     patient.setErstellZeit(LocalDateTime.now());
                     CommunicationsController.insertNewPatient(patient);
-                    System.out.println("Neuer Patient eingefügt");
+                    Main.logger.info("Neuer Patient eingefügt");
                 }
                 else{
                     patient.setBearbeiter("00000000");
                     patient.setBearbeiterZeit(LocalDateTime.now());
                     new PatientDao(Main.configuration).update(patient);
-                    System.out.println("Patient bekannt und bearbeitet");
+                    Main.logger.info("Patient bekannt und bearbeitet");
                 }
                 if(CommunicationsController.getInstance().canInsertPatient(patient)){
                     Fall fall = MessageParser.parseA01Case(message);
@@ -80,7 +80,7 @@ public class Server {
                             fall.setErsteller("00000000");
                             fall.setErstellZeit(LocalDateTime.now());
                             CommunicationsController.insertNewCase(fall);
-                            System.out.println("Neuer Fall eingefügt");
+                            Main.logger.info("Neuer Fall eingefügt");
                         }
                         else{
                             fall.setBearbeiter("00000000");
@@ -150,8 +150,8 @@ public class Server {
         hapiServer.registerApplication("BAR", "P05", new ReceivingApplication<>() {
             @Override
             public Message processMessage(Message message, Map<String, Object> map){
-                try{                String encodedMessage = MessageParser.pipeParser.encode(message);
-                    //System.out.println(encodedMessage);
+                try{
+                    String encodedMessage = MessageParser.pipeParser.encode(message);
 
                     Platform.runLater(()->{
                         //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
@@ -192,12 +192,12 @@ public class Server {
         hapiServer.registerConnectionListener(new ConnectionListener() {
             @Override
             public void connectionReceived(Connection connection) {
-                System.out.println("New connection received: " + connection.getRemoteAddress().toString());
+                Main.logger.info("New connection received: " + connection.getRemoteAddress().toString());
             }
 
             @Override
             public void connectionDiscarded(Connection connection) {
-                System.out.println("Lost connection from: " + connection.getRemoteAddress().toString());
+                Main.logger.info("Lost connection from: " + connection.getRemoteAddress().toString());
             }
         });
         //if a progress failes like the receiving or the process/responde of the message, the exception handler
