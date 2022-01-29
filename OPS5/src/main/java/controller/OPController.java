@@ -1,4 +1,5 @@
 package controller;
+import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
 import javafx.application.Platform;
 
@@ -172,7 +173,7 @@ public class OPController{
                         if (fall == null || empty){
                             setGraphic(null);
                         } else {
-                            setText("FallID: " + fall.getFallId().toString() + " , Aufnahme: " + fall.getAufnahmedatum());
+                            setText("FallID: " + fall.getFallId().toString() + " , Aufnahme: " + Converter.dateTimeConverter(fall.getAufnahmedatum(), false));
                         }
                     }
                 };
@@ -309,7 +310,7 @@ public class OPController{
             @Override
             public String toString(){
                 return "Fall-ID: " + fall.getFallId() + ", Aufnahmedatum: " +
-                        fall.getAufnahmedatum();
+                        Converter.dateTimeConverter(fall.getAufnahmedatum(), false);
             }
         };
         OpTypSt opTypSt = new OpTypStDao(Main.configuration).fetchOneByOpTyp(operation.getOpTypSt());
