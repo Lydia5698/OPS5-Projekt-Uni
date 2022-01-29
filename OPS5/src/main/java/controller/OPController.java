@@ -179,11 +179,6 @@ public class OPController{
         opCaseId.getItems().setAll(new FallDao(Main.configuration).fetchByPatId(patId));
         opCaseId.valueProperty().set(null);
         opCaseId.setSelectionModel(new CustomSelectionModel<>(opCaseId));
-        opCaseId.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue == null){
-                Platform.runLater(()-> opCaseId.setValue(oldValue));
-            }
-        });
     }
 
     /**
@@ -211,12 +206,8 @@ public class OPController{
         opType.setCellFactory(cellFactory);
         opType.getItems().setAll(new OpTypStDao(Main.configuration).findAll());
         opType.setSelectionModel(new CustomSelectionModel<>(opType));
-        opType.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue == null){
-                Platform.runLater(()-> opType.setValue(oldValue));
-            }
-        });
     }
+
     /**
      * This method is called when initialising the window.
      * It sets all operation rooms of the database as choosing options of the combobox.
@@ -242,12 +233,8 @@ public class OPController{
         opRoom.setCellFactory(cellFactory);
         opRoom.getItems().setAll(new OpSaalStDao(Main.configuration).findAll());
         opRoom.setSelectionModel(new CustomSelectionModel<>(opRoom));
-        opRoom.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue == null){
-                Platform.runLater(()-> opRoom.setValue(oldValue));
-            }
-        });
     }
+
     /**
      * This method is called when initialising the window.
      * It sets all Narkose types of the database as choosing options of the combobox.
@@ -273,11 +260,6 @@ public class OPController{
         narkose.setCellFactory(cellFactory);
         narkose.getItems().setAll(new NarkoseStDao(Main.configuration).findAll());
         narkose.setSelectionModel(new CustomSelectionModel<>(narkose));
-        narkose.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue == null){
-                Platform.runLater(()-> narkose.setValue(oldValue));
-            }
-        });
     }
 
     /**
