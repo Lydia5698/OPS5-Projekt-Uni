@@ -38,9 +38,9 @@ public class OPController{
     @FXML
     private DateTimePicker sewTime;
     @FXML
-    private final Spinner<Integer> towelsBefore = new Spinner<>(0, 100, 0);
+    private Spinner<Integer> towelsBefore = new Spinner<>(0, 100, 0);
     @FXML
-    private final Spinner<Integer> towelsAfter = new Spinner<>(0, 100, 0);
+    private Spinner<Integer> towelsAfter = new Spinner<>(0, 100, 0);
 
     /**
      * This method returns the integer of the selected integer
@@ -52,6 +52,10 @@ public class OPController{
         }
         return null;
     }
+    public void setOpCaseId(Fall fall){
+        opCaseId.getSelectionModel().select(fall);
+    }
+
 
     /**
      * This method returns the time and date of the beginning of the operation.
