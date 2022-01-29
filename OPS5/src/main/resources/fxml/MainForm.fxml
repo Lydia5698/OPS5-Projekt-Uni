@@ -33,7 +33,7 @@
    <bottom>
       <Pane prefHeight="59.0" prefWidth="815.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="btnLogout" layoutX="742.0" layoutY="17.0" mnemonicParsing="false" onAction="#log_out" text="Log Out" />
+            <Button fx:id="btnLogIn" layoutX="742.0" layoutY="17.0" mnemonicParsing="false" onAction="#log_out" text="Log Out" />
             <SearchableComboBox fx:id="employeeId" layoutX="585.0" layoutY="17.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="150.0" />
             <Label fx:id="systemMessage" layoutX="467.0" layoutY="21.0" text="User Informationen" />
          </children>

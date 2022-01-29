@@ -45,11 +45,17 @@ public class MessageParser {
         patient.setGeschlecht(Converter.SexFromISSToOurConverter(pid.getAdministrativeSex().getValue()));
         patient.setStorniert(false);
         patient.setGeburtsort(pid.getBirthPlace().getValue());
-        patient.setStrasse(pid.getPatientAddress(0).getStreetAddress().getStreetName().getValue() + " " + pid.getPatientAddress(0).getStreetAddress().getDwellingNumber().getValue());
+        String straße = pid.getPatientAddress(0).getStreetAddress().getStreetName().getValue();
+        String number = pid.getPatientAddress(0).getStreetAddress().getDwellingNumber().getValue();
+        if(straße != null){
+            String patientsadress = straße;
+            if(number != null){
+                patientsadress = patientsadress + " " + number;
+            }
+            patient.setStrasse(patientsadress);
+        }
         patient.setPostleitzahl(pid.getPatientAddress(0).getXad5_ZipOrPostalCode().getValue());
         patient.setTelefonnummer(pid.getPhoneNumberHome(0).getTelephoneNumber().getValue());
-        patient.setErsteller("00000000");
-        patient.setErstellZeit(LocalDateTime.now()); //TODO hier evt noch umändern
         return patient;
 
     }
@@ -73,8 +79,6 @@ public class MessageParser {
         if(pv1.getDischargeDateTime(0).getTime().getValue() != null){fall.setEntlassungsdatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getDischargeDateTime(0).getTime().getValue())));}
         fall.setStationSt(pv1.getAssignedPatientLocation().getPl1_PointOfCare().getValue());
         fall.setStorniert(false);
-        fall.setErsteller(pv1.getAdmittingDoctor(0).getIDNumber().getValue());
-        fall.setErstellZeit(LocalDateTime.now());
         return fall;
     }
 
@@ -95,8 +99,6 @@ public class MessageParser {
                 for (DG1 dg1 : dg1List) {
                     Diagnose diagnose = new Diagnose();
                     diagnose.setDiagnoseId(Integer.parseInt(dg1.getDg11_SetIDDG1().getValue()));
-                    diagnose.setErsteller("00000000");
-                    diagnose.setErstellZeit(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(dg1.getDiagnosisDateTime().getTime().getValue())));
                     diagnose.setDiagnosetyp(1);
                     diagnose.setIcd10Code(dg1.getDiagnosisCodeDG1().getCe1_Identifier().getValue());
                     diagnose.setKlartextDiagnose(dg1.getDiagnosisDescription().getValue());
@@ -201,7 +203,7 @@ public class MessageParser {
                 DG1 dg1 = bar05.getVISIT().getDG1(i);
                 dg1.getSetIDDG1().setValue(diagnose.get(i).getDiagnoseId().toString());
                 dg1.getDiagnosisCodeDG1().getCe1_Identifier().setValue(diagnose.get(i).getIcd10Code());
-                dg1.getDiagnosisDescription().setValue(diagnose.get(i).getKlartextDiagnose());
+                dg1.getDiagnosisDescription().setValue(diagnose.get(i).getKlartextDiagnose().replaceAll("\n", "").replaceAll("\r",""));
                 dg1.getDiagnosisDateTime().getTime().setValue(diagnose.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
                 dg1.getDiagnosingClinician(0).getIDNumber().setValue(diagnose.get(i).getErsteller());
             }
@@ -212,7 +214,7 @@ public class MessageParser {
                 PR1 pr1 = bar05.getVISIT(0).getPROCEDURE().getPR1();
                 pr1.getSetIDPR1().setValue(prozedur.getProzId().toString());
                 pr1.getProcedureCode().getIdentifier().setValue(prozedur.getOpsCode());
-                pr1.getProcedureDescription().setValue(prozedur.getAnmerkung());
+                pr1.getProcedureDescription().setValue(prozedur.getAnmerkung().replaceAll("\n", "").replaceAll("\r",""));
                 pr1.getProcedureDateTime().getTime().setValue(prozedur.getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
                 pr1.getSurgeon(0).getIDNumber().setValue(prozedur.getErsteller());
             }

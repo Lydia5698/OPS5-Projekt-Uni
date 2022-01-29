@@ -3,6 +3,7 @@ package controller;
 import ExternalFiles.Converter;
 import ExternalFiles.TableViewMessage;
 import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.llp.MllpConstants;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v251.message.ACK;
 import connection.Client;
@@ -55,6 +56,7 @@ public class CommunicationsController {
     @FXML
     public void initialize() {
         try {
+            System.setProperty(MllpConstants.CHARSET_KEY, "ISO-8859-1");
             startServer();
             setCommunicationsObjectBox();
             hl7Message.setCellValueFactory(param -> param.getValue().hl7MessageProperty());
@@ -144,27 +146,34 @@ public class CommunicationsController {
             alert.setContentText("Es muss eine Operation ausgewählt werden, die verschickt werden soll!");
             alert.showAndWait();
         } else {
-            Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
-            try {
-                Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
-                String stringFromMessage = MessageParser.messageToString(sendMessage);
+            Thread thread = new Thread(()->{
+                Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
+                try {
+                    Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
+                    String stringFromMessage = MessageParser.messageToString(sendMessage);
 
-                ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
+                    ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
 
-                Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
+                    Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
 
-                //if in ack was sent back, the value of gültig changes to true
-                if (responseMessage instanceof ACK) {
-                    ACK ack = (ACK) responseMessage;
-                    if (ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")) {
-                        ts.getItems().stream()
-                                .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
-                                .forEach(tM -> tM.setAckMessage("ja"));
+                    //if in ack was sent back, the value of gültig changes to true
+                    if (responseMessage instanceof ACK) {
+                        ACK ack = (ACK) responseMessage;
+                        if (ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")) {
+                            ts.getItems().stream()
+                                    .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
+                                    .forEach(tM -> tM.setAckMessage("ja"));
+                        }
                     }
+                } finally {
+                    client.closeClient();
+                    //interuppt thread when the client has been closed
+                    Thread.currentThread().interrupt();
+                    Main.logger.info("Thread des Clients wurde unterbrochen, da der Client geschlossen wurde");
                 }
-            } finally {
-                client.closeClient();
-            }
+            });
+            thread.setDaemon(true);
+            thread.start();
         }
     }
 
@@ -221,7 +230,7 @@ public class CommunicationsController {
         if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())) {
             return true;
         }
-        return !(fall.getEntlassungsdatum() == null || !fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum()));
+        return !(fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum()));
     }
 
     public boolean isNewCase(Fall fall){
