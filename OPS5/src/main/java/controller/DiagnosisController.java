@@ -489,13 +489,13 @@ public class DiagnosisController {
 	 * @throws Exception
 	 */
 	private JSONObject getJsonForCode(String code) throws Exception {
-		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=https://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code=" +code+ "&system=https://fhir.de/CodeSystem/bfarm/icd-10-gm");
+		URL url = new URL("https://fhir.imi.uni-luebeck.de/fhir/ConceptMap/$translate?url=http://imi.uni-luebeck.de/ehealth/fhir/ConceptMap/icd-10-to-msh&code="+code+"&system=http://fhir.de/CodeSystem/bfarm/icd-10-gm");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestProperty("accept", "application/json");
 		InputStream responseStream = connection.getInputStream();
 		JSONParser jsonParser = new JSONParser();
 		return (JSONObject)jsonParser.parse(
-				new InputStreamReader(responseStream, StandardCharsets.UTF_8));
+				new InputStreamReader(responseStream, "UTF-8"));
 	}
 
 	/**
