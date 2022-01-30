@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
@@ -47,6 +48,8 @@ public class RoleOverviewController {
 	private SearchableComboBox<RolleSt> role;
 	@FXML
 	private SearchableComboBox<Operation> op;
+	@FXML
+	private Button speichern;
 
 
 	/**
@@ -121,6 +124,10 @@ public class RoleOverviewController {
 			confirm.setHeaderText("Erfolgreich eingefügt");
 			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 			confirm.showAndWait();
+
+			//close the window
+			Stage stage = (Stage) speichern.getScene().getWindow();
+			stage.close();
 		}
 	}
 
@@ -150,9 +157,11 @@ public class RoleOverviewController {
 			Alert confirm = new Alert(AlertType.INFORMATION);
 			confirm.setTitle("Information");
 			confirm.setHeaderText("Erfolgreich eingefügt");
-			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+			confirm.setContentText("Der Datensatz wurde geupdatet.");
 			confirm.showAndWait();
-			confirm.showAndWait();
+			//close the window
+			Stage stage = (Stage) speichern.getScene().getWindow();
+			stage.close();
 		}
 		else{
 			Main.logger.warning("Fehlende Auswahl: Es muss eine Rolle zum Bearbeiten ausgewählt werden.");

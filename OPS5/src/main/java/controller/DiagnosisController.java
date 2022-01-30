@@ -349,12 +349,16 @@ public class DiagnosisController {
 							icd10CodeSt.getBeschreibung();
 				}
 			};
-			Operation operation1 = new Operation(operation){
-				@Override
-				public String toString(){
-					return operation.getOpId().toString();
-				}
-			};
+			if(operation != null){
+				Operation operation1 = new Operation(operation){
+					@Override
+					public String toString(){
+						return operation.getOpId().toString();
+					}
+				};
+				diagnosisOpId.setValue(operation1);
+			}
+			//can not be null
 			DiagnosetypSt diagnosetypSt1 = new DiagnosetypSt(diagnosetypSt){
 				@Override
 				public String toString(){
@@ -362,8 +366,8 @@ public class DiagnosisController {
 				}
 			};
 			diagnosisIcdCode.setValue(icd10CodeSt1);
-			diagnosisOpId.setValue(operation1);
 			diagnosisType.setValue(diagnosetypSt1);
+			diagnosisFreetext.setText(diagnose.getKlartextDiagnose());
 		}
 	}
 

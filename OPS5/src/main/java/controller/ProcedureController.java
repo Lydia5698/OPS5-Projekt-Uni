@@ -283,6 +283,7 @@ public class ProcedureController {
             };
             procedureOpsCode.setValue(opsCodeSt1);
             procedureOpID.setValue(operation1);
+            procedureAnmerkung.setText(prozedur.getAnmerkung());
         }
 
     }
