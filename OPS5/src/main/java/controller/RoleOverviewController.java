@@ -208,7 +208,7 @@ public class RoleOverviewController {
 						@Override
 						public String toString() {
 							return "OP: " + operationX.getOpId() + ", Fall: " + operationX.getFallId() +
-									", Datum: " + operationX.getBeginn();
+									", Datum: " + Converter.dateTimeConverter(operationX.getBeginn(),false);
 						}
 					};
 					RolleSt roleStX = new RolleStDao(Main.configuration).fetchOneByRolle(editRole.getRolleSt());
