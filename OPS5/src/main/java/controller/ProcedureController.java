@@ -264,7 +264,7 @@ public class ProcedureController {
      */
     @FXML
     void mouseEntered(MouseEvent event) {
-        if (event.getClickCount() > 0) {
+        if (event.getClickCount() > 0 && !procedureTable.getItems().isEmpty()) {
             Prozedur prozedur = procedureTable.getSelectionModel().getSelectedItem();
             OpsCodeSt opsCodeSt = new OpsCodeStDao(Main.configuration).fetchOneByOpsCode(prozedur.getOpsCode());
             Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(prozedur.getOpId());

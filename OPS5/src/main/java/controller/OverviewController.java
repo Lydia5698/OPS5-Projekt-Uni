@@ -214,7 +214,7 @@ public class OverviewController {
         });
         // When an Operation gets double clicked you can edit this Operation
         opListOperation.setOnMouseClicked((MouseEvent event) -> {
-            if (event.getClickCount() > 1) {
+            if (event.getClickCount() > 1 && onEditOperation() != 0) {
                 opId = onEditOperation();
                 createAndShowOperationWindow();
                 opListOperation.setItems(operationView(onEditCase()));
