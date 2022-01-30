@@ -1,8 +1,13 @@
 package controller;
 
 import ExternalFiles.Converter;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import jooq.tables.pojos.MedPersonal;
 import org.controlsfx.control.SearchableComboBox;
@@ -16,6 +21,10 @@ public class LogInController {
     private SearchableComboBox<MedPersonal> mitarbeiter;
     @FXML
     private Button login;
+    @FXML
+    private PasswordField passwort;
+    @FXML
+    private Label message;
 
     @FXML
     public void initialize() {
@@ -26,8 +35,17 @@ public class LogInController {
      * Logs in the new selected user
      */
     public void loginNewEmployee() {
-        MainController.setEmployee(mitarbeiter.getSelectionModel().getSelectedIndex());
-        Stage stage = (Stage) login.getScene().getWindow();
-        stage.close();
+        if (!passwort.getText().equals("OPS5")) {
+            message.setText("Falsches Passwort");
+            message.setTextFill(Color.rgb(210,39,30));
+        }
+        else{
+            passwort.clear();
+            message.setText("");
+            MainController.setEmployee(mitarbeiter.getSelectionModel().getSelectedIndex());
+            Stage stage = (Stage) login.getScene().getWindow();
+            stage.close();
+        }
+
     }
 }
