@@ -2,7 +2,11 @@ package controller;
 import java.io.IOException;
 
 import ExternalFiles.Converter;
+import ExternalFiles.CustomSelectionModel;
+import io.r2dbc.spi.Parameter;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,12 +19,15 @@ import javafx.collections.FXCollections;
 
 import java.time.LocalDate;
 
+import javafx.util.Callback;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
+import org.controlsfx.control.SearchableComboBox;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -174,6 +181,9 @@ public class OverviewController {
     private CheckBox stornierteOperation;
 
     @FXML
+    private SearchableComboBox<StationSt> stations;
+
+    @FXML
     private Button btnRole;
 
     private static Integer opId;
@@ -193,6 +203,7 @@ public class OverviewController {
 
         btnRole.setVisible(false);
         initializeColumns();
+        setStations();
         opListPatients.setItems(patientView());
         // When a Patient gets selected the corresponding Cases show
         opListPatients.setOnMouseClicked((MouseEvent event) -> {
@@ -384,6 +395,44 @@ public class OverviewController {
         return FXCollections.observableArrayList(result);
 
     }
+    /**
+     * Gets all the Stations and saves them in the stations Combobox
+     */
+    private void setStations() {
+        Callback<ListView<StationSt>, ListCell<StationSt>> cellFactory = new Callback<>() {
+            @Override
+            public ListCell<StationSt> call(ListView<StationSt> medPersonalListView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(StationSt stationSt, boolean empty) {
+                        super.updateItem(stationSt, empty);
+                        if (stationSt == null || empty) {
+                            setGraphic(null);
+                        } else {
+                            setText(stationSt.getStation() + " " + stationSt.getBezeichnung());
+                        }
+                    }
+                };
+            }
+        };
+        stations.setButtonCell(cellFactory.call(null));
+        stations.setCellFactory(cellFactory);
+        stations.getItems().setAll(new StationStDao(Main.configuration).findAll());
+        stations.setSelectionModel(new CustomSelectionModel<>(stations));
+        stations.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                Platform.runLater(() -> stations.setValue(oldValue));
+            }
+        });
+
+    }
+
+    public void showPatientsOnStation() {
+        if(stations.getValue() != null){
+            List<Fall> fall = new FallDao(Main.configuration).fetchByStationSt(stations.getValue().getStation());
+            opListCase.setItems(FXCollections.observableArrayList(fall));
+        }
+    }
 
     /**
      * Deletes an selected Operation (sets storniert true) and updates this Operation
@@ -520,6 +569,7 @@ public class OverviewController {
     public void setStorniertShown(Boolean storniertShown) {
         OverviewController.storniertShown = storniertShown;
     }
+
 
 
 }
