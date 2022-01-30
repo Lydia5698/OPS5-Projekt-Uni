@@ -313,31 +313,40 @@ public class OPController{
                         Converter.dateTimeConverter(fall.getAufnahmedatum(), false);
             }
         };
+        opCaseId.setValue(fall1);
+
         OpTypSt opTypSt = new OpTypStDao(Main.configuration).fetchOneByOpTyp(operation.getOpTypSt());
-        OpTypSt opTypSt1 = new OpTypSt(opTypSt){
-            @Override
-            public String toString(){
-                return opTypSt.getBeschreibung();
-            }
-        };
+        if(opTypSt != null){
+            OpTypSt opTypSt1 = new OpTypSt(opTypSt){
+                @Override
+                public String toString(){
+                    return opTypSt.getBeschreibung();
+                }
+            };
+            opType.setValue(opTypSt1);
+        }
+
         OpSaalSt opSaalSt = new OpSaalStDao(Main.configuration).fetchOneByCode(operation.getOpSaal());
-        OpSaalSt opSaalSt1 = new OpSaalSt(opSaalSt){
+        if(opSaalSt != null){
+            OpSaalSt opSaalSt1 = new OpSaalSt(opSaalSt){
             @Override
             public String toString(){
                 return opSaalSt.getBeschreibung();
             }
         };
-        NarkoseSt narkoseSt = new NarkoseStDao(Main.configuration).fetchOneByNarkose(operation.getNarkoseSt());
-        NarkoseSt narkoseSt1 = new NarkoseSt(narkoseSt){
-            @Override
-            public String toString(){
-                return narkoseSt.getBeschreibung();
-            }
-        };
-        opCaseId.setValue(fall1);
-        opType.setValue(opTypSt1);
         opRoom.setValue(opSaalSt1);
-        narkose.setValue(narkoseSt1);
+        }
+
+        NarkoseSt narkoseSt = new NarkoseStDao(Main.configuration).fetchOneByNarkose(operation.getNarkoseSt());
+        if(narkoseSt != null){
+            NarkoseSt narkoseSt1 = new NarkoseSt(narkoseSt){
+                @Override
+                public String toString(){
+                    return narkoseSt.getBeschreibung();
+                }
+            };
+            narkose.setValue(narkoseSt1);
+        }
 	}
 
     /**
