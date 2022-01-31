@@ -10,6 +10,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import jooq.tables.pojos.MedPersonal;
+import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
 /**
@@ -25,6 +26,8 @@ public class LogInController {
     private PasswordField passwort;
     @FXML
     private Label message;
+    @FXML
+    private Button schliessen;
 
     @FXML
     public void initialize() {
@@ -47,5 +50,13 @@ public class LogInController {
             stage.close();
         }
 
+    }
+
+    /**
+     * If the button was pressed, the application closes (System.exit() cause it is also called in the stop method from Main)
+     * @param actionEvent
+     */
+    public void closeApplication(ActionEvent actionEvent) {
+        System.exit(0);
     }
 }

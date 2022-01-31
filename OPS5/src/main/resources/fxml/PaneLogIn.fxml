@@ -21,8 +21,9 @@
          </font>
       </Text>
       <SearchableComboBox fx:id="mitarbeiter" layoutX="140.0" layoutY="223.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="150.0" promptText="Mitarbeiter" />
-      <Button fx:id="login" layoutX="541.0" layoutY="356.0" mnemonicParsing="false" onAction="#loginNewEmployee" text="Log In" />
+      <Button fx:id="login" layoutX="539.0" layoutY="339.0" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#loginNewEmployee" prefHeight="26.0" prefWidth="71.0" text="Log In" />
       <PasswordField fx:id="passwort" layoutX="140.0" layoutY="273.0" maxHeight="26.0" maxWidth="150.0" promptText="Passwort" />
       <Label fx:id="message" layoutX="140.0" layoutY="299.0" prefHeight="26.0" prefWidth="150.0" />
+      <Button fx:id="schliessen" layoutX="539.0" layoutY="377.0" mnemonicParsing="false" onAction="#closeApplication" text="Schließen" />
    </children>
 </AnchorPane>
