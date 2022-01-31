@@ -228,6 +228,10 @@ public class OverviewController {
 
     }
 
+    public void reload(){
+        opListPatients.setItems(patientView());
+    }
+
     /**
      * 	Initializes all Columns from the Table Views opListPatients, opListCase and opListOperation
      */

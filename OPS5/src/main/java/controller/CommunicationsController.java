@@ -106,7 +106,7 @@ public class CommunicationsController {
      * if the patients are chosen the patient combobox is visible and the operation combobox is set to invisible
      * and the same for operation
      */
-    private void setCommunicationsObjectBox() {
+    public void setCommunicationsObjectBox() {
         Converter.setOperation(communicationsObject, "communication");
     }
 
