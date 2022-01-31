@@ -9,7 +9,10 @@
   
 ## Datensatz zur Synchronisierung mit der Partnergruppe
 
-Wir haben uns gemeinsam mit der Partnergruppe entschieden einen Datensatz aufzustellen, welche synchronisiert ist. Diesen kann man bei phpMyAdmin über das SQL-Feld aufspielen. Dabei werden zunächst alle Bewegungstabellen zurückgesetzt und dann mit den synchronisierten Daten bespielt. Die SQL-Statements, die kopiert werden müssen, sind die folgenden:
+Wir haben uns gemeinsam mit der Partnergruppe entschieden einen Datensatz aufzustellen, welche synchronisiert ist. Diesen kann man bei phpMyAdmin über das SQL-Feld aufspielen. Dabei werden zunächst alle Bewegungstabellen zurückgesetzt und dann mit den synchronisierten Daten bespielt.
+**WICHTIG**: In den **Editiermodus** gehen zum Kopieren, sonst werden die Anführungsstriche nicht richtig mitgenommen!
+
+ Die SQL-Statements, die kopiert werden müssen, sind die folgenden:
 
 ### Zum Leeren der Bewegungstabellen
 
