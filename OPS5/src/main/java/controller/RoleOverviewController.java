@@ -117,13 +117,30 @@ public class RoleOverviewController {
 					false //storniert
 			);
 			RolleDao roleDao = new RolleDao(Main.configuration);
-			roleDao.insert(insertRole);
-			Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
-			Alert confirm = new Alert(AlertType.INFORMATION);
-			confirm.setTitle("Information");
-			confirm.setHeaderText("Erfolgreich eingefügt");
-			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-			confirm.showAndWait();
+			// test if role with this operation and medical_user is already in the database
+			List<Rolle> allRoles = roleDao.findAll();
+			boolean roleExists = false;
+			for (Rolle r : allRoles){
+				if (r.getOpId() == insertRole.getOpId() && r.getMedPersonalPersId().equals(insertRole.getMedPersonalPersId())){
+					roleExists = true;
+				}
+			}
+			if(roleExists){
+				Main.logger.warning("Es existiert bereits ein Rollen-Eintrag mit dieser Schlüsselkombination aus Op-Id und Mitarbeiter.");
+				alert.setHeaderText("Eintrag mit diesem Schlüssel bereits vorhanden.");
+				alert.setContentText("Es existiert bereits ein Eintrag mit dieser Schlüsselkombination aus Op-Id und Mitarbeiter. " +
+						"Zum Bearbeiten der Rolle nutzen Sie bitte den Speichern-Button.");
+				alert.showAndWait();
+			}
+			else {
+				roleDao.insert(insertRole);
+				Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
+				Alert confirm = new Alert(AlertType.INFORMATION);
+				confirm.setTitle("Information");
+				confirm.setHeaderText("Erfolgreich eingefügt");
+				confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+				confirm.showAndWait();
+			}
 
 			//close the window
 			Stage stage = (Stage) speichern.getScene().getWindow();
