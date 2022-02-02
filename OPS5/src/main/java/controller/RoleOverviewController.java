@@ -169,13 +169,33 @@ public class RoleOverviewController {
 					selectedRole.getStorniert() //storniert
 			);
 			RolleDao roleDao = new RolleDao(Main.configuration);
-			roleDao.update(updateRole);
-			Main.logger.info("Der Datensatz wurde geupdated.");
-			Alert confirm = new Alert(AlertType.INFORMATION);
-			confirm.setTitle("Information");
-			confirm.setHeaderText("Erfolgreich eingefügt");
-			confirm.setContentText("Der Datensatz wurde geupdatet.");
-			confirm.showAndWait();
+			// test if role with this operation and medical_user is already in the database
+			List<Rolle> allRoles = roleDao.findAll();
+			boolean roleExists = false;
+			for (Rolle r : allRoles){
+				if (r.getOpId() == updateRole.getOpId() && r.getMedPersonalPersId().equals(updateRole.getMedPersonalPersId()) &&
+				 (r.getOpId() != selectedRole.getOpId() || !(r.getMedPersonalPersId().equals(selectedRole.getMedPersonalPersId())))){
+					roleExists = true;
+				}
+			}
+			if(roleExists){
+				Main.logger.warning("Es existiert bereits ein Rollen-Eintrag mit dieser Schlüsselkombination aus Op-Id und Mitarbeiter.");
+				Alert warning = new Alert(AlertType.WARNING);
+				warning.setTitle("Error");
+				warning.setHeaderText("Eintrag mit diesem Schlüssel bereits vorhanden.");
+				warning.setContentText("Es existiert bereits ein Eintrag mit dieser Schlüsselkombination aus Op-Id und Mitarbeiter. ");
+				warning.showAndWait();
+			}
+			else {
+				roleDao.update(updateRole);
+				Main.logger.info("Der Datensatz wurde geupdated.");
+				Alert confirm = new Alert(AlertType.INFORMATION);
+				confirm.setTitle("Information");
+				confirm.setHeaderText("Erfolgreich eingefügt");
+				confirm.setContentText("Der Datensatz wurde geupdatet.");
+				confirm.showAndWait();
+			}
+
 			//close the window
 			Stage stage = (Stage) speichern.getScene().getWindow();
 			stage.close();
