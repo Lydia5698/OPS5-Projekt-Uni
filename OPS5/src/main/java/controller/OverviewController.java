@@ -199,8 +199,6 @@ public class OverviewController {
      */
     @FXML
 	public void initialize() {
-        Main.logger.info("Initialize OPlist-Tab!");
-
         btnRole.setVisible(false);
         initializeColumns();
         setStations();
@@ -452,6 +450,7 @@ public class OverviewController {
             Operation operation = opListOperation.getSelectionModel().getSelectedItem();
             OperationDao operationDao = new OperationDao(Main.configuration);
             operationDao.update(operation);
+            Main.logger.info("Die Operation und die dazugehörigen Diagnosen und Prozeduren wurden storniert.");
             opListOperation.setItems(operationView(onEditCase()));
         }
         else{
@@ -484,7 +483,6 @@ public class OverviewController {
      */
     @FXML
     public void createAndShowDiagnosisWindow() {
-        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneDiagnosis.fxml"));
@@ -506,7 +504,6 @@ public class OverviewController {
      */
     @FXML
     public void createAndShowOperationWindow() {
-        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOpEdit.fxml"));
@@ -528,7 +525,6 @@ public class OverviewController {
      */
     @FXML
     public void createAndShowProcedureWindow() {
-        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneProcedure.fxml"));
@@ -550,7 +546,6 @@ public class OverviewController {
      */
     @FXML
     void showRoles(){
-        Main.logger.info("Show and edit Role Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRoleOverview.fxml"));

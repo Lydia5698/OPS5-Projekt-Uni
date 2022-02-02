@@ -65,8 +65,6 @@ public class ProcedureController {
      */
     @FXML
     public void initialize() {
-
-        Main.logger.info("Initialize Procedure-Tab!");
         initializeColumns();
         setProcedureOpID();
         setProcedureOpsCode();
@@ -97,7 +95,6 @@ public class ProcedureController {
                 alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
                 alert.show();
         } else {
-            Main.logger.info("Create procedure!");
             insertNewProcedure();
             Node source = (Node) event.getSource();
             Stage thisStage = (Stage) source.getScene().getWindow();
@@ -183,6 +180,12 @@ public class ProcedureController {
             Prozedur prozedur = new Prozedur(prozID, anmerkungText, false, null, bearbeiterZeit, opID, opsCodeValue, bearbeiter, null);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.update(prozedur);
+            Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
+            Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+            confirm.setTitle("Information");
+            confirm.setHeaderText("Erfolgreich geupdatet");
+            confirm.setContentText("Der Datensatz wurde geupdatet.");
+            confirm.showAndWait();
 
         }
         // new Procedure
@@ -192,14 +195,14 @@ public class ProcedureController {
             Prozedur prozedur = new Prozedur(prozID, anmerkungText, false, erstellZeit, null, opID, opsCodeValue, null, ersteller);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.insert(prozedur);
-        }
-        Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
-        Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-        confirm.setTitle("Information");
-        confirm.setHeaderText("Erfolgreich eingefügt");
-        confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-        confirm.showAndWait();
+            Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
+            Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+            confirm.setTitle("Information");
+            confirm.setHeaderText("Erfolgreich eingefügt");
+            confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+            confirm.showAndWait();
 
+        }
     }
 
     /**

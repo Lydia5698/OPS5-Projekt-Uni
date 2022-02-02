@@ -65,7 +65,6 @@ public class CommunicationsController {
 
             communicationsIpAddress.setText(InetAddress.getLocalHost().getHostAddress());
             communicationsPort.setText(String.valueOf(Main.port));
-            Main.logger.info("Initialize Communications-Tab!");
         } catch (UnknownHostException e) {
             Platform.runLater(() -> {
                 Main.logger.warning("Die Adresse kann nicht zu einer IP Adresse gecastet werden.");

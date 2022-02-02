@@ -65,7 +65,6 @@ public class PatientController {
 
     @FXML
 	public void initialize() {
-        Main.logger.info("Initialize Patient-Tab!");
 	}
 
     /**

@@ -280,8 +280,6 @@ public class OPController{
         opDateEnd.getEditor().clear();
         cutTime.getEditor().clear();
         sewTime.getEditor().clear();
-
-        Main.logger.info("Initialize OP-Tab!");
 	}
 
     /**

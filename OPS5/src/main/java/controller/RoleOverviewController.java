@@ -57,7 +57,6 @@ public class RoleOverviewController {
 	 */
 	@FXML
 	public void initialize() {
-		Main.logger.info("Initialize Rolle-Tab!");
 		initializeColumns();
 		setRole();
 		setOp();
@@ -86,7 +85,6 @@ public class RoleOverviewController {
 	 */
 	@FXML
 	void createNewRole() {
-		Main.logger.info("Create new role!");
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Error");
 		alert.setHeaderText("Fehlende Einträge!");
@@ -155,7 +153,6 @@ public class RoleOverviewController {
 	 */
 	@FXML
 	public void createRole(){
-		Main.logger.info("Create role!");
 		if (roleTable.getSelectionModel().getSelectedItem() != null) {
 			Rolle selectedRole = roleTable.getSelectionModel().getSelectedItem();
 			Rolle updateRole = new Rolle(
@@ -230,7 +227,6 @@ public class RoleOverviewController {
 		roleTable.setOnMouseClicked((MouseEvent event) -> {
 			if (event.getClickCount() > 0) {
 				if (roleTable.getSelectionModel().getSelectedItem() != null) {
-					Main.logger.info("Role clicked!");
 					Rolle editRole = roleTable.getSelectionModel().getSelectedItem();
 					MedPersonal medPersX = new MedPersonalDao(Main.configuration).fetchOneByPersId(editRole.getMedPersonalPersId());
 					MedPersonal medPers = new MedPersonal(medPersX) {

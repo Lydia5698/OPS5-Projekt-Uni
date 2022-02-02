@@ -55,7 +55,6 @@ public class FallController {
         setFallTyp();
         setStation();
         entlassungsdatum.getEditor().clear();
-        Main.logger.info("Initialize Fall-Tab!");
     }
 
     /**

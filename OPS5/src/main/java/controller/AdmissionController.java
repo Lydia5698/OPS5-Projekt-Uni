@@ -59,8 +59,6 @@ public class AdmissionController {
             }
         });
         setPatient();
-
-        Main.logger.info("Initialize Admission-Tab!");
     }
 
     /**
@@ -121,7 +119,6 @@ public class AdmissionController {
             CommunicationsController.getInstance().setCommunicationsObjectBox();
             MainController.getInstance().getOverviewController().reload();
         }
-        Main.logger.info("Creating OP!");
     }
 
     /**
@@ -230,7 +227,6 @@ public class AdmissionController {
      */
     @FXML
     public void createRole() {
-        Main.logger.info("Creating Role in new window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRole.fxml"));
@@ -246,7 +242,6 @@ public class AdmissionController {
 
     @FXML
     public void createAndShowNewPatientWindow() {
-        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PanePatient.fxml"));
@@ -263,7 +258,6 @@ public class AdmissionController {
 
 
     public void createAndShowNewFallWindow() {
-        Main.logger.info("New Fall Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneFall.fxml"));
