@@ -226,7 +226,7 @@ public class ProcedureController {
     public boolean noMissingStatement() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
-        if (procedureOpID.getSelectionModel().isEmpty()) {
+        if (procedureOpID.getValue() == null) {
             Main.logger.warning("Fehlende OP-ID: Bitte wählen Sie eine Operations-ID aus.");
             alert.setHeaderText("Fehlende OP-ID");
             alert.setContentText("Bitte wählen Sie eine Operations-ID aus");
@@ -234,7 +234,7 @@ public class ProcedureController {
             return false;
         }
 
-        if (procedureOpsCode.getSelectionModel().isEmpty()) {
+        if (procedureOpsCode.getValue() == null) {
             Main.logger.warning("Fehlender OPS-Code: Bitte wählen Sie einen OPS-Code aus.");
             alert.setHeaderText("Fehlender OPS-Code");
             alert.setContentText("Bitte wählen Sie einen OPS-Code aus");

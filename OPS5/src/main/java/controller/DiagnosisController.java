@@ -111,7 +111,7 @@ public class DiagnosisController {
 	public void editDiagnosis(ActionEvent event){
 		Main.logger.info("Create diagnosis!");
 		flagEditDiagnose = true;
-		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
+		if(diagnosisTable.getSelectionModel().isEmpty()){
 			Main.logger.warning("Fehlende Diagnose: Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Error");
@@ -379,7 +379,7 @@ public class DiagnosisController {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle("Error");
 
-		if(diagnosisOpId.getSelectionModel().isEmpty()){
+		if(diagnosisOpId.getValue() == null){
 			Main.logger.warning("Fehlende OP: Bitte wählen Sie eine OP aus.");
 			alert.setHeaderText("Fehlender Op");
 			alert.setContentText("Bitte wählen Sie eine OP aus.");
@@ -387,10 +387,10 @@ public class DiagnosisController {
 			return false;
 		}
 		
-		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
+		if(diagnosisIcdCode.getValue() == null){
 			Main.logger.warning("Fehlender Diagnose-Code: Bitte wählen Sie einen Diagnose-Code aus.");
 			alert.setHeaderText("Fehlender Diagnose-Code ");
-			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
+			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus.");
 			alert.showAndWait();
 			return false;
 		}
@@ -398,12 +398,12 @@ public class DiagnosisController {
 		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
 			Main.logger.warning("Falscher Diagnose-Code: Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			alert.setHeaderText("Fehlender Diagnose-Code");
-			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
+			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			alert.showAndWait();
 			return false;
 		}
 
-		if(diagnosisType.getSelectionModel().isEmpty()){
+		if(diagnosisType.getValue() == null){
 			Main.logger.warning("Fehlender Diagnosetyp: Bitte wählen Sie einen Diagnosetyp aus.");
 			alert.setHeaderText("Fehlender Diagnosetyp");
 			alert.setContentText("Bitte wählen Sie einen Diagnosetyp aus");
