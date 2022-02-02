@@ -449,6 +449,18 @@ public class OverviewController {
             opListOperation.getSelectionModel().getSelectedItem().setStorniert(!opListOperation.getSelectionModel().getSelectedItem().getStorniert());
             Operation operation = opListOperation.getSelectionModel().getSelectedItem();
             OperationDao operationDao = new OperationDao(Main.configuration);
+            DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
+            ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
+            List<Diagnose> diagnose = diagnoseDao.fetchByOpId(operation.getOpId());
+            List<Prozedur> prozedur = prozedurDao.fetchByOpId(operation.getOpId());
+            for (Diagnose value : diagnose) {
+                value.setStorniert(opListOperation.getSelectionModel().getSelectedItem().getStorniert());
+                diagnoseDao.update(value);
+            }
+            for (Prozedur value : prozedur){
+                value.setStorniert(opListOperation.getSelectionModel().getSelectedItem().getStorniert());
+                prozedurDao.update(value);
+            }
             operationDao.update(operation);
             Main.logger.info("Die Operation und die dazugehörigen Diagnosen und Prozeduren wurden storniert.");
             opListOperation.setItems(operationView(onEditCase()));
