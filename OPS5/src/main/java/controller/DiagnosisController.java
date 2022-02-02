@@ -368,6 +368,7 @@ public class DiagnosisController {
 			diagnosisIcdCode.setValue(icd10CodeSt1);
 			diagnosisType.setValue(diagnosetypSt1);
 			diagnosisFreetext.setText(diagnose.getKlartextDiagnose());
+			dateDiagnosis.setDateTimeValue(diagnose.getDatum());
 		}
 	}
 
