@@ -17,6 +17,7 @@ import main.Main;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -107,13 +108,14 @@ public class Server {
                                         operation.setBauchtuecherPost(0);
                                         new OperationDao(Main.configuration).insert(operation);
                                         //setze die op id
-                                        diagnose.setOpId(new OperationDao(Main.configuration).fetchByFallId().get(0).getOpId());
+                                        diagnose.setOpId(new OperationDao(Main.configuration).fetchByFallId(fall.getFallId()).get(0).getOpId());
                                     }
                                     else{
                                         //falls es schon eine Operation zu dem Fall gibt, wird die diagnose der neusten Operation
                                         //hinzugefügt
-                                        int newestOperation = new OperationDao(Main.configuration).fetchByFallId().size();
-                                        diagnose.setOpId(new OperationDao(Main.configuration).fetchByFallId().get(newestOperation).getOpId());
+                                        List<Operation> operationList = new OperationDao(Main.configuration).fetchByFallId(fall.getFallId());
+                                        operationList.sort(Comparator.comparing(Operation::getOpId));
+                                        diagnose.setOpId(operationList.get(operationList.size()-1).getOpId());
                                     }
                                     diagnose.setErsteller("00000000");
                                     diagnose.setErstellZeit(LocalDateTime.now());

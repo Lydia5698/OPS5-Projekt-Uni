@@ -204,7 +204,6 @@ public class OverviewController {
         btnRole.setVisible(false);
         initializeColumns();
         setStations();
-        // Station Combobox shows only the Cases on the selected Station
         stations.setOnAction(e -> {
             if (stations.getValue() != null) {
                 showPatientsOnStation();
@@ -248,7 +247,7 @@ public class OverviewController {
     }
 
     /**
-     * Reloads the Patient Table after receiving
+     * Reloads the Patient Table after receiving a new Patient from the KIS
      */
     public void reload(){
         opListPatients.setItems(patientView());
