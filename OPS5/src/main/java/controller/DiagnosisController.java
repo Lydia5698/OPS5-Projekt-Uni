@@ -111,7 +111,7 @@ public class DiagnosisController {
 	public void editDiagnosis(ActionEvent event){
 		Main.logger.info("Create diagnosis!");
 		flagEditDiagnose = true;
-		if(diagnosisTable.getSelectionModel().isEmpty() && flagEditDiagnose){
+		if(diagnosisTable.getSelectionModel().isEmpty()){
 			Main.logger.warning("Fehlende Diagnose: Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Error");
@@ -190,9 +190,9 @@ public class DiagnosisController {
 		// columns Diagnosis
 		diagIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getDiagnoseId()));
 		textCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getKlartextDiagnose()));
-		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getDatum())));
-		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
-		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
+		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getDatum(), true)));
+		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
+		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
 		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
 		opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
 		diagnosetypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.diagnoseTypConverter(features.getValue().getDiagnosetyp())));
@@ -337,7 +337,7 @@ public class DiagnosisController {
 	@FXML
 	void diagnosisClicked(MouseEvent event) {
 		flagEditDiagnose = true;
-		if(event.getClickCount() > 0){
+		if(event.getClickCount() > 0 && !diagnosisTable.getItems().isEmpty()){
 			Diagnose diagnose = diagnosisTable.getSelectionModel().getSelectedItem();
 			Icd10CodeSt icd10CodeSt = new Icd10CodeStDao(Main.configuration).fetchOneByIcd10Code(diagnose.getIcd10Code());
 			Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(diagnose.getOpId());
@@ -349,12 +349,16 @@ public class DiagnosisController {
 							icd10CodeSt.getBeschreibung();
 				}
 			};
-			Operation operation1 = new Operation(operation){
-				@Override
-				public String toString(){
-					return operation.getOpId().toString();
-				}
-			};
+			if(operation != null){
+				Operation operation1 = new Operation(operation){
+					@Override
+					public String toString(){
+						return operation.getOpId().toString();
+					}
+				};
+				diagnosisOpId.setValue(operation1);
+			}
+			//can not be null
 			DiagnosetypSt diagnosetypSt1 = new DiagnosetypSt(diagnosetypSt){
 				@Override
 				public String toString(){
@@ -362,8 +366,8 @@ public class DiagnosisController {
 				}
 			};
 			diagnosisIcdCode.setValue(icd10CodeSt1);
-			diagnosisOpId.setValue(operation1);
 			diagnosisType.setValue(diagnosetypSt1);
+			diagnosisFreetext.setText(diagnose.getKlartextDiagnose());
 		}
 	}
 
@@ -375,7 +379,7 @@ public class DiagnosisController {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle("Error");
 
-		if(diagnosisOpId.getSelectionModel().isEmpty()){
+		if(diagnosisOpId.getValue() == null){
 			Main.logger.warning("Fehlende OP: Bitte wählen Sie eine OP aus.");
 			alert.setHeaderText("Fehlender Op");
 			alert.setContentText("Bitte wählen Sie eine OP aus.");
@@ -383,10 +387,10 @@ public class DiagnosisController {
 			return false;
 		}
 		
-		if(diagnosisIcdCode.getSelectionModel().isEmpty()){
+		if(diagnosisIcdCode.getValue() == null){
 			Main.logger.warning("Fehlender Diagnose-Code: Bitte wählen Sie einen Diagnose-Code aus.");
 			alert.setHeaderText("Fehlender Diagnose-Code ");
-			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus aus");
+			alert.setContentText("Bitte wählen Sie einen Diagnose-Code aus.");
 			alert.showAndWait();
 			return false;
 		}
@@ -394,12 +398,12 @@ public class DiagnosisController {
 		if(diagnosisIcdCode.getSelectionModel().getSelectedItem().getIcd10Code().endsWith("-")){
 			Main.logger.warning("Falscher Diagnose-Code: Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			alert.setHeaderText("Fehlender Diagnose-Code");
-			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus");
+			alert.setContentText("Bitte wählen Sie einen endständigen Diagnose-Code aus.");
 			alert.showAndWait();
 			return false;
 		}
 
-		if(diagnosisType.getSelectionModel().isEmpty()){
+		if(diagnosisType.getValue() == null){
 			Main.logger.warning("Fehlender Diagnosetyp: Bitte wählen Sie einen Diagnosetyp aus.");
 			alert.setHeaderText("Fehlender Diagnosetyp");
 			alert.setContentText("Bitte wählen Sie einen Diagnosetyp aus");

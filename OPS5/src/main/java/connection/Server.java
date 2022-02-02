@@ -127,9 +127,8 @@ public class Server {
                             }
                         }
                     }
-
-
-
+                    CommunicationsController.getInstance().setCommunicationsObjectBox();
+                    MainController.getInstance().getOverviewController().reload();
                 }
                 try {
                     return message.generateACK();

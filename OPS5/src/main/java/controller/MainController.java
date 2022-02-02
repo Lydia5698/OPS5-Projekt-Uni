@@ -135,6 +135,10 @@ public class MainController {
         return commTabController;
     }
 
+    public OverviewController getOverviewController(){
+        return opListeIdController;
+    }
+
     /**
      * Is only used once at the beginning of the application so a medpersonal have to log in first before he can
      * serve the gui

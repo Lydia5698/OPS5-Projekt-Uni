@@ -118,6 +118,8 @@ public class AdmissionController {
             confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
             confirm.showAndWait();
             clearFields();
+            CommunicationsController.getInstance().setCommunicationsObjectBox();
+            MainController.getInstance().getOverviewController().reload();
         }
         Main.logger.info("Creating OP!");
     }
@@ -201,7 +203,8 @@ public class AdmissionController {
             );
             OperationDao operationDao = new OperationDao(Main.configuration);
             operationDao.update(operation);
-
+            CommunicationsController.getInstance().setCommunicationsObjectBox();
+            MainController.getInstance().getOverviewController().reload();
 
             Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
             Alert confirm = new Alert(AlertType.INFORMATION);

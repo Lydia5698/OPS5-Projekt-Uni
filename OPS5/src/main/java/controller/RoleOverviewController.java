@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 import jooq.tables.daos.*;
 import jooq.tables.pojos.*;
 import main.Main;
@@ -47,6 +48,8 @@ public class RoleOverviewController {
 	private SearchableComboBox<RolleSt> role;
 	@FXML
 	private SearchableComboBox<Operation> op;
+	@FXML
+	private Button speichern;
 
 
 	/**
@@ -70,8 +73,8 @@ public class RoleOverviewController {
 		opCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
 		bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
 		roleCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.roleConverter(features.getValue().getRolleSt())));
-		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
-		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
+		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
+		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
 		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
 		userCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getMedPersonalPersId()));
 		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
@@ -114,13 +117,34 @@ public class RoleOverviewController {
 					false //storniert
 			);
 			RolleDao roleDao = new RolleDao(Main.configuration);
-			roleDao.insert(insertRole);
-			Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
-			Alert confirm = new Alert(AlertType.INFORMATION);
-			confirm.setTitle("Information");
-			confirm.setHeaderText("Erfolgreich eingefügt");
-			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-			confirm.showAndWait();
+			// test if role with this operation and medical_user is already in the database
+			List<Rolle> allRoles = roleDao.findAll();
+			boolean roleExists = false;
+			for (Rolle r : allRoles){
+				if (r.getOpId() == insertRole.getOpId() && r.getMedPersonalPersId().equals(insertRole.getMedPersonalPersId())){
+					roleExists = true;
+				}
+			}
+			if(roleExists){
+				Main.logger.warning("Es existiert bereits ein Rollen-Eintrag mit dieser Schlüsselkombination aus Op-Id und Mitarbeiter.");
+				alert.setHeaderText("Eintrag mit diesem Schlüssel bereits vorhanden.");
+				alert.setContentText("Es existiert bereits ein Eintrag mit dieser Schlüsselkombination aus Op-Id und Mitarbeiter. " +
+						"Zum Bearbeiten der Rolle nutzen Sie bitte den Speichern-Button.");
+				alert.showAndWait();
+			}
+			else {
+				roleDao.insert(insertRole);
+				Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
+				Alert confirm = new Alert(AlertType.INFORMATION);
+				confirm.setTitle("Information");
+				confirm.setHeaderText("Erfolgreich eingefügt");
+				confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+				confirm.showAndWait();
+			}
+
+			//close the window
+			Stage stage = (Stage) speichern.getScene().getWindow();
+			stage.close();
 		}
 	}
 
@@ -145,14 +169,36 @@ public class RoleOverviewController {
 					selectedRole.getStorniert() //storniert
 			);
 			RolleDao roleDao = new RolleDao(Main.configuration);
-			roleDao.update(updateRole);
-			Main.logger.info("Der Datensatz wurde geupdated.");
-			Alert confirm = new Alert(AlertType.INFORMATION);
-			confirm.setTitle("Information");
-			confirm.setHeaderText("Erfolgreich eingefügt");
-			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-			confirm.showAndWait();
-			confirm.showAndWait();
+			// test if role with this operation and medical_user is already in the database
+			List<Rolle> allRoles = roleDao.findAll();
+			boolean roleExists = false;
+			for (Rolle r : allRoles){
+				if (r.getOpId() == updateRole.getOpId() && r.getMedPersonalPersId().equals(updateRole.getMedPersonalPersId()) &&
+				 (r.getOpId() != selectedRole.getOpId() || !(r.getMedPersonalPersId().equals(selectedRole.getMedPersonalPersId())))){
+					roleExists = true;
+				}
+			}
+			if(roleExists){
+				Main.logger.warning("Es existiert bereits ein Rollen-Eintrag mit dieser Schlüsselkombination aus Op-Id und Mitarbeiter.");
+				Alert warning = new Alert(AlertType.WARNING);
+				warning.setTitle("Error");
+				warning.setHeaderText("Eintrag mit diesem Schlüssel bereits vorhanden.");
+				warning.setContentText("Es existiert bereits ein Eintrag mit dieser Schlüsselkombination aus Op-Id und Mitarbeiter. ");
+				warning.showAndWait();
+			}
+			else {
+				roleDao.update(updateRole);
+				Main.logger.info("Der Datensatz wurde geupdated.");
+				Alert confirm = new Alert(AlertType.INFORMATION);
+				confirm.setTitle("Information");
+				confirm.setHeaderText("Erfolgreich eingefügt");
+				confirm.setContentText("Der Datensatz wurde geupdatet.");
+				confirm.showAndWait();
+			}
+
+			//close the window
+			Stage stage = (Stage) speichern.getScene().getWindow();
+			stage.close();
 		}
 		else{
 			Main.logger.warning("Fehlende Auswahl: Es muss eine Rolle zum Bearbeiten ausgewählt werden.");
@@ -199,7 +245,7 @@ public class RoleOverviewController {
 						@Override
 						public String toString() {
 							return "OP: " + operationX.getOpId() + ", Fall: " + operationX.getFallId() +
-									", Datum: " + operationX.getBeginn();
+									", Datum: " + Converter.dateTimeConverter(operationX.getBeginn(),false);
 						}
 					};
 					RolleSt roleStX = new RolleStDao(Main.configuration).fetchOneByRolle(editRole.getRolleSt());
