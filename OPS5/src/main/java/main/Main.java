@@ -31,7 +31,7 @@ public class Main extends Application{
      */
    public static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
    static{
-       System.setProperty("java.util.logging.SimpleFormatter.format","%4$s: %5$s [%1$tc]%n");
+       System.setProperty("java.util.logging.SimpleFormatter.format","%4$s [%2$s]: %5$s%6$s%n");
        logger.setLevel(Level.INFO);
        logger.setUseParentHandlers(false);
        ConsoleHandler handler = new ConsoleHandler();

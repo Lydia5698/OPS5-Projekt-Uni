@@ -76,8 +76,9 @@ public class Converter {
         }
     }
 
-    public static String dateTimeConverter(LocalDateTime localDateTime){
-        if(localDateTime == null){return null;}
+    public static String dateTimeConverter(LocalDateTime localDateTime, boolean isOverview){
+        if(localDateTime == null && isOverview){return null;}
+        else if(localDateTime == null){return "nicht bekannt";}
         else{
             DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
             return localDateTime.format(formatter);
@@ -230,7 +231,7 @@ public class Converter {
                                     setText(operation.getOpId().toString());
                                     break;
                                 case "role":
-                                    setText("OP: " + operation.getOpId() + ", Fall: " + operation.getFallId() + ", Datum: " + operation.getBeginn());
+                                    setText("OP: " + operation.getOpId() + ", Fall: " + operation.getFallId() + ", Datum: " + dateTimeConverter(operation.getBeginn(), false));
                                     break;
                                 case "communication":
                                     setText("OP-ID: " + operation.getOpId() + ", " + "Fall-ID: " + operation.getFallId() + "(" + Converter.fallIdToPatientsNameConverter(operation.getFallId()) + ")");

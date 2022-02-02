@@ -154,8 +154,8 @@ public class ProcedureController {
         prozCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getProzId()));
         anmerkungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getAnmerkung()));
         storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
-        erstelltzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit())));
-        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit())));
+        erstelltzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
+        bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
         opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
         opsCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpsCode()));
         bearbeiterCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
@@ -226,7 +226,7 @@ public class ProcedureController {
     public boolean noMissingStatement() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
-        if (procedureOpID.getSelectionModel().isEmpty()) {
+        if (procedureOpID.getValue() == null) {
             Main.logger.warning("Fehlende OP-ID: Bitte wählen Sie eine Operations-ID aus.");
             alert.setHeaderText("Fehlende OP-ID");
             alert.setContentText("Bitte wählen Sie eine Operations-ID aus");
@@ -234,7 +234,7 @@ public class ProcedureController {
             return false;
         }
 
-        if (procedureOpsCode.getSelectionModel().isEmpty()) {
+        if (procedureOpsCode.getValue() == null) {
             Main.logger.warning("Fehlender OPS-Code: Bitte wählen Sie einen OPS-Code aus.");
             alert.setHeaderText("Fehlender OPS-Code");
             alert.setContentText("Bitte wählen Sie einen OPS-Code aus");
@@ -264,7 +264,7 @@ public class ProcedureController {
      */
     @FXML
     void mouseEntered(MouseEvent event) {
-        if (event.getClickCount() > 0) {
+        if (event.getClickCount() > 0 && !procedureTable.getItems().isEmpty()) {
             Prozedur prozedur = procedureTable.getSelectionModel().getSelectedItem();
             OpsCodeSt opsCodeSt = new OpsCodeStDao(Main.configuration).fetchOneByOpsCode(prozedur.getOpsCode());
             Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(prozedur.getOpId());
@@ -283,6 +283,7 @@ public class ProcedureController {
             };
             procedureOpsCode.setValue(opsCodeSt1);
             procedureOpID.setValue(operation1);
+            procedureAnmerkung.setText(prozedur.getAnmerkung());
         }
 
     }
