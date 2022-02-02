@@ -204,15 +204,22 @@ public class OverviewController {
         btnRole.setVisible(false);
         initializeColumns();
         setStations();
+        stations.setOnAction(e -> {
+            if (stations.getValue() != null) {
+                showPatientsOnStation();
+            }
+        });
         opListPatients.setItems(patientView());
         // When a Patient gets selected the corresponding Cases show
         opListPatients.setOnMouseClicked((MouseEvent event) -> {
+            stations.getSelectionModel().clearSelection();
             if (event.getClickCount() > 0) {
                 int patientId = onEditPatient();
                 opListCase.setItems(fallView(patientId));
                 opListOperation.setItems(null);
                 btnRole.setVisible(false);
             }
+
         });
 
         // When a Case gets selected the corresponding Operations show
@@ -419,12 +426,6 @@ public class OverviewController {
         stations.setCellFactory(cellFactory);
         stations.getItems().setAll(new StationStDao(Main.configuration).findAll());
         stations.setSelectionModel(new CustomSelectionModel<>(stations));
-        stations.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                Platform.runLater(() -> stations.setValue(oldValue));
-            }
-        });
-
     }
 
     public void showPatientsOnStation() {

@@ -41,7 +41,7 @@
             <TableColumn fx:id="bearbeiterzeitCol" prefWidth="140.0" text="Bearbeiterzeit" />
             <TableColumn fx:id="storniertCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>
-      <SearchableComboBox fx:id="stations" layoutX="400.0" layoutY="16.0" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#showPatientsOnStation" prefHeight="26.0" prefWidth="150.0" promptText="Station" />
+      <SearchableComboBox fx:id="stations" layoutX="400.0" layoutY="16.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="150.0" promptText="Station" />
       <Button fx:id="btnDiag" layoutX="422.0" layoutY="422.0" mnemonicParsing="false" onAction="#createAndShowDiagnosisWindow" text="Diagnosen" />
       <Button fx:id="btnProc" layoutX="527.0" layoutY="422.0" mnemonicParsing="false" onAction="#createAndShowProcedureWindow" text="Prozeduren" />
       <TableView fx:id="opListOperation" layoutX="745.0" layoutY="45.0" prefHeight="353.0" prefWidth="262.0">
