@@ -228,6 +228,9 @@ public class OverviewController {
 
     }
 
+    /**
+     * Reloads the combobox for the patients
+     */
     public void reload(){
         opListPatients.setItems(patientView());
     }
