@@ -254,28 +254,26 @@ public class CommunicationsController {
      */
     public static void insertNewCase(Fall fall) {
         FallDao fallDao = new FallDao(Main.configuration);
-        //checking for values which can not be null (in this case it is only the patient)
-        Platform.runLater(() -> {
-
-            //checking for invalid entries concerning the dates
-            //Entlassungsdatum ist vor dem Aufnahmedatum
-            if (getInstance().canInsertCase(fall)) {
-                Main.logger.warning("Der Fall hat invalide Eingaben und kann nicht eingefügt werden.");
+        //checking for invalid entries concerning the dates
+        //Entlassungsdatum ist vor dem Aufnahmedatum
+        if(!getInstance().canInsertCase(fall)){
+            Main.logger.warning("Der Fall hat invalide Eingaben und kann nicht eingefügt werden.");
+            Platform.runLater(()->{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Fehlender Eintrag!");
                 alert.setContentText("Der Fall hat invalide Eingaben und kann nicht eingefügt werden.");
                 alert.showAndWait();
-            } else {
-                //if the aufnahmedatum is null set it to the current date and time
-                if (fall.getAufnahmedatum() == null) {
-                    fall.setAufnahmedatum(LocalDateTime.now());
-                }
-                fallDao.insert(fall);
-                Main.logger.info("Creating sent case!");
+            });
+        }
+        else{
+            //if the aufnahmedatum is null set it to the current date and time
+            if (fall.getAufnahmedatum() == null) {
+                fall.setAufnahmedatum(LocalDateTime.now());
             }
-        });
-
+            fallDao.insert(fall);
+            Main.logger.info("Creating sent case!");
+        }
     }
 
 }

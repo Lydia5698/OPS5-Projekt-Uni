@@ -133,8 +133,10 @@ public class Server {
                         CommunicationsController.getInstance().setGueltig(message);
                     }
                     //reload the comboboxes with new patient/cases,...
-                    CommunicationsController.getInstance().setCommunicationsObjectBox();
-                    MainController.getInstance().getOverviewController().reload();
+                    Platform.runLater(()->{
+                        CommunicationsController.getInstance().setCommunicationsObjectBox();
+                        MainController.getInstance().getOverviewController().reload();
+                    });
                 }
                 try {
                     return message.generateACK();
