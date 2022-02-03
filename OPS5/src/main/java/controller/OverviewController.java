@@ -3,10 +3,7 @@ import java.io.IOException;
 
 import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
-import io.r2dbc.spi.Parameter;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,7 +24,6 @@ import org.controlsfx.control.SearchableComboBox;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -204,7 +200,7 @@ public class OverviewController {
         setStations();
         stations.setOnAction(e -> {
             if (stations.getValue() != null) {
-                showPatientsOnStation();
+                showCasesOnStation();
             }
         });
         opListPatients.setItems(patientView());
@@ -433,7 +429,10 @@ public class OverviewController {
         stations.setSelectionModel(new CustomSelectionModel<>(stations));
     }
 
-    public void showPatientsOnStation() {
+    /**
+     * Shows all cases on the selected Station
+     */
+    public void showCasesOnStation() {
         if(stations.getValue() != null){
             List<Fall> fall = new FallDao(Main.configuration).fetchByStationSt(stations.getValue().getStation());
             opListCase.setItems(FXCollections.observableArrayList(fall));

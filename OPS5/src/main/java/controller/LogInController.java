@@ -7,11 +7,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import jooq.tables.pojos.MedPersonal;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
+
+
 
 /**
  * Ensures that one person is always logged in to edit.
@@ -32,6 +36,11 @@ public class LogInController {
     @FXML
     public void initialize() {
         Converter.setMitarbeiter(mitarbeiter, true, 0);
+        passwort.setOnKeyPressed(k -> {
+            if (k.getCode().equals(KeyCode.ENTER)) {
+                loginNewEmployee();
+            }
+        });
     }
 
     /**
