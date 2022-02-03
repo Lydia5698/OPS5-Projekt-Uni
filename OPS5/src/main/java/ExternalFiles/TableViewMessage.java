@@ -7,6 +7,10 @@ import javafx.beans.property.StringProperty;
 
 import java.time.LocalDateTime;
 
+/**
+ * This represents a line in the overview in the communicationscontroller so it includes the hl7 message
+ * the date and the ackmessage if the message was correctly handled or not
+ */
 public class TableViewMessage {
 
     private final StringProperty hl7Message;

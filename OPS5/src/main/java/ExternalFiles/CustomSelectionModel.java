@@ -7,6 +7,8 @@ import jooq.tables.pojos.*;
 
 /**
  * This class is the selection model for the combobox to fix the mistakes of the single selection model
+ * the equalsmethod is not working correctly for our pojos so we have to check it manually if two objects are
+ * the same by checking their foreign key for example
  * @param <T>
  */
 public class CustomSelectionModel<T> extends SingleSelectionModel<T> {
