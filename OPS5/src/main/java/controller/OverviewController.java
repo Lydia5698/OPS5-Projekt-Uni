@@ -198,11 +198,7 @@ public class OverviewController {
         btnRole.setVisible(false);
         initializeColumns();
         setStations();
-        stations.setOnAction(e -> {
-            if (stations.getValue() != null) {
-                showCasesOnStation();
-            }
-        });
+        stations.setOnAction(e -> {showCasesOnStation();});
         opListPatients.setItems(patientView());
         // When a Patient gets selected the corresponding Cases show
         opListPatients.setOnMouseClicked((MouseEvent event) -> {
@@ -436,6 +432,7 @@ public class OverviewController {
         if(stations.getValue() != null){
             List<Fall> fall = new FallDao(Main.configuration).fetchByStationSt(stations.getValue().getStation());
             opListCase.setItems(FXCollections.observableArrayList(fall));
+            opListOperation.setItems(null);
         }
     }
 
