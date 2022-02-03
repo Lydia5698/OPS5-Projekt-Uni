@@ -59,6 +59,7 @@ public class Server {
                         alert.showAndWait();
                     });
                 }
+
                 Patient patient = MessageParser.parseA01Patient(message);
                 //only insert the patient if it is a new patient
                 if(CommunicationsController.getInstance().isNewPatient(patient)){
@@ -128,7 +129,10 @@ public class Server {
                                 }
                             }
                         }
+                        //wenn alles korrekt war, dann wir der gültig auf wahr gesetzt
+                        CommunicationsController.getInstance().setGueltig(message);
                     }
+                    //reload the comboboxes with new patient/cases,...
                     CommunicationsController.getInstance().setCommunicationsObjectBox();
                     MainController.getInstance().getOverviewController().reload();
                 }
@@ -156,6 +160,7 @@ public class Server {
             public Message processMessage(Message message, Map<String, Object> map){
                 try{
                     String encodedMessage = MessageParser.pipeParser.encode(message);
+                    CommunicationsController.getInstance().insertReceivedMessage(message);
 
                     Platform.runLater(()->{
                         //dem Nutzer zeigen, dass das Kis einen neuen Patienten gesendet hat
@@ -166,6 +171,7 @@ public class Server {
                         alert.setContentText(encodedMessage);
                         alert.showAndWait();
                     });
+                    CommunicationsController.getInstance().setGueltig(message);
                 }catch(HL7Exception e){
                     Platform.runLater(()->{
                         Main.logger.warning("Die Nachricht kann nicht gelesen werden.");
@@ -196,12 +202,12 @@ public class Server {
         hapiServer.registerConnectionListener(new ConnectionListener() {
             @Override
             public void connectionReceived(Connection connection) {
-                Main.logger.info("New connection received: " + connection.getRemoteAddress().toString());
+                //Main.logger.info("New connection received: " + connection.getRemoteAddress().toString());
             }
 
             @Override
             public void connectionDiscarded(Connection connection) {
-                Main.logger.info("Lost connection from: " + connection.getRemoteAddress().toString());
+                //Main.logger.info("Lost connection from: " + connection.getRemoteAddress().toString());
             }
         });
         //if a progress failes like the receiving or the process/responde of the message, the exception handler

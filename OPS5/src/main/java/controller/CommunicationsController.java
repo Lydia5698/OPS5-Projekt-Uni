@@ -116,7 +116,7 @@ public class CommunicationsController {
      */
     public void insertReceivedMessage(Message message) {
         try {
-            ts.getItems().add(new TableViewMessage(message.encode(), LocalDateTime.now(), "ja"));
+            ts.getItems().add(new TableViewMessage(message.encode(), LocalDateTime.now(), "nein"));
         } catch (HL7Exception e) {
             Platform.runLater(() -> {
                 Main.logger.warning("Die Nachricht kann nicht in einen String umgewandelt werden.");
@@ -128,6 +128,17 @@ public class CommunicationsController {
             });
         }
 
+    }
+
+    /**
+     * the gueltig value is set to true when the hl7 message can be inserted correctly
+     * @param message the sent message
+     */
+    public void setGueltig(Message message){
+        String stringFromMessage = MessageParser.messageToString(message);
+        ts.getItems().stream()
+                .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
+                .forEach(tM -> tM.setAckMessage("ja"));
     }
 
     /**
@@ -168,7 +179,7 @@ public class CommunicationsController {
                     client.closeClient();
                     //interuppt thread when the client has been closed
                     Thread.currentThread().interrupt();
-                    Main.logger.info("Thread des Clients wurde unterbrochen, da der Client geschlossen wurde");
+                    Main.logger.info("Thread des Clients wurde geschlossen, da die Kommunikation abgeschlossen ist.");
                 }
             });
             thread.setDaemon(true);
