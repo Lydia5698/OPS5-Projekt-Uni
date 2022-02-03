@@ -106,13 +106,13 @@ public class PatientController {
             //checking for values which can not be null (in this case it is the patients first and lastname)
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            if (patient.getVorname().equals("")) {
+            if (patient.getVorname().trim().equals("")) {
                 Main.logger.warning("Fehlende Einträge: Der Vorname des Patienten muss eingefügt werden.");
                 alert.setHeaderText("Fehlende Einträge!");
                 alert.setContentText("Der Vorname des Patienten muss eingefügt werden!");
                 alert.showAndWait();
             } 
-            else if (patient.getName().equals("")) {
+            else if (patient.getName().trim().equals("")) {
                 Main.logger.warning("Fehlende Einträge: Der Nachname des Patienten muss eingefügt werden.");
                 alert.setHeaderText("Fehlende Einträge!");
                 alert.setContentText("Der Nachname des Patienten muss eingefügt werden!");
