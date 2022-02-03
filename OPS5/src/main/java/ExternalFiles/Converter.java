@@ -140,7 +140,7 @@ public class Converter {
      * @return The string of the sex for the iss standard
      */
     public static String IssSexConverter(String s){
-        if(s == null){return null;}
+        if(s == null){return "U";}
         else if(s.equals("w")){return "F";}
         else if(s.equals("m")){return "M";}
         else{return "O";}
