@@ -55,7 +55,6 @@ public class FallController {
         setFallTyp();
         setStation();
         entlassungsdatum.getEditor().clear();
-        Main.logger.info("Initialize Fall-Tab!");
     }
 
     /**
@@ -116,7 +115,7 @@ public class FallController {
                         if (s == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(s.getBezeichnung());
+                            setText(s.getStation() + ": " + s.getBezeichnung());
                         }
                     }
                 };

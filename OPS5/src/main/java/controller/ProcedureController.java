@@ -39,7 +39,7 @@ public class ProcedureController {
     @FXML
     private TableColumn<Prozedur, String> anmerkungCol;
     @FXML
-    private TableColumn<Prozedur, Boolean> storniertCol;
+    private TableColumn<Prozedur, String> storniertCol;
     @FXML
     private TableColumn<Prozedur, String> erstelltzeitCol;
     @FXML
@@ -65,8 +65,6 @@ public class ProcedureController {
      */
     @FXML
     public void initialize() {
-
-        Main.logger.info("Initialize Procedure-Tab!");
         initializeColumns();
         setProcedureOpID();
         setProcedureOpsCode();
@@ -97,7 +95,6 @@ public class ProcedureController {
                 alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
                 alert.show();
         } else {
-            Main.logger.info("Create procedure!");
             insertNewProcedure();
             Node source = (Node) event.getSource();
             Stage thisStage = (Stage) source.getScene().getWindow();
@@ -153,7 +150,7 @@ public class ProcedureController {
         // columns Procedure
         prozCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getProzId()));
         anmerkungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getAnmerkung()));
-        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
         erstelltzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
         bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
         opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
@@ -183,6 +180,12 @@ public class ProcedureController {
             Prozedur prozedur = new Prozedur(prozID, anmerkungText, false, null, bearbeiterZeit, opID, opsCodeValue, bearbeiter, null);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.update(prozedur);
+            Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
+            Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+            confirm.setTitle("Information");
+            confirm.setHeaderText("Erfolgreich geupdatet");
+            confirm.setContentText("Der Datensatz wurde geupdatet.");
+            confirm.showAndWait();
 
         }
         // new Procedure
@@ -192,14 +195,14 @@ public class ProcedureController {
             Prozedur prozedur = new Prozedur(prozID, anmerkungText, false, erstellZeit, null, opID, opsCodeValue, null, ersteller);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
             prozedurDao.insert(prozedur);
-        }
-        Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
-        Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-        confirm.setTitle("Information");
-        confirm.setHeaderText("Erfolgreich eingefügt");
-        confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-        confirm.showAndWait();
+            Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
+            Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+            confirm.setTitle("Information");
+            confirm.setHeaderText("Erfolgreich eingefügt");
+            confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+            confirm.showAndWait();
 
+        }
     }
 
     /**
@@ -325,5 +328,13 @@ public class ProcedureController {
             }
         });
 
+    }
+    public String booleanToString(Boolean notfall){
+        if(notfall){
+            return "ja";
+        }
+        else{
+            return "nein";
+        }
     }
 }

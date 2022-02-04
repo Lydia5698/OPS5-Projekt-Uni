@@ -38,7 +38,6 @@ public class RoleController{
      */
     @FXML
     public void initialize() {
-        Main.logger.info("Initialize Rolle-Tab!");
         setRole();
         setOp();
         setMitarbeiter();

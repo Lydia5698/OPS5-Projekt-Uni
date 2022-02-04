@@ -65,7 +65,6 @@ public class CommunicationsController {
 
             communicationsIpAddress.setText(InetAddress.getLocalHost().getHostAddress());
             communicationsPort.setText(String.valueOf(Main.port));
-            Main.logger.info("Initialize Communications-Tab!");
         } catch (UnknownHostException e) {
             Platform.runLater(() -> {
                 Main.logger.warning("Die Adresse kann nicht zu einer IP Adresse gecastet werden.");
@@ -117,7 +116,7 @@ public class CommunicationsController {
      */
     public void insertReceivedMessage(Message message) {
         try {
-            ts.getItems().add(new TableViewMessage(message.encode(), LocalDateTime.now(), "ja"));
+            ts.getItems().add(new TableViewMessage(message.encode(), LocalDateTime.now(), "nein"));
         } catch (HL7Exception e) {
             Platform.runLater(() -> {
                 Main.logger.warning("Die Nachricht kann nicht in einen String umgewandelt werden.");
@@ -129,6 +128,17 @@ public class CommunicationsController {
             });
         }
 
+    }
+
+    /**
+     * the gueltig value is set to true when the hl7 message can be inserted correctly
+     * @param message the sent message
+     */
+    public void setGueltig(Message message){
+        String stringFromMessage = MessageParser.messageToString(message);
+        ts.getItems().stream()
+                .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
+                .forEach(tM -> tM.setAckMessage("ja"));
     }
 
     /**
@@ -147,29 +157,41 @@ public class CommunicationsController {
             alert.showAndWait();
         } else {
             Thread thread = new Thread(()->{
-                Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
-                try {
-                    Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
-                    String stringFromMessage = MessageParser.messageToString(sendMessage);
+                if(!isValidPort(communicationsPort.getText())){
+                    Main.logger.warning("Dies ist kein valider Port.");
+                    Platform.runLater(()->{
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Falscher Port!");
+                        alert.setContentText("Es muss ein richtiger Port ausgewählt werden");
+                        alert.showAndWait();
+                    });
+                }
+                else{
+                    Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
+                    try {
+                        Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
+                        String stringFromMessage = MessageParser.messageToString(sendMessage);
 
-                    ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
+                        ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
 
-                    Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
+                        Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
 
-                    //if in ack was sent back, the value of gültig changes to true
-                    if (responseMessage instanceof ACK) {
-                        ACK ack = (ACK) responseMessage;
-                        if (ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")) {
-                            ts.getItems().stream()
-                                    .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
-                                    .forEach(tM -> tM.setAckMessage("ja"));
+                        //if in ack was sent back, the value of gültig changes to true
+                        if (responseMessage instanceof ACK) {
+                            ACK ack = (ACK) responseMessage;
+                            if (ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")) {
+                                ts.getItems().stream()
+                                        .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
+                                        .forEach(tM -> tM.setAckMessage("ja"));
+                            }
                         }
+                    } finally {
+                        client.closeClient();
+                        //interuppt thread when the client has been closed
+                        Thread.currentThread().interrupt();
+                        Main.logger.info("Thread des Clients wurde geschlossen, da die Kommunikation abgeschlossen ist.");
                     }
-                } finally {
-                    client.closeClient();
-                    //interuppt thread when the client has been closed
-                    Thread.currentThread().interrupt();
-                    Main.logger.info("Thread des Clients wurde unterbrochen, da der Client geschlossen wurde");
                 }
             });
             thread.setDaemon(true);
@@ -244,28 +266,35 @@ public class CommunicationsController {
      */
     public static void insertNewCase(Fall fall) {
         FallDao fallDao = new FallDao(Main.configuration);
-        //checking for values which can not be null (in this case it is only the patient)
-        Platform.runLater(() -> {
-
-            //checking for invalid entries concerning the dates
-            //Entlassungsdatum ist vor dem Aufnahmedatum
-            if (getInstance().canInsertCase(fall)) {
-                Main.logger.warning("Der Fall hat invalide Eingaben und kann nicht eingefügt werden.");
+        //checking for invalid entries concerning the dates
+        //Entlassungsdatum ist vor dem Aufnahmedatum
+        if(!getInstance().canInsertCase(fall)){
+            Main.logger.warning("Der Fall hat invalide Eingaben und kann nicht eingefügt werden.");
+            Platform.runLater(()->{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Fehlender Eintrag!");
                 alert.setContentText("Der Fall hat invalide Eingaben und kann nicht eingefügt werden.");
                 alert.showAndWait();
-            } else {
-                //if the aufnahmedatum is null set it to the current date and time
-                if (fall.getAufnahmedatum() == null) {
-                    fall.setAufnahmedatum(LocalDateTime.now());
-                }
-                fallDao.insert(fall);
-                Main.logger.info("Creating sent case!");
+            });
+        }
+        else{
+            //if the aufnahmedatum is null set it to the current date and time
+            if (fall.getAufnahmedatum() == null) {
+                fall.setAufnahmedatum(LocalDateTime.now());
             }
-        });
+            fallDao.insert(fall);
+            Main.logger.info("Creating sent case!");
+        }
+    }
 
+    private boolean isValidPort(String s){
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e){
+            return false;
+        }
     }
 
 }

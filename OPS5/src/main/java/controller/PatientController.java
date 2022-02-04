@@ -65,7 +65,6 @@ public class PatientController {
 
     @FXML
 	public void initialize() {
-        Main.logger.info("Initialize Patient-Tab!");
 	}
 
     /**
@@ -85,6 +84,7 @@ public class PatientController {
             patient.setGeburtsdatum(patientBirthdate.getValue());
             patient.setBlutgruppe(getBlutgruppe());
             patient.setGeschlecht(getGeschlecht());
+            patient.setNotfall(true);
             patient.setErstellZeit(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
             if (!patientStreet.getText().equals("")) {
                 patient.setStrasse(patientStreet.getText());

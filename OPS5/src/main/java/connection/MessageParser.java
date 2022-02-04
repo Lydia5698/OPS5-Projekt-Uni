@@ -44,6 +44,8 @@ public class MessageParser {
         patient.setGeburtsdatum(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
         patient.setGeschlecht(Converter.SexFromISSToOurConverter(pid.getAdministrativeSex().getValue()));
         patient.setStorniert(false);
+        patient.setNotfall(false);
+        patient.setBlutgruppe("nb.");
         patient.setGeburtsort(pid.getBirthPlace().getValue());
         String straße = pid.getPatientAddress(0).getStreetAddress().getStreetName().getValue();
         String number = pid.getPatientAddress(0).getStreetAddress().getDwellingNumber().getValue();
@@ -72,9 +74,9 @@ public class MessageParser {
         PV1 pv1 = adtMsg.getPV1();
 
         Fall fall = new Fall();
-        fall.setFallId(Integer.parseInt(pv1.getSetIDPV1().getValue()));
+        fall.setFallId(Integer.parseInt(pv1.getVisitNumber().getCx1_IDNumber().getValue()));
         fall.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
-        fall.setFallTyp(pv1.getPatientClass().getValue().equals("Inpatient") ? 1 : 2);
+        if(pv1.getPatientClass().getValue() != null){fall.setFallTyp(pv1.getPatientClass().getValue().equals("I") ? 1 : 2);}
         fall.setAufnahmedatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getAdmitDateTime().getTime().getValue())));
         if(pv1.getDischargeDateTime(0).getTime().getValue() != null){fall.setEntlassungsdatum(LocalDateTime.from(DateTimeFormatter.ofPattern("yyyyMMddHHmmss").parse(pv1.getDischargeDateTime(0).getTime().getValue())));}
         fall.setStationSt(pv1.getAssignedPatientLocation().getPl1_PointOfCare().getValue());
@@ -172,7 +174,7 @@ public class MessageParser {
             pid.getPatientID().getCx1_IDNumber().setValue(patient.getPatId().toString());
             pid.getPatientName(0).getFamilyName().getSurname().setValue(patient.getName());
             pid.getPatientName(0).getGivenName().setValue(patient.getVorname());
-            pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            if(patient.getGeburtsdatum() != null){pid.getDateTimeOfBirth().getTime().setValue(patient.getGeburtsdatum().format(DateTimeFormatter.ofPattern("yyyyMMdd")));}
             pid.getAdministrativeSex().setValue(Converter.IssSexConverter(patient.getGeschlecht()));
             pid.getPatientAddress(0).getStreetAddress().getStreetName().setValue(patient.getStrasse());
             pid.getPatientAddress(0).getZipOrPostalCode().setValue(patient.getPostleitzahl());
@@ -181,9 +183,8 @@ public class MessageParser {
 
             //pv1
             PV1 pv1 = bar05.getVISIT().getPV1();
-            pv1.getSetIDPV1().setValue(operation.getFallId().toString());
             if (fall.getFallTyp() != null) {
-                pv1.getPatientClass().setValue(Converter.fallTypConverter(fall.getFallTyp()).equals("stationär") ? "Inpatient" : "Outpatient");
+                pv1.getPatientClass().setValue(Converter.fallTypConverter(fall.getFallTyp()).equals("stationär") ? "I" : "O");
             }
             pv1.getAdmitDateTime().getTime().setValue(fall.getAufnahmedatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
             assert medPersonal != null;
@@ -191,6 +192,7 @@ public class MessageParser {
             pv1.getAdmittingDoctor(0).getFamilyName().getSurname().setValue(medPersonal.getName());
             pv1.getAdmittingDoctor(0).getGivenName().setValue(medPersonal.getVorname());
             pv1.getVisitNumber().getCx1_IDNumber().setValue(fall.getFallId().toString());
+            pv1.getAdmissionType().setValue(patient.getNotfall() ? "E" : "R");
             if (fall.getEntlassungsdatum() != null) {
                 pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
             }

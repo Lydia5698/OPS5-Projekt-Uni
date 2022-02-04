@@ -24,6 +24,8 @@
                 <TableColumn fx:id="paStrasse" prefWidth="96.0" text="Strasse" />
                 <TableColumn fx:id="paPostleitzahl" prefWidth="96.0" text="Postleitzahl" />
                 <TableColumn fx:id="paTelefonnummer" prefWidth="96.0" text="Telefonnummer" />
+                <TableColumn fx:id="panotfall" prefWidth="96.0" text="Notfallaufnahme" />
+
 
 			</columns>
 		</TableView>
@@ -61,6 +63,7 @@
             <TableColumn fx:id="erstellzeitOPCol" prefWidth="140.0" text="Erstellzeit" />
             <TableColumn fx:id="bearbeiterOPCol" prefWidth="150.0" text="Bearbeiter" />
             <TableColumn fx:id="bearbeiterzeitOPCol" prefWidth="140.0" text="Bearbeiterzeit" />
+             <TableColumn fx:id="geplantCol" prefWidth="55.0" text="geplant (von KIS)" />
             <TableColumn fx:id="storniertOPCol" prefWidth="55.0" text="Storniert" />
          </columns></TableView>
       <Button fx:id="btnStornieren" layoutX="640.0" layoutY="422.0" mnemonicParsing="false" onAction="#storniereOP" text="Stornieren" />

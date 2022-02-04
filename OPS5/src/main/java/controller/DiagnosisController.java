@@ -65,7 +65,7 @@ public class DiagnosisController {
 	private TableColumn<Diagnose, String> bearbeiterzeitCol;
 
 	@FXML
-	private TableColumn<Diagnose, Boolean> storniertCol;
+	private TableColumn<Diagnose, String> storniertCol;
 
 	@FXML
 	private TableColumn<Diagnose, Integer> opIDCol;
@@ -94,8 +94,6 @@ public class DiagnosisController {
 	 */
 	@FXML
 	public void initialize() {
-
-		Main.logger.info("Initialize Diagnosis-Tab!");
 		initializeColumns();
 		setDiagnosisOpId();
 		setDiagnosisIcdCode();
@@ -109,7 +107,6 @@ public class DiagnosisController {
 	 */
 	@FXML
 	public void editDiagnosis(ActionEvent event){
-		Main.logger.info("Create diagnosis!");
 		flagEditDiagnose = true;
 		if(diagnosisTable.getSelectionModel().isEmpty()){
 			Main.logger.warning("Fehlende Diagnose: Bitte wählen Sie die zu bearbeitende Diagnose in der Tabelle aus.");
@@ -193,7 +190,7 @@ public class DiagnosisController {
 		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getDatum(), true)));
 		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
 		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
-		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
 		opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
 		diagnosetypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.diagnoseTypConverter(features.getValue().getDiagnosetyp())));
 		icdCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getIcd10Code()));
@@ -226,6 +223,12 @@ public class DiagnosisController {
 			Diagnose diagnose = new Diagnose(diagID,freitext,datum, null,bearbeiterZeit, false,opID,diagTyp,icdCode, null,bearbeiter);
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.update(diagnose);
+			Main.logger.info("Der Datensatz wurde geupdatet.");
+			Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+			confirm.setTitle("Information");
+			confirm.setHeaderText("Erfolgreich geupdatet");
+			confirm.setContentText("Der Datensatz wurde geupdatet.");
+			confirm.showAndWait();
 		}
 		// Creates new Diagnosis
 		else{
@@ -236,13 +239,13 @@ public class DiagnosisController {
 			Diagnose diagnose = new Diagnose(diagID,freitext,datum,erstellZeit, null, false,opID,diagTyp,icdCode,ersteller, null);
 			DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
 			diagnoseDao.insert(diagnose);
+			Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
+			Alert confirm = new Alert(Alert.AlertType.INFORMATION);
+			confirm.setTitle("Information");
+			confirm.setHeaderText("Erfolgreich eingefügt");
+			confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
+			confirm.showAndWait();
 		}
-		Main.logger.info("Der Datensatz wurde in die Datenbank eingefügt.");
-		Alert confirm = new Alert(Alert.AlertType.INFORMATION);
-		confirm.setTitle("Information");
-		confirm.setHeaderText("Erfolgreich eingefügt");
-		confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
-		confirm.showAndWait();
 	}
 
 	/**
@@ -471,7 +474,6 @@ public class DiagnosisController {
 	 */
 	@FXML
 	public void openWebView(String url) {
-		Main.logger.info("New Patient Window!");
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader();
 			fxmlLoader.setLocation(getClass().getResource("/fxml/WebView.fxml"));
@@ -555,5 +557,13 @@ public class DiagnosisController {
 			}
 		}
 		return null;
+	}
+	private String booleanToString(Boolean notfall){
+		if(notfall){
+			return "ja";
+		}
+		else{
+			return "nein";
+		}
 	}
 }

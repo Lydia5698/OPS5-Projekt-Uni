@@ -3,10 +3,7 @@ import java.io.IOException;
 
 import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
-import io.r2dbc.spi.Parameter;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,7 +24,6 @@ import org.controlsfx.control.SearchableComboBox;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -64,7 +60,7 @@ public class OverviewController {
     private TableColumn<Fall, String> bearbeiterzeitCol;
 
     @FXML
-    private TableColumn<Fall, Boolean> storniertCol;
+    private TableColumn<Fall, String> storniertCol;
 
     @FXML
     private TableColumn<Fall, String> patientenIDCol;
@@ -112,7 +108,7 @@ public class OverviewController {
     private TableColumn<Operation, String> bearbeiterzeitOPCol;
 
     @FXML
-    private TableColumn<Operation, Boolean> storniertOPCol;
+    private TableColumn<Operation, String> storniertOPCol;
 
     @FXML
     private TableColumn<Operation, Integer> fallIdOPCol;
@@ -163,7 +159,7 @@ public class OverviewController {
     private TableColumn<Patient, String> paErstellzeit;
 
     @FXML
-    private TableColumn<Patient, Boolean> paStorniert;
+    private TableColumn<Patient, String> paStorniert;
 
     @FXML
     private TableColumn<Patient, String> paGeburtsort;
@@ -176,6 +172,12 @@ public class OverviewController {
 
     @FXML
     private TableColumn<Patient, String> paTelefonnummer;
+
+    @FXML
+    private TableColumn<Patient, String> panotfall;
+
+    @FXML
+    private TableColumn<Operation, String> geplantCol;
 
     @FXML
     private CheckBox stornierteOperation;
@@ -199,16 +201,10 @@ public class OverviewController {
      */
     @FXML
 	public void initialize() {
-        Main.logger.info("Initialize OPlist-Tab!");
-
         btnRole.setVisible(false);
         initializeColumns();
         setStations();
-        stations.setOnAction(e -> {
-            if (stations.getValue() != null) {
-                showPatientsOnStation();
-            }
-        });
+        stations.setOnAction(e -> {showCasesOnStation();});
         opListPatients.setItems(patientView());
         // When a Patient gets selected the corresponding Cases show
         opListPatients.setOnMouseClicked((MouseEvent event) -> {
@@ -270,11 +266,12 @@ public class OverviewController {
         paBearbeiterzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
         paErsteller.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
         paErstellzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
-        paStorniert.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        paStorniert.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
         paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));
         paStrasse.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStrasse()));
         paPostleitzahl.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getPostleitzahl()));
         paTelefonnummer.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getTelefonnummer()));
+        panotfall.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getNotfall())));
 
         // columns Case
         fallIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
@@ -282,7 +279,7 @@ public class OverviewController {
         entlassungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getEntlassungsdatum(), true)));
         erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
         bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
-        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
         patientenIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.patientConverter(features.getValue().getPatId())));
         stationCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStationSt()));
         erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
@@ -299,13 +296,14 @@ public class OverviewController {
         nahtzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getNahtzeit(), true)));
         erstellzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
         bearbeiterzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
-        storniertOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        storniertOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
         fallIdOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
         opSaalCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpSaal()));
         narkoseCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.narkoseConverter(features.getValue().getNarkoseSt())));
         opTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.opTypConverter(features.getValue().getOpTypSt())));
         erstellerOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
         bearbeiterOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
+        geplantCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getGeplant())));
 
     }
 
@@ -423,7 +421,7 @@ public class OverviewController {
                         if (stationSt == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(stationSt.getStation() + " " + stationSt.getBezeichnung());
+                            setText(stationSt.getStation() + ": " + stationSt.getBezeichnung());
                         }
                     }
                 };
@@ -435,10 +433,14 @@ public class OverviewController {
         stations.setSelectionModel(new CustomSelectionModel<>(stations));
     }
 
-    public void showPatientsOnStation() {
+    /**
+     * Shows all cases on the selected Station
+     */
+    public void showCasesOnStation() {
         if(stations.getValue() != null){
             List<Fall> fall = new FallDao(Main.configuration).fetchByStationSt(stations.getValue().getStation());
             opListCase.setItems(FXCollections.observableArrayList(fall));
+            opListOperation.setItems(null);
         }
     }
 
@@ -463,8 +465,8 @@ public class OverviewController {
                 value.setStorniert(opListOperation.getSelectionModel().getSelectedItem().getStorniert());
                 prozedurDao.update(value);
             }
-
             operationDao.update(operation);
+            Main.logger.info("Die Operation und die dazugehörigen Diagnosen und Prozeduren wurden storniert.");
             opListOperation.setItems(operationView(onEditCase()));
         }
         else{
@@ -497,7 +499,6 @@ public class OverviewController {
      */
     @FXML
     public void createAndShowDiagnosisWindow() {
-        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneDiagnosis.fxml"));
@@ -519,7 +520,6 @@ public class OverviewController {
      */
     @FXML
     public void createAndShowOperationWindow() {
-        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneOpEdit.fxml"));
@@ -541,7 +541,6 @@ public class OverviewController {
      */
     @FXML
     public void createAndShowProcedureWindow() {
-        Main.logger.info("New Patient Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneProcedure.fxml"));
@@ -563,7 +562,6 @@ public class OverviewController {
      */
     @FXML
     void showRoles(){
-        Main.logger.info("Show and edit Role Window!");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("/fxml/PaneRoleOverview.fxml"));
@@ -591,6 +589,13 @@ public class OverviewController {
         OverviewController.storniertShown = storniertShown;
     }
 
-
+    private String booleanToString(Boolean notfall){
+        if(notfall){
+            return "ja";
+        }
+        else{
+            return "nein";
+        }
+    }
 
 }

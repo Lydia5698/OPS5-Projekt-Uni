@@ -285,4 +285,19 @@ public class OperationDao extends DAOImpl<OperationRecord, jooq.tables.pojos.Ope
     public List<jooq.tables.pojos.Operation> fetchByBearbeiter(String... values) {
         return fetch(Operation.OPERATION.BEARBEITER, values);
     }
+
+    /**
+     * Fetch records that have <code>geplant BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<jooq.tables.pojos.Operation> fetchRangeOfGeplant(Boolean lowerInclusive, Boolean upperInclusive) {
+        return fetchRange(Operation.OPERATION.GEPLANT, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>geplant IN (values)</code>
+     */
+    public List<jooq.tables.pojos.Operation> fetchByGeplant(Boolean... values) {
+        return fetch(Operation.OPERATION.GEPLANT, values);
+    }
 }

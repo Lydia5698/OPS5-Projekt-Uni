@@ -32,6 +32,7 @@ public class Operation implements Serializable {
     private Integer       opTypSt;
     private String        ersteller;
     private String        bearbeiter;
+    private Boolean       geplant;
 
     public Operation() {}
 
@@ -52,6 +53,7 @@ public class Operation implements Serializable {
         this.opTypSt = value.opTypSt;
         this.ersteller = value.ersteller;
         this.bearbeiter = value.bearbeiter;
+        this.geplant = value.geplant;
     }
 
     public Operation(
@@ -70,7 +72,8 @@ public class Operation implements Serializable {
         Integer       narkoseSt,
         Integer       opTypSt,
         String        ersteller,
-        String        bearbeiter
+        String        bearbeiter,
+        Boolean       geplant
     ) {
         this.opId = opId;
         this.beginn = beginn;
@@ -88,6 +91,7 @@ public class Operation implements Serializable {
         this.opTypSt = opTypSt;
         this.ersteller = ersteller;
         this.bearbeiter = bearbeiter;
+        this.geplant = geplant;
     }
 
     /**
@@ -314,6 +318,20 @@ public class Operation implements Serializable {
         this.bearbeiter = bearbeiter;
     }
 
+    /**
+     * Getter for <code>pmiw21g05_v01.operation.geplant</code>.
+     */
+    public Boolean getGeplant() {
+        return this.geplant;
+    }
+
+    /**
+     * Setter for <code>pmiw21g05_v01.operation.geplant</code>.
+     */
+    public void setGeplant(Boolean geplant) {
+        this.geplant = geplant;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Operation (");
@@ -334,6 +352,7 @@ public class Operation implements Serializable {
         sb.append(", ").append(opTypSt);
         sb.append(", ").append(ersteller);
         sb.append(", ").append(bearbeiter);
+        sb.append(", ").append(geplant);
 
         sb.append(")");
         return sb.toString();
