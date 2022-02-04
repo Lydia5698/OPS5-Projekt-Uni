@@ -157,29 +157,41 @@ public class CommunicationsController {
             alert.showAndWait();
         } else {
             Thread thread = new Thread(()->{
-                Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
-                try {
-                    Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
-                    String stringFromMessage = MessageParser.messageToString(sendMessage);
+                if(!isValidPort(communicationsPort.getText())){
+                    Main.logger.warning("Dies ist kein valider Port.");
+                    Platform.runLater(()->{
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Falscher Port!");
+                        alert.setContentText("Es muss ein richtiger Port ausgewählt werden");
+                        alert.showAndWait();
+                    });
+                }
+                else{
+                    Client client = new Client(communicationsIpAddress.getText(), Integer.parseInt(communicationsPort.getText()));
+                    try {
+                        Message sendMessage = MessageParser.parseBar05(communicationsObject.getValue());
+                        String stringFromMessage = MessageParser.messageToString(sendMessage);
 
-                    ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
+                        ts.getItems().add(new TableViewMessage(stringFromMessage, LocalDateTime.now(), "nein"));
 
-                    Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
+                        Message responseMessage = client.sendMessage(MessageParser.parseBar05(communicationsObject.getValue()));
 
-                    //if in ack was sent back, the value of gültig changes to true
-                    if (responseMessage instanceof ACK) {
-                        ACK ack = (ACK) responseMessage;
-                        if (ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")) {
-                            ts.getItems().stream()
-                                    .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
-                                    .forEach(tM -> tM.setAckMessage("ja"));
+                        //if in ack was sent back, the value of gültig changes to true
+                        if (responseMessage instanceof ACK) {
+                            ACK ack = (ACK) responseMessage;
+                            if (ack.getMSA().getAcknowledgmentCode().getValue().equals("AA")) {
+                                ts.getItems().stream()
+                                        .filter(tM -> tM.getHl7Message().equals(stringFromMessage))
+                                        .forEach(tM -> tM.setAckMessage("ja"));
+                            }
                         }
+                    } finally {
+                        client.closeClient();
+                        //interuppt thread when the client has been closed
+                        Thread.currentThread().interrupt();
+                        Main.logger.info("Thread des Clients wurde geschlossen, da die Kommunikation abgeschlossen ist.");
                     }
-                } finally {
-                    client.closeClient();
-                    //interuppt thread when the client has been closed
-                    Thread.currentThread().interrupt();
-                    Main.logger.info("Thread des Clients wurde geschlossen, da die Kommunikation abgeschlossen ist.");
                 }
             });
             thread.setDaemon(true);
@@ -273,6 +285,15 @@ public class CommunicationsController {
             }
             fallDao.insert(fall);
             Main.logger.info("Creating sent case!");
+        }
+    }
+
+    private boolean isValidPort(String s){
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e){
+            return false;
         }
     }
 
