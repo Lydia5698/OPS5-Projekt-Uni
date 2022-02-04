@@ -115,7 +115,7 @@ public class FallController {
                         if (s == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(s.getBezeichnung());
+                            setText(s.getStation() + ": " + s.getBezeichnung());
                         }
                     }
                 };

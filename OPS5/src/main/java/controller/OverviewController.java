@@ -421,7 +421,7 @@ public class OverviewController {
                         if (stationSt == null || empty) {
                             setGraphic(null);
                         } else {
-                            setText(stationSt.getStation() + " " + stationSt.getBezeichnung());
+                            setText(stationSt.getStation() + ": " + stationSt.getBezeichnung());
                         }
                     }
                 };
