@@ -93,7 +93,8 @@ public class AdmissionController {
                     opController.getNarkose(), //narkoseSt
                     opController.getOpType(), //opTypSt
                     MainController.getUserId(), //ersteller
-                    null //bearbeiter
+                    null, //bearbeiter
+                    false //geplant
             );
 
             OperationDao operationDao = new OperationDao(Main.configuration);
@@ -196,7 +197,8 @@ public class AdmissionController {
                     opController.getNarkose(), //narkoseSt
                     opController.getOpType(), //opTypSt
                     null, //ersteller
-                    MainController.getUserId() //bearbeiter
+                    MainController.getUserId(),//bearbeiter
+                    false //geplant
             );
             OperationDao operationDao = new OperationDao(Main.configuration);
             operationDao.update(operation);

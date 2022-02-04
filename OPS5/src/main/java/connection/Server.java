@@ -107,6 +107,7 @@ public class Server {
                                         operation.setFallId(fall.getFallId());
                                         operation.setBauchtuecherPrae(0);
                                         operation.setBauchtuecherPost(0);
+                                        operation.setGeplant(true);
                                         new OperationDao(Main.configuration).insert(operation);
                                         //setze die op id
                                         diagnose.setOpId(new OperationDao(Main.configuration).fetchByFallId(fall.getFallId()).get(0).getOpId());

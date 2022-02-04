@@ -177,6 +177,9 @@ public class OverviewController {
     private TableColumn<Patient, String> panotfall;
 
     @FXML
+    private TableColumn<Operation, String> geplantCol;
+
+    @FXML
     private CheckBox stornierteOperation;
 
     @FXML
@@ -300,6 +303,7 @@ public class OverviewController {
         opTypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.opTypConverter(features.getValue().getOpTypSt())));
         erstellerOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
         bearbeiterOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getBearbeiter())));
+        geplantCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getGeplant())));
 
     }
 

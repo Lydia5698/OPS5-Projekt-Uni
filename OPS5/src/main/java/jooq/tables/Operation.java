@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -130,6 +130,11 @@ public class Operation extends TableImpl<OperationRecord> {
      * The column <code>pmiw21g05_v01.operation.bearbeiter</code>.
      */
     public final TableField<OperationRecord, String> BEARBEITER = createField(DSL.name("bearbeiter"), SQLDataType.VARCHAR(45).defaultValue(DSL.field("NULL", SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>pmiw21g05_v01.operation.geplant</code>.
+     */
+    public final TableField<OperationRecord, Boolean> GEPLANT = createField(DSL.name("geplant"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     private Operation(Name alias, Table<OperationRecord> aliased) {
         this(alias, aliased, null);
@@ -265,11 +270,11 @@ public class Operation extends TableImpl<OperationRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<Integer, LocalDateTime, LocalDateTime, Integer, Integer, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Integer, Integer, Integer, Integer, String, String> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row17<Integer, LocalDateTime, LocalDateTime, Integer, Integer, LocalDateTime, LocalDateTime, LocalDateTime, LocalDateTime, Boolean, Integer, Integer, Integer, Integer, String, String, Boolean> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }
