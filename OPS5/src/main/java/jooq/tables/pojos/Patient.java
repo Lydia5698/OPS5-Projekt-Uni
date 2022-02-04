@@ -32,6 +32,7 @@ public class Patient implements Serializable {
     private String        strasse;
     private String        postleitzahl;
     private String        telefonnummer;
+    private Boolean       notfall;
 
     public Patient() {}
 
@@ -51,6 +52,7 @@ public class Patient implements Serializable {
         this.strasse = value.strasse;
         this.postleitzahl = value.postleitzahl;
         this.telefonnummer = value.telefonnummer;
+        this.notfall = value.notfall;
     }
 
     public Patient(
@@ -68,7 +70,8 @@ public class Patient implements Serializable {
         String        geburtsort,
         String        strasse,
         String        postleitzahl,
-        String        telefonnummer
+        String        telefonnummer,
+        Boolean       notfall
     ) {
         this.patId = patId;
         this.name = name;
@@ -85,6 +88,7 @@ public class Patient implements Serializable {
         this.strasse = strasse;
         this.postleitzahl = postleitzahl;
         this.telefonnummer = telefonnummer;
+        this.notfall = notfall;
     }
 
     /**
@@ -297,6 +301,20 @@ public class Patient implements Serializable {
         this.telefonnummer = telefonnummer;
     }
 
+    /**
+     * Getter for <code>pmiw21g05_v01.patient.notfall</code>.
+     */
+    public Boolean getNotfall() {
+        return this.notfall;
+    }
+
+    /**
+     * Setter for <code>pmiw21g05_v01.patient.notfall</code>.
+     */
+    public void setNotfall(Boolean notfall) {
+        this.notfall = notfall;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Patient (");
@@ -316,6 +334,7 @@ public class Patient implements Serializable {
         sb.append(", ").append(strasse);
         sb.append(", ").append(postleitzahl);
         sb.append(", ").append(telefonnummer);
+        sb.append(", ").append(notfall);
 
         sb.append(")");
         return sb.toString();

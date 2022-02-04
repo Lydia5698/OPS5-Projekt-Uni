@@ -44,6 +44,8 @@ public class MessageParser {
         patient.setGeburtsdatum(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
         patient.setGeschlecht(Converter.SexFromISSToOurConverter(pid.getAdministrativeSex().getValue()));
         patient.setStorniert(false);
+        patient.setNotfall(false);
+        patient.setBlutgruppe("nb.");
         patient.setGeburtsort(pid.getBirthPlace().getValue());
         String straße = pid.getPatientAddress(0).getStreetAddress().getStreetName().getValue();
         String number = pid.getPatientAddress(0).getStreetAddress().getDwellingNumber().getValue();
@@ -190,6 +192,7 @@ public class MessageParser {
             pv1.getAdmittingDoctor(0).getFamilyName().getSurname().setValue(medPersonal.getName());
             pv1.getAdmittingDoctor(0).getGivenName().setValue(medPersonal.getVorname());
             pv1.getVisitNumber().getCx1_IDNumber().setValue(fall.getFallId().toString());
+            pv1.getAdmissionType().setValue(patient.getNotfall() ? "E" : "R");
             if (fall.getEntlassungsdatum() != null) {
                 pv1.getDischargeDateTime(0).getTime().setValue(fall.getEntlassungsdatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
             }

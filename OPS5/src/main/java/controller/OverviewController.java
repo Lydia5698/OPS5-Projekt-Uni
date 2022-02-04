@@ -60,7 +60,7 @@ public class OverviewController {
     private TableColumn<Fall, String> bearbeiterzeitCol;
 
     @FXML
-    private TableColumn<Fall, Boolean> storniertCol;
+    private TableColumn<Fall, String> storniertCol;
 
     @FXML
     private TableColumn<Fall, String> patientenIDCol;
@@ -108,7 +108,7 @@ public class OverviewController {
     private TableColumn<Operation, String> bearbeiterzeitOPCol;
 
     @FXML
-    private TableColumn<Operation, Boolean> storniertOPCol;
+    private TableColumn<Operation, String> storniertOPCol;
 
     @FXML
     private TableColumn<Operation, Integer> fallIdOPCol;
@@ -159,7 +159,7 @@ public class OverviewController {
     private TableColumn<Patient, String> paErstellzeit;
 
     @FXML
-    private TableColumn<Patient, Boolean> paStorniert;
+    private TableColumn<Patient, String> paStorniert;
 
     @FXML
     private TableColumn<Patient, String> paGeburtsort;
@@ -172,6 +172,9 @@ public class OverviewController {
 
     @FXML
     private TableColumn<Patient, String> paTelefonnummer;
+
+    @FXML
+    private TableColumn<Patient, String> panotfall;
 
     @FXML
     private CheckBox stornierteOperation;
@@ -260,11 +263,12 @@ public class OverviewController {
         paBearbeiterzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
         paErsteller.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
         paErstellzeit.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
-        paStorniert.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        paStorniert.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
         paGeburtsort.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getGeburtsort()));
         paStrasse.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStrasse()));
         paPostleitzahl.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getPostleitzahl()));
         paTelefonnummer.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getTelefonnummer()));
+        panotfall.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getNotfall())));
 
         // columns Case
         fallIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
@@ -272,7 +276,7 @@ public class OverviewController {
         entlassungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getEntlassungsdatum(), true)));
         erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
         bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
-        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
         patientenIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.patientConverter(features.getValue().getPatId())));
         stationCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStationSt()));
         erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
@@ -289,7 +293,7 @@ public class OverviewController {
         nahtzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getNahtzeit(), true)));
         erstellzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
         bearbeiterzeitOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
-        storniertOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        storniertOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
         fallIdOPCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getFallId()));
         opSaalCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpSaal()));
         narkoseCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.narkoseConverter(features.getValue().getNarkoseSt())));
@@ -581,6 +585,13 @@ public class OverviewController {
         OverviewController.storniertShown = storniertShown;
     }
 
-
+    private String booleanToString(Boolean notfall){
+        if(notfall){
+            return "ja";
+        }
+        else{
+            return "nein";
+        }
+    }
 
 }

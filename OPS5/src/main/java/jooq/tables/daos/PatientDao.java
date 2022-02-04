@@ -271,4 +271,19 @@ public class PatientDao extends DAOImpl<PatientRecord, jooq.tables.pojos.Patient
     public List<jooq.tables.pojos.Patient> fetchByTelefonnummer(String... values) {
         return fetch(Patient.PATIENT.TELEFONNUMMER, values);
     }
+
+    /**
+     * Fetch records that have <code>notfall BETWEEN lowerInclusive AND
+     * upperInclusive</code>
+     */
+    public List<jooq.tables.pojos.Patient> fetchRangeOfNotfall(Boolean lowerInclusive, Boolean upperInclusive) {
+        return fetchRange(Patient.PATIENT.NOTFALL, lowerInclusive, upperInclusive);
+    }
+
+    /**
+     * Fetch records that have <code>notfall IN (values)</code>
+     */
+    public List<jooq.tables.pojos.Patient> fetchByNotfall(Boolean... values) {
+        return fetch(Patient.PATIENT.NOTFALL, values);
+    }
 }

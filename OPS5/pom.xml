@@ -121,6 +121,12 @@
 								<includeTypes>.*</includeTypes>
 								<objectType>ALL</objectType>
 							</forcedType>
+								<forcedType>
+									<name>BOOLEAN</name>
+									<includeExpression>.*\.notfall</includeExpression>
+									<includeTypes>.*</includeTypes>
+									<objectType>ALL</objectType>
+								</forcedType>
 							</forcedTypes>
 						</database>
 						<target>

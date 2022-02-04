@@ -39,7 +39,7 @@ public class ProcedureController {
     @FXML
     private TableColumn<Prozedur, String> anmerkungCol;
     @FXML
-    private TableColumn<Prozedur, Boolean> storniertCol;
+    private TableColumn<Prozedur, String> storniertCol;
     @FXML
     private TableColumn<Prozedur, String> erstelltzeitCol;
     @FXML
@@ -150,7 +150,7 @@ public class ProcedureController {
         // columns Procedure
         prozCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getProzId()));
         anmerkungCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getAnmerkung()));
-        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+        storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
         erstelltzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
         bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
         opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
@@ -328,5 +328,13 @@ public class ProcedureController {
             }
         });
 
+    }
+    public String booleanToString(Boolean notfall){
+        if(notfall){
+            return "ja";
+        }
+        else{
+            return "nein";
+        }
     }
 }

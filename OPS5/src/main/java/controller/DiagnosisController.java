@@ -65,7 +65,7 @@ public class DiagnosisController {
 	private TableColumn<Diagnose, String> bearbeiterzeitCol;
 
 	@FXML
-	private TableColumn<Diagnose, Boolean> storniertCol;
+	private TableColumn<Diagnose, String> storniertCol;
 
 	@FXML
 	private TableColumn<Diagnose, Integer> opIDCol;
@@ -190,7 +190,7 @@ public class DiagnosisController {
 		dateCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getDatum(), true)));
 		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
 		bearbeiterzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getBearbeiterZeit(), true)));
-		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
 		opIDCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getOpId()));
 		diagnosetypCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.diagnoseTypConverter(features.getValue().getDiagnosetyp())));
 		icdCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getIcd10Code()));
@@ -557,5 +557,13 @@ public class DiagnosisController {
 			}
 		}
 		return null;
+	}
+	private String booleanToString(Boolean notfall){
+		if(notfall){
+			return "ja";
+		}
+		else{
+			return "nein";
+		}
 	}
 }

@@ -20,7 +20,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row15;
+import org.jooq.Row16;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -126,6 +126,11 @@ public class Patient extends TableImpl<PatientRecord> {
      * The column <code>pmiw21g05_v01.patient.telefonnummer</code>.
      */
     public final TableField<PatientRecord, String> TELEFONNUMMER = createField(DSL.name("telefonnummer"), SQLDataType.VARCHAR(45).defaultValue(DSL.field("NULL", SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>pmiw21g05_v01.patient.notfall</code>.
+     */
+    public final TableField<PatientRecord, Boolean> NOTFALL = createField(DSL.name("notfall"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     private Patient(Name alias, Table<PatientRecord> aliased) {
         this(alias, aliased, null);
@@ -245,11 +250,11 @@ public class Patient extends TableImpl<PatientRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row15 type methods
+    // Row16 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<Integer, String, String, LocalDate, String, String, String, LocalDateTime, String, LocalDateTime, Boolean, String, String, String, String> fieldsRow() {
-        return (Row15) super.fieldsRow();
+    public Row16<Integer, String, String, LocalDate, String, String, String, LocalDateTime, String, LocalDateTime, Boolean, String, String, String, String, Boolean> fieldsRow() {
+        return (Row16) super.fieldsRow();
     }
 }
