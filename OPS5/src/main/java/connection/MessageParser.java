@@ -206,7 +206,7 @@ public class MessageParser {
                 dg1.getSetIDDG1().setValue(diagnose.get(i).getDiagnoseId().toString());
                 dg1.getDiagnosisCodeDG1().getCe1_Identifier().setValue(diagnose.get(i).getIcd10Code());
                 dg1.getDiagnosisDescription().setValue(diagnose.get(i).getKlartextDiagnose().replaceAll("\n", "").replaceAll("\r",""));
-                dg1.getDiagnosisDateTime().getTime().setValue(diagnose.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+                dg1.getDiagnosisDateTime().getTime().setValue(diagnose.get(i).getDatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
                 dg1.getDiagnosingClinician(0).getIDNumber().setValue(diagnose.get(i).getErsteller());
             }
 
