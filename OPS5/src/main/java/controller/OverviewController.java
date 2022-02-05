@@ -243,7 +243,7 @@ public class OverviewController {
     }
 
     /**
-     * Reloads the Patient Table after receiving a new Patient from the KIS
+     * Reloads the Patient Table after receiving a new Patient from the KIS and after inserting a new operation
      */
     public void reload(){
         opListPatients.setItems(patientView());
@@ -579,10 +579,18 @@ public class OverviewController {
         }
     }
 
+    /**
+     * returns the selected opid for updating the selected op
+     * @return
+     */
     public static Integer getOpId() {
         return opId;
     }
 
+    /**
+     * Boolean to see if the canceled operations has to be shown or the others
+     * @return true if the checkbox is selected
+     */
     public static Boolean getStorniertShown() {
         return storniertShown;
     }
@@ -591,6 +599,11 @@ public class OverviewController {
         OverviewController.storniertShown = storniertShown;
     }
 
+    /**
+     * Converts a boolen to a string to show it prettier in the overview
+     * @param notfall the boolean value
+     * @return ja when the boolean is true, else false
+     */
     private String booleanToString(Boolean notfall){
         if(notfall){
             return "ja";

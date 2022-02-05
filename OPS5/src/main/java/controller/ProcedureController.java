@@ -329,6 +329,12 @@ public class ProcedureController {
         });
 
     }
+
+    /**
+     * Converts a boolean to a string so it is shown prettier in the overview
+     * @param notfall boolean value
+     * @return ja when the boolean is true, else false
+     */
     public String booleanToString(Boolean notfall){
         if(notfall){
             return "ja";

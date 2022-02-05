@@ -38,24 +38,12 @@ public class TableViewMessage {
         return hl7Message;
     }
 
-    public void setHl7Message(String hl7Message) {
-        this.hl7Message.set(hl7Message);
-    }
-
     public LocalDateTime getDateOfMessage() {
         return dateOfMessage.get();
     }
 
     public ObjectProperty<LocalDateTime> dateOfMessageProperty() {
         return dateOfMessage;
-    }
-
-    public void setDateOfMessage(LocalDateTime dateOfMessage) {
-        this.dateOfMessage.set(dateOfMessage);
-    }
-
-    public String getAckMessage() {
-        return ackMessage.get();
     }
 
     public StringProperty ackMessageProperty() {

@@ -2,17 +2,14 @@ package controller;
 
 import ExternalFiles.Converter;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import jooq.tables.pojos.MedPersonal;
-import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
 

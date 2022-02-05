@@ -12,7 +12,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jooq.tables.pojos.MedPersonal;
-import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;

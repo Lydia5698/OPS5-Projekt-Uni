@@ -1,7 +1,6 @@
 package controller;
 import ExternalFiles.Converter;
 import ExternalFiles.CustomSelectionModel;
-import javafx.application.Platform;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

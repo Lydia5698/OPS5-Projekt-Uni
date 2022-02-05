@@ -12,8 +12,6 @@ import main.Main;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 /**
  * the receiver is listening for incomming messages
@@ -54,7 +52,7 @@ public class Client {
         Message response;
         if(this.initiator == null){return null;} //if the initiator is null an alert has already be thrown so the message
         //can not be sent at all
-        for (int i=0; i < 5; i++){ //try 4 times to send the message
+        for (int i=0; i < 5; i++){ //try 5 times to send the message
             try{
                 response = initiator.sendAndReceive(message);
                 return response;

@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.web.WebView;
 
 /**
- * Displays the Pub Med article
+ * Displays the PubMed article
  */
 public class WebViewController {
 
