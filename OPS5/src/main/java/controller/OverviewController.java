@@ -468,6 +468,8 @@ public class OverviewController {
             operationDao.update(operation);
             Main.logger.info("Die Operation und die dazugehörigen Diagnosen und Prozeduren wurden storniert.");
             opListOperation.setItems(operationView(onEditCase()));
+            CommunicationsController.getInstance().setCommunicationsObjectBox();
+            //lade neu, damit nur die nicht stonierten Operationen gesendet werden können
         }
         else{
             Main.logger.warning("Fehlende Operation: Bitte wählen Sie eine Operation zum Stornieren aus.");

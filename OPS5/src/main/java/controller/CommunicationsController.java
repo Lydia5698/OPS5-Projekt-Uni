@@ -12,16 +12,12 @@ import connection.Server;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import jooq.tables.daos.DiagnoseDao;
-import jooq.tables.daos.FallDao;
-import jooq.tables.daos.PatientDao;
-import jooq.tables.pojos.Diagnose;
-import jooq.tables.pojos.Fall;
-import jooq.tables.pojos.Operation;
-import jooq.tables.pojos.Patient;
+import jooq.tables.daos.*;
+import jooq.tables.pojos.*;
 import main.Main;
 import org.controlsfx.control.SearchableComboBox;
 
@@ -30,6 +26,10 @@ import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Is responsible for communication with the KIS
@@ -107,6 +107,11 @@ public class CommunicationsController {
      */
     public void setCommunicationsObjectBox() {
         Converter.setOperation(communicationsObject, "communication");
+        //filter nur die nicht stornierten Operationen
+        List<Operation> opList = new OperationDao(Main.configuration).findAll();
+        var result = opList.stream().filter(op -> !op.getStorniert()) //nur nicht stornierte OPS
+                .collect(Collectors.toList());
+        communicationsObject.getItems().setAll(result);
     }
 
     /**
