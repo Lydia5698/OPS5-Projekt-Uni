@@ -41,7 +41,9 @@ public class MessageParser {
         patient.setPatId(Integer.parseInt(pid.getPatientID().getCx1_IDNumber().getValue()));
         patient.setName(pid.getPatientName(0).getFamilyName().getSurname().getValue());
         patient.setVorname(pid.getPatientName(0).getGivenName().getValue());
-        patient.setGeburtsdatum(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
+        if(pid.getDateTimeOfBirth().getTime().getValue() != null){
+            patient.setGeburtsdatum(DateTimeFormatter.BASIC_ISO_DATE.parse(pid.getDateTimeOfBirth().getTime().getValue(), LocalDate::from));
+        }
         patient.setGeschlecht(Converter.SexFromISSToOurConverter(pid.getAdministrativeSex().getValue()));
         patient.setStorniert(false);
         patient.setNotfall(false);
@@ -189,6 +191,8 @@ public class MessageParser {
             pv1.getAdmitDateTime().getTime().setValue(fall.getAufnahmedatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
             assert medPersonal != null;
             pv1.getAdmittingDoctor(0).getIDNumber().setValue(medPersonal.getPersId());
+            pv1.getAdmittingDoctor(0).getPrefixEgDR().setValue(medPersonal.getAnrede());
+            pv1.getAdmittingDoctor(0).getDegreeEgMD().setValue(medPersonal.getTitel());
             pv1.getAdmittingDoctor(0).getFamilyName().getSurname().setValue(medPersonal.getName());
             pv1.getAdmittingDoctor(0).getGivenName().setValue(medPersonal.getVorname());
             pv1.getVisitNumber().getCx1_IDNumber().setValue(fall.getFallId().toString());
@@ -202,23 +206,33 @@ public class MessageParser {
             //DG1 fields
             List<Diagnose> diagnose = new DiagnoseDao(Main.configuration).fetchByOpId(operation.getOpId());
             for (int i = 0; i < diagnose.size(); i++) {
+                MedPersonal med = new MedPersonalDao(Main.configuration).fetchOneByPersId(diagnose.get(i).getErsteller());
                 DG1 dg1 = bar05.getVISIT().getDG1(i);
                 dg1.getSetIDDG1().setValue(diagnose.get(i).getDiagnoseId().toString());
                 dg1.getDiagnosisCodeDG1().getCe1_Identifier().setValue(diagnose.get(i).getIcd10Code());
                 dg1.getDiagnosisDescription().setValue(diagnose.get(i).getKlartextDiagnose().replaceAll("\n", "").replaceAll("\r",""));
                 dg1.getDiagnosisDateTime().getTime().setValue(diagnose.get(i).getDatum().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-                dg1.getDiagnosingClinician(0).getIDNumber().setValue(diagnose.get(i).getErsteller());
+                dg1.getDiagnosingClinician(0).getIDNumber().setValue(med.getPersId());
+                dg1.getDiagnosingClinician(0).getFamilyName().getSurname().setValue(med.getName());
+                dg1.getDiagnosingClinician(0).getGivenName().setValue(med.getVorname());
+                dg1.getDiagnosingClinician(0).getPrefixEgDR().setValue(med.getAnrede());
+                dg1.getDiagnosingClinician(0).getDegreeEgMD().setValue(med.getTitel());
             }
 
             //PR1 fields
             List<Prozedur> prozedurs = new ProzedurDao(Main.configuration).fetchByOpId(operation.getOpId());
             for (Prozedur prozedur : prozedurs) {
+                MedPersonal medProz = new MedPersonalDao(Main.configuration).fetchOneByPersId(prozedur.getErsteller());
                 PR1 pr1 = bar05.getVISIT(0).getPROCEDURE().getPR1();
                 pr1.getSetIDPR1().setValue(prozedur.getProzId().toString());
                 pr1.getProcedureCode().getIdentifier().setValue(prozedur.getOpsCode());
                 pr1.getProcedureDescription().setValue(prozedur.getAnmerkung().replaceAll("\n", "").replaceAll("\r",""));
                 pr1.getProcedureDateTime().getTime().setValue(prozedur.getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
                 pr1.getSurgeon(0).getIDNumber().setValue(prozedur.getErsteller());
+                pr1.getSurgeon(0).getFamilyName().getSurname().setValue(medProz.getName());
+                pr1.getSurgeon(0).getGivenName().setValue(medProz.getVorname());
+                pr1.getSurgeon(0).getPrefixEgDR().setValue(medProz.getAnrede());
+                pr1.getSurgeon(0).getDegreeEgMD().setValue(medProz.getTitel());
             }
         } catch(HL7Exception e){
             Platform.runLater(()->{

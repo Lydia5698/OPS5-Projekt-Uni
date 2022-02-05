@@ -1,6 +1,7 @@
 package controller;
 
 import ExternalFiles.Converter;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -44,7 +45,10 @@ public class AdmissionController {
      * This method selects all patients of the system as choosing options of the combobox for the selection of the patient.
      */
     public void setPatient() {
-        Converter.setPatient(selectPatient, false);
+        Platform.runLater(()->{
+            Converter.setPatient(selectPatient, false);
+        });
+
     }
 
     /**

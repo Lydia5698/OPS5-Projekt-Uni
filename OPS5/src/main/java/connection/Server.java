@@ -117,6 +117,7 @@ public class Server {
                                         //hinzugefügt
                                         List<Operation> operationList = new OperationDao(Main.configuration).fetchByFallId(fall.getFallId());
                                         operationList.sort(Comparator.comparing(Operation::getOpId));
+                                        System.out.println();
                                         diagnose.setOpId(operationList.get(operationList.size()-1).getOpId());
                                     }
                                     diagnose.setErsteller("00000000");
@@ -126,6 +127,8 @@ public class Server {
                                 else{
                                     diagnose.setBearbeiter("00000000");
                                     diagnose.setBearbeiterZeit(LocalDateTime.now());
+                                    int opid = new DiagnoseDao(Main.configuration).fetchOneByDiagnoseId(diagnose.getDiagnoseId()).getOpId();
+                                    diagnose.setOpId(opid);
                                     new DiagnoseDao(Main.configuration).update(diagnose);
                                 }
                             }

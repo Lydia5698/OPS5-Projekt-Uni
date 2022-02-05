@@ -228,20 +228,19 @@ public class CommunicationsController {
     public static void insertNewPatient(Patient patient) {
         PatientDao patientDao = new PatientDao(Main.configuration);
         //checking for values which can not be null (in this case it is the patients first and lastname)
-        Platform.runLater(() -> {
-            if (!getInstance().canInsertPatient(patient)) {
-                Main.logger.warning("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden.");
+        if (!getInstance().canInsertPatient(patient)) {
+            Main.logger.warning("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden.");
+            Platform.runLater(()->{
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Patient kann nicht eingefügt werden!");
                 alert.setContentText("Der gesendete Patient enthält fehlerhafte Eingaben und kann somit nicht eingefügt werden!");
                 alert.showAndWait();
-            } else {
-                patientDao.insert(patient);
-                Main.logger.info("Creating sent patient!");
-            }
-        });
-
+            });
+        } else {
+        patientDao.insert(patient);
+        Main.logger.info("Creating sent patient!");
+        }
     }
 
     /**
