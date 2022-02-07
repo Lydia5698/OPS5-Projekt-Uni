@@ -455,8 +455,14 @@ public class OverviewController {
             OperationDao operationDao = new OperationDao(Main.configuration);
             DiagnoseDao diagnoseDao = new DiagnoseDao(Main.configuration);
             ProzedurDao prozedurDao = new ProzedurDao(Main.configuration);
+            RolleDao rolleDao = new RolleDao(Main.configuration);
             List<Diagnose> diagnose = diagnoseDao.fetchByOpId(operation.getOpId());
             List<Prozedur> prozedur = prozedurDao.fetchByOpId(operation.getOpId());
+            List<Rolle> rolle = rolleDao.fetchByOpId(operation.getOpId());
+            for(Rolle value: rolle){
+                value.setStorniert(opListOperation.getSelectionModel().getSelectedItem().getStorniert());
+                rolleDao.update(value);
+            }
             for (Diagnose value : diagnose) {
                 value.setStorniert(opListOperation.getSelectionModel().getSelectedItem().getStorniert());
                 diagnoseDao.update(value);
@@ -466,7 +472,7 @@ public class OverviewController {
                 prozedurDao.update(value);
             }
             operationDao.update(operation);
-            Main.logger.info("Die Operation und die dazugehörigen Diagnosen und Prozeduren wurden storniert.");
+            Main.logger.info("Die Operation und die dazugehörigen Diagnosen, Prozeduren und Rollen wurden storniert.");
             opListOperation.setItems(operationView(onEditCase()));
             CommunicationsController.getInstance().setCommunicationsObjectBox();
             //lade neu, damit nur die nicht stonierten Operationen gesendet werden können

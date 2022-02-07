@@ -37,7 +37,7 @@ public class RoleOverviewController {
 	@FXML
 	private TableColumn<Rolle, String> bearbeiterzeitCol;
 	@FXML
-	private TableColumn<Rolle, Boolean> storniertCol;
+	private TableColumn<Rolle, String> storniertCol;
 	@FXML
 	private TableColumn<Rolle, String> erstellerCol;
 	@FXML
@@ -76,7 +76,7 @@ public class RoleOverviewController {
 		erstellzeitCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.dateTimeConverter(features.getValue().getErstellZeit(), true)));
 		erstellerCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(Converter.medPersonalConverter(features.getValue().getErsteller())));
 		userCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getMedPersonalPersId()));
-		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(features.getValue().getStorniert()));
+		storniertCol.setCellValueFactory(features -> new ReadOnlyObjectWrapper<>(booleanToString(features.getValue().getStorniert())));
 	}
 
 
@@ -138,11 +138,10 @@ public class RoleOverviewController {
 				confirm.setHeaderText("Erfolgreich eingefügt");
 				confirm.setContentText("Der Datensatz wurde in die Datenbank eingefügt.");
 				confirm.showAndWait();
+				//close the window
+				Stage stage = (Stage) speichern.getScene().getWindow();
+				stage.close();
 			}
-
-			//close the window
-			Stage stage = (Stage) speichern.getScene().getWindow();
-			stage.close();
 		}
 	}
 
@@ -283,4 +282,12 @@ public class RoleOverviewController {
 		Converter.setMitarbeiter(mitarbeiter, false, 0);
 	}
 
+	private String booleanToString(Boolean notfall){
+		if(notfall){
+			return "ja";
+		}
+		else{
+			return "nein";
+		}
+	}
 }

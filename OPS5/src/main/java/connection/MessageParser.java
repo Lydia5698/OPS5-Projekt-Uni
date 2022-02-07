@@ -221,19 +221,33 @@ public class MessageParser {
 
             //PR1 fields
             List<Prozedur> prozedurs = new ProzedurDao(Main.configuration).fetchByOpId(operation.getOpId());
-            for (Prozedur prozedur : prozedurs) {
-                MedPersonal medProz = new MedPersonalDao(Main.configuration).fetchOneByPersId(prozedur.getErsteller());
-                PR1 pr1 = bar05.getVISIT(0).getPROCEDURE().getPR1();
-                pr1.getSetIDPR1().setValue(prozedur.getProzId().toString());
-                pr1.getProcedureCode().getIdentifier().setValue(prozedur.getOpsCode());
-                pr1.getProcedureDescription().setValue(prozedur.getAnmerkung().replaceAll("\n", "").replaceAll("\r",""));
-                pr1.getProcedureDateTime().getTime().setValue(prozedur.getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-                pr1.getSurgeon(0).getIDNumber().setValue(prozedur.getErsteller());
+            for (int i = 0; i < prozedurs.size(); i++) {
+                MedPersonal medProz = new MedPersonalDao(Main.configuration).fetchOneByPersId(prozedurs.get(i).getErsteller());
+                PR1 pr1 = bar05.getVISIT().getPROCEDURE(i).getPR1();
+                pr1.getSetIDPR1().setValue(prozedurs.get(i).getProzId().toString());
+                pr1.getProcedureCode().getIdentifier().setValue(prozedurs.get(i).getOpsCode());
+                pr1.getProcedureDescription().setValue(prozedurs.get(i).getAnmerkung().replaceAll("\n", "").replaceAll("\r",""));
+                pr1.getProcedureDateTime().getTime().setValue(prozedurs.get(i).getErstellZeit().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+                pr1.getSurgeon(0).getIDNumber().setValue(prozedurs.get(i).getErsteller());
                 pr1.getSurgeon(0).getFamilyName().getSurname().setValue(medProz.getName());
                 pr1.getSurgeon(0).getGivenName().setValue(medProz.getVorname());
                 pr1.getSurgeon(0).getPrefixEgDR().setValue(medProz.getAnrede());
                 pr1.getSurgeon(0).getDegreeEgMD().setValue(medProz.getTitel());
             }
+
+            //rolle
+            List<Rolle> rolles = new RolleDao(Main.configuration).fetchByOpId(operation.getOpId());
+            for (int i = 0; i < rolles.size(); i++){
+                ROL rol = bar05.getROL(i);
+                MedPersonal medPersonal1 = new MedPersonalDao(Main.configuration).fetchOneByPersId(rolles.get(i).getMedPersonalPersId());
+                rol.getRol3_RoleROL().getIdentifier().setValue(Converter.roleConverter(rolles.get(i).getRolleSt()));
+                rol.getRol4_RolePerson(0).getIDNumber().setValue(medPersonal1.getPersId());
+                rol.getRol4_RolePerson(0).getGivenName().setValue(medPersonal1.getVorname());
+                rol.getRol4_RolePerson(0).getFamilyName().getSurname().setValue(medPersonal1.getName());
+                rol.getRol4_RolePerson(0).getPrefixEgDR().setValue(medPersonal1.getAnrede());
+                rol.getRol4_RolePerson(0).getDegreeEgMD().setValue(medPersonal1.getTitel());
+            }
+
         } catch(HL7Exception e){
             Platform.runLater(()->{
                 Main.logger.warning("Es kann keine Nachricht aus den eingegebenen Daten geparsed werden.");
