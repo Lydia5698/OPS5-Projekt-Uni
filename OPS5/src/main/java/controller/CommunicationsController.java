@@ -250,7 +250,7 @@ public class CommunicationsController {
      * @return false if there is wrong information about the case
      */
     public boolean canInsertCase(Fall fall) {
-        if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && fall.getEntlassungsdatum().isBefore(LocalDateTime.now())) {
+        if (fall.getEntlassungsdatum() != null && fall.getAufnahmedatum() == null && !fall.getEntlassungsdatum().isBefore(LocalDateTime.now())) {
             return true;
         }
         return !(fall.getEntlassungsdatum() != null && fall.getEntlassungsdatum().isBefore(fall.getAufnahmedatum()));
