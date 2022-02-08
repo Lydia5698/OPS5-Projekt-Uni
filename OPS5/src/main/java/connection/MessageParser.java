@@ -240,7 +240,8 @@ public class MessageParser {
             for (int i = 0; i < rolles.size(); i++){
                 ROL rol = bar05.getROL(i);
                 MedPersonal medPersonal1 = new MedPersonalDao(Main.configuration).fetchOneByPersId(rolles.get(i).getMedPersonalPersId());
-                rol.getRol3_RoleROL().getIdentifier().setValue(Converter.roleConverter(rolles.get(i).getRolleSt()));
+                rol.getRol3_RoleROL().getIdentifier().setValue(String.valueOf(rolles.get(i).getRolleSt()));
+                rol.getRol3_RoleROL().getText().setValue(Converter.roleConverter(rolles.get(i).getRolleSt()));
                 rol.getRol4_RolePerson(0).getIDNumber().setValue(medPersonal1.getPersId());
                 rol.getRol4_RolePerson(0).getGivenName().setValue(medPersonal1.getVorname());
                 rol.getRol4_RolePerson(0).getFamilyName().getSurname().setValue(medPersonal1.getName());
