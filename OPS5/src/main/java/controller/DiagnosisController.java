@@ -347,7 +347,7 @@ public class DiagnosisController {
 	@FXML
 	void diagnosisClicked(MouseEvent event) {
 		flagEditDiagnose = true;
-		if(event.getClickCount() > 0 && !diagnosisTable.getItems().isEmpty()){
+		if(event.getClickCount() > 0 && !diagnosisTable.getItems().isEmpty() && diagnosisTable.getSelectionModel().getSelectedItem() != null){
 			Diagnose diagnose = diagnosisTable.getSelectionModel().getSelectedItem();
 			Icd10CodeSt icd10CodeSt = new Icd10CodeStDao(Main.configuration).fetchOneByIcd10Code(diagnose.getIcd10Code());
 			Operation operation = new OperationDao(Main.configuration).fetchOneByOpId(diagnose.getOpId());
