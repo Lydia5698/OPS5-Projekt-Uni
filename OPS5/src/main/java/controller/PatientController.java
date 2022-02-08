@@ -124,7 +124,14 @@ public class PatientController {
                 alert.setHeaderText("Falsche Einträge!");
                 alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
                 alert.showAndWait();
-            } //invalid birthdate
+            } // entry for field is too long
+            else if(!textLengthTooLong(patient).equals("Gut")){
+                Main.logger.warning("Falscher Eintrag: Die Länge des Feldes für " + textLengthTooLong(patient) + " ist zu lang");
+                alert.setHeaderText("Zu langer Eintrag!");
+                alert.setContentText("Die Eingabe für das Feld " + textLengthTooLong(patient) + " ist zu lang!");
+                alert.showAndWait();
+            }
+            //invalid birthdate
             else if(patientBirthdate.getValue() != null && patientBirthdate.getValue().isAfter(LocalDate.now())){
                     Main.logger.warning("Falscher Eintrag: Das gewählte Geburtsdatum liegt in der Zukunft.");
                     alert.setHeaderText("Falscher Eintrag!");
@@ -208,6 +215,33 @@ public class PatientController {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Checks for invalid length of the database
+     * @param patient patient to get the length of the fields
+     * @return string depending of the problem
+     */
+    private String textLengthTooLong(Patient patient){
+        if(patient.getName().length() > 45){
+            return "Name";
+        }
+        else if(patient.getVorname().length() > 45){
+            return "Vorname";
+        }
+        else if(patient.getGeburtsort() != null && patient.getGeburtsort().length() > 100){
+            return "Geburtsort";
+        }
+        else if(patient.getStrasse() != null && patient.getStrasse().length() > 100){
+            return "Strasse";
+        }
+        else if(patient.getPostleitzahl() != null && patient.getPostleitzahl().length() > 25){
+            return "PLZ";
+        }
+        else if(patient.getTelefonnummer() != null && patient.getTelefonnummer().length() > 45){
+            return "Telefon";
+        }
+        return "Gut";
     }
 
 }

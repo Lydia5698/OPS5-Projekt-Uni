@@ -94,7 +94,16 @@ public class ProcedureController {
                 alert.setHeaderText("Falscher Eintrag");
                 alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
                 alert.show();
-        } else {
+        }
+        else if(procedureAnmerkung.getText() != null && procedureAnmerkung.getText().length() > 200){
+            Main.logger.warning("Falscher Eintrag: Die Länge des Freitextes ist zu lang.");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Fehler");
+            alert.setHeaderText("Falscher Eintrag");
+            alert.setContentText("Der Eintrag des Freitextes ist zu lang");
+            alert.show();
+        }
+        else {
             insertNewProcedure();
             Node source = (Node) event.getSource();
             Stage thisStage = (Stage) source.getScene().getWindow();
@@ -256,6 +265,15 @@ public class ProcedureController {
             Main.logger.warning("Falscher Eintrag: Die Sonderzeichen sind für HL7 reserviert.");
             alert.setHeaderText("Falscher Eintrag");
             alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
+            alert.show();
+            return false;
+        }
+        if(procedureAnmerkung.getText() != null && procedureAnmerkung.getText().length() > 200){
+            Main.logger.warning("Falscher Eintrag: Die Länge des Freitextes ist zu lang.");
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Fehler");
+            alert.setHeaderText("Falscher Eintrag");
+            alert.setContentText("Der Eintrag des Freitextes ist zu lang");
             alert.show();
             return false;
         }

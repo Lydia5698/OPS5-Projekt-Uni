@@ -131,6 +131,14 @@ public class DiagnosisController {
 			alert.setContentText("Es dürfen keine Sonderzeichen verwendet werden (&,^,\\,~)!");
 			alert.show();
 		}
+		else if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().length() > 200){
+			Main.logger.warning("Falscher Eintrag: Die Länge des Freitextes ist zu lang.");
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Fehler");
+			alert.setHeaderText("Falscher Eintrag");
+			alert.setContentText("Der Eintrag des Freitextes ist zu lang");
+			alert.show();
+		}
 		else{
 			insertNewDiagnose();
 			Node source = (Node) event.getSource();
@@ -427,6 +435,15 @@ public class DiagnosisController {
 			alert.show();
 			return false;
 		}
+		if(diagnosisFreetext.getText() != null && diagnosisFreetext.getText().length() > 200){
+			Main.logger.warning("Falscher Eintrag: Die Länge des Freitextes ist zu lang.");
+			alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Fehler");
+			alert.setHeaderText("Falscher Eintrag");
+			alert.setContentText("Der Eintrag des Freitextes ist zu lang");
+			alert.show();
+			return false;
+		}
 		return true;
 
 	}
@@ -557,6 +574,7 @@ public class DiagnosisController {
 		}
 		return null;
 	}
+
 	private String booleanToString(Boolean notfall){
 		if(notfall){
 			return "ja";
