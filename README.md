@@ -11,5 +11,6 @@
 
 Wir haben uns gemeinsam mit der Partnergruppe entschieden einen Datensatz aufzustellen, welcher synchronisiert ist. Diesen kann man bei phpMyAdmin über das SQL-Feld aufspielen. Dabei werden zunächst alle Bewegungstabellen zurückgesetzt und dann mit den synchronisierten Daten bespielt.
 
- Die SQL-Statements, die kopiert werden müssen, sind im Lessonslearned am Ende zu finden.
+Die SQL-Statements, die kopiert werden müssen, sind im Dokument "Datensatz zur Synchronisierung mit der Partnergruppe" im Hauptverzeichnis zu finden. 
 
+ACHTUNG: Beim Leeren der Datenbank muss die Fremdschlüsselüberprüfung deaktiviert werden!
